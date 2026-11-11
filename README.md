@@ -92,3 +92,20 @@ near-zero stretch exists, or a gap is 3 days or longer. Otherwise `ok`. The near
 ## License
 
 Proposed defaults, not final: MIT for code, CC BY 4.0 for aggregated data. To be decided before anything is published.
+
+## Dashboard
+
+A static dashboard for one race lives in `web/` (Vite + TypeScript, D3, Observable Plot). It reads
+`data/processed/<race_id>.json` and makes no other network calls.
+
+    cd web
+    npm ci
+    npm run build      # writes web/dist and copies data/processed/*.json into web/dist/data/
+    npm run preview    # serves web/dist at http://127.0.0.1:4173/
+    npm run dev        # live reload; serves data/processed under /data/
+
+`?race=<race_id>` picks the race file (default `tx-senate-2026`). The page loads its data with `fetch`, and
+browsers block `fetch` from `file://` pages, so open it over http (`npm run preview` or any static file server
+on `web/dist`), not by double-clicking `index.html`. The build is plain static files and can go on any host
+under any path. `npm run check` type-checks, `npm test` runs the transform tests, and `npm run verify` (with the
+preview running) does the offline render check, screenshots and axe. Details and results: `docs/m1-notes.md`.
