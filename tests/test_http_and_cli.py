@@ -88,14 +88,14 @@ def test_cost_guard():
 def test_unknown_source(tmp_path):
     from raceattn.pipeline import PipelineError
 
-    with pytest.raises(PipelineError, match="unknown source 'x'"):
-        run(load_race("tx-senate-2026"), ["x"], raw_dir=str(tmp_path), out_dir=str(tmp_path), log=lambda *_: None)
+    with pytest.raises(PipelineError, match="unknown source 'nope'"):
+        run(load_race("tx-senate-2026"), ["nope"], raw_dir=str(tmp_path), out_dir=str(tmp_path), log=lambda *_: None)
 
 
-def test_trades_stub():
-    race = load_race("tx-senate-2026")
-    with pytest.raises(NotImplementedError, match="M2"):
-        KalshiConnector().fetch_trades(race, race.window)
+def test_fetch_trades_delegates_to_trades_connector():
+    from raceattn.connectors.kalshi import KalshiTradesConnector
+
+    assert hasattr(KalshiConnector, "fetch_trades") and KalshiTradesConnector.id == "kalshi_trades"
 
 
 def test_cli_validate_and_errors(capsys):
