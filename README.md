@@ -7,7 +7,8 @@ The tool reports timing and association, not causation.
 Milestone M0 covers: race config schema, Kalshi and Wikipedia connectors, the metrics module, Texas end to end and
 a golden test that reproduces the stdlib pilot in `docs/reference/pilot/`. M2 adds Kalshi trades, X (your own
 token), news (Media Cloud, Guardian, NYT, a manual CSV, optional GDELT), Bluesky, the event list generator and the
-event, spike and reversion metrics. See `docs/spec.md`, `docs/m0-notes.md` and `docs/m2-notes.md`.
+event, spike and reversion metrics. M3 adds race discovery (`discover`), multi-state runs (`run --all`) and the US
+map dashboard. See `docs/spec.md` and `docs/m0-notes.md` to `docs/m3-notes.md`.
 
 ## Setup
 
@@ -46,6 +47,32 @@ Events: `events` reads the polling tables on the race's Wikipedia page at a fixe
 poll (`date_utc,type,source_url,note,status`), plus debates and filing deadlines only where the page lists them.
 Every row is `needs_review` and cites the revision. Change a row's status to `confirmed` after checking it; the
 event metrics ignore everything else. `events` refuses to overwrite a file that has confirmed rows (use `--force`).
+
+## Discover races and run them all
+
+    .venv/bin/python -m raceattn discover --office senate                 # all 50 states
+    .venv/bin/python -m raceattn discover --office governor --state TX,OH
+    .venv/bin/python -m raceattn run --all                                # every confirmed config
+
+`discover` lists every Kalshi event (`GET /events`, statuses open, closed and settled; the settled listing is cut to
+events with a market closing on or after election day) and matches a state by the event title ("Ohio Senate winner?",
+"Texas Governor winner?" with 2026 in the sub title), never by ticker pattern. The followed market is the Democratic
+party contract, as for Texas. It then finds the race article on Wikipedia through the MediaWiki API (redirects
+resolved, so the Ohio and Florida special elections are found from the regular title), reads the nominees from the
+election infobox (at least 5% of the vote when shares are listed) and writes
+`config/races/drafts/<race_id>.yaml` with `status: needs_review` and a `discovery:` block: one confidence note per
+field (high, medium or low, why, and the source URL or ticker). Aliases default to the surname. The news query uses
+the bare surname only when Wikipedia has no other topic under it (no article, a redirect to the candidate, or a
+surname list page), else the full name. Subreddits stay empty. It also writes
+`config/races/drafts/discover-report-<office>.md` (and `.json`): every race resolved, every state not resolved and
+why, and for a race that already has a hand-written config, a field-by-field comparison. The first run takes about
+15 minutes (about 370 Kalshi pages and 2 s between MediaWiki calls); later runs read the cache (`--refresh` re-fetches).
+
+A draft is trusted only after a human reviews it, moves it to `config/races/` and sets `status: confirmed`. A file
+in `config/races/` without a `status` (the hand-written Texas config) counts as confirmed. `run --all` runs every
+confirmed config and writes `data/processed/<race>.json` and `index.json`; drafts and `needs_review` files are left
+out and listed. Per-race run settings (a lower Bluesky page cap, a source left out with a reason) go under
+`race_overrides` in `config/project.yaml`; the race JSON records them in `run_overrides` and `skipped`.
 
 `--race` takes a race id (loads `config/races/<id>.yaml`) or a path to a yaml file. One file fully describes a
 race; connectors render every query from it and hard-code nothing.
@@ -92,8 +119,16 @@ Reused unless `--refresh`. Bluesky stores one record per day with hourly counts 
   With no confirmed events, `status` is `"no confirmed events"` and the event-window and excess-attention entries say
   so instead of giving a number; `n_needs_review_ignored` counts the draft rows that were ignored.
 
-`data/processed/index.json` (committed): one entry per race with window, quality statuses and the headline metric
-(Wikipedia total surprise vs Kalshi volume surprise). Re-running one race merges into the file and keeps the others.
+`data/processed/index.json` (committed): one entry per race with state, office, window, quality statuses and the
+headline metric (Wikipedia total surprise vs Kalshi volume surprise, every lag). Under `metrics`, the map's numbers,
+each with its n and all over the non-excluded days of the window: `attention_total` (Wikipedia pageviews summed),
+`attention_vs_volume` (rho at lag 0), `price_change` (cents, first close to the last close before election night),
+`polling_density`, `data_coverage` (mean coverage of the attention series that ran), `quality_summary` (status counts,
+unusable series with reasons, skipped sources with reasons) and `attention` (the same numbers per attention series,
+with its platform group). Re-running one race merges into the file and keeps the others.
+
+The race JSON also has `events_overlay` (every row of the events CSV in the window with its status; the dashboard
+draws them, metrics use only confirmed rows) and `run_overrides`.
 
 ## Method
 
@@ -126,12 +161,12 @@ near-zero stretch exists, or a gap is 3 days or longer. Otherwise `ok`. The near
 
 ## Layout
 
-    config/races/          one yaml per race
+    config/races/          one yaml per race (confirmed); drafts/ holds discover output (needs_review)
     config/events/         event drafts per race (<race>.csv) and generator meta (<race>.meta.json)
-    config/project.yaml    default sources, connector settings, licensing and funding flags
+    config/project.yaml    default sources, connector settings, race_overrides, licensing and funding flags
     raceattn/connectors/   base.py kalshi.py wikipedia.py x.py news.py bluesky.py
     raceattn/metrics/      surprise.py lags.py quality.py events.py
-    raceattn/pipeline.py   raceattn/cli.py   raceattn/events.py (generator)
+    raceattn/pipeline.py   raceattn/cli.py   raceattn/events.py (generator)   raceattn/discover.py
     data/processed/        committed outputs
     docs/sources/          terms and robots findings per source
     tests/fixtures/raw/    recorded public API responses (same layout as data/raw)
@@ -143,8 +178,23 @@ Proposed defaults, not final: MIT for code, CC BY 4.0 for aggregated data. To be
 
 ## Dashboard
 
-A static dashboard for one race lives in `web/` (Vite + TypeScript, D3, Observable Plot). It reads
-`data/processed/<race_id>.json` and makes no other network calls.
+A static dashboard lives in `web/` (Vite + TypeScript, D3, Observable Plot). It reads `data/processed/index.json`
+and `data/processed/<race_id>.json` and makes no other network calls. The US map uses d3-geo with the us-atlas
+`states-albers-10m.json` geometry, committed in `web/src/geo/` and bundled, so it renders offline.
+
+- Map: states colored by a selectable metric (total attention, attention surprise vs volume rho, price change,
+  polling density, data coverage). A state with no race, or with n under 20 for the metric, is hatched and reads
+  "insufficient data". Each state with a race prints its value on the map; a legend and a table below the map give
+  the same values with n.
+- Click a state, press Enter or Space on a focused state, or pick it from the State select: the race opens below
+  with the M1 panels and the M3 charts (small multiples, normalized overlay, lead-lag heatmap, event study, scatter of
+  attention surprise vs volume surprise, calendar heatmap). A race-type switcher appears when a state has more than
+  one race.
+- Filters: race type, platform group (talking, reporting, looking) and source, window (sub-range, applied in the
+  page), map metric, information-event overlay, polling density band (low under 10 polls, medium 10 to 29, high 30+).
+- The URL carries `race`, `state` and the filters, so every view is linkable (`?race=oh-senate-2026&state=OH`).
+- A source with no data shows a card with the reason and the command to run it locally with your own key; an
+  unusable series shows its badge and reason.
 
     cd web
     npm ci
@@ -152,8 +202,9 @@ A static dashboard for one race lives in `web/` (Vite + TypeScript, D3, Observab
     npm run preview    # serves web/dist at http://127.0.0.1:4173/
     npm run dev        # live reload; serves data/processed under /data/
 
-`?race=<race_id>` picks the race file (default `tx-senate-2026`). The page loads its data with `fetch`, and
+`?race=<race_id>` picks the race (default `tx-senate-2026`). The page loads its data with `fetch`, and
 browsers block `fetch` from `file://` pages, so open it over http (`npm run preview` or any static file server
 on `web/dist`), not by double-clicking `index.html`. The build is plain static files and can go on any host
 under any path. `npm run check` type-checks, `npm test` runs the transform tests, and `npm run verify` (with the
-preview running) does the offline render check, screenshots and axe. Details and results: `docs/m1-notes.md`.
+preview running) does the offline render check, the state-switch check, the badge checks, screenshots and axe at
+390 and 1280 px. Details and results: `docs/m1-notes.md` and `docs/m3-notes.md`.
