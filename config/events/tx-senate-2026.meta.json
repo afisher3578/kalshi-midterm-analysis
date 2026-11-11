@@ -1,0 +1,29 @@
+{
+ "race_id": "tx-senate-2026",
+ "page": "2026 United States Senate election in Texas",
+ "revid": 1384978385,
+ "revision_url": "https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Texas&oldid=1384978385",
+ "fetched_at": "2026-11-11T06:18:04Z",
+ "generated_at": "2026-11-11T06:25:44Z",
+ "window": [
+  "2026-09-01",
+  "2026-11-04"
+ ],
+ "polling_density": 53,
+ "polling_density_definition": "distinct polls (pollster + end of fieldwork) whose chosen date is in the window, from the polling tables on this revision",
+ "polls_on_page": 87,
+ "poll_tables_read": 18,
+ "polling_sections": [
+  "General election > Polling"
+ ],
+ "unparsed_poll_rows": [
+  "Brad Parscale (R): 'Mid-April 2025'"
+ ],
+ "counts": {
+  "poll": 53,
+  "debate": 0,
+  "filing_deadline": 0
+ },
+ "status": "needs_review",
+ "note": "Draft. Every row needs a human check against the cited revision before its status is set to confirmed. Debates and filing deadlines appear only if the page lists them with a date."
+}
