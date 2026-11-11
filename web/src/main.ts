@@ -5,7 +5,7 @@ import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, S
 import { fmtMap, renderMap, type StateCell } from "./map";
 import { el, esc, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
 import type { IndexData, IndexRace, RaceData } from "./types";
-import { clampRange, densityBand, type DensityBand, mapValue, type MapMetric, PLATFORM_GROUP, raceIdFromSearch,
+import { byOffice, clampRange, densityBand, type DensityBand, mapValue, type MapMetric, PLATFORM_GROUP, raceIdFromSearch,
   type View } from "./transforms";
 
 const METRICS: Record<MapMetric, { label: string; diverging: boolean }> = {
@@ -84,7 +84,7 @@ function writeUrl(ui: Ui) {
 
 function racesIn(state: string, office: string): IndexRace[] {
   return Object.values(index.races).filter((r) => r.state === state && (office === "all" || r.office === office))
-    .sort((a, b) => a.office.localeCompare(b.office));
+    .sort(byOffice);
 }
 
 /** The attention series the map reads for the current platform and source filters. */
@@ -216,44 +216,55 @@ function drawMap(ui: Ui) {
   const source = mapSource(ui);
   const m = METRICS[ui.metric];
   const cells = new Map<string, StateCell>();
+  const rows: StateCell[] = [];
+  const multi: string[] = [];
   const fmt = { int: format(".3~s"), two: format(".2f"), pct: format(".0%") };
+  const cellOf = (code: string, r: IndexRace): StateCell => {
+    const v = mapValue(r.metrics, ui.metric, mapSeries(r, source), fmt);
+    const band = densityBand(r.metrics?.polling_density);
+    return { code, name: STATES[code], value: v.value, raceId: r.race_id, filteredOut: ui.band !== "all" && band !== ui.band,
+      text: v.value === null ? `insufficient data (${v.reason})` : v.text };
+  };
   for (const code of Object.keys(STATES)) {
+    // the selected state keeps its selected race; any other state is filled by its first race in office order
     const rs = racesIn(code, ui.office);
     const r = rs.find((x) => x.race_id === ui.race) ?? rs[0];
     if (!r) {
       cells.set(code, { code, name: STATES[code], value: null, text: "no processed race", raceId: null, filteredOut: false });
       continue;
     }
-    const series = mapSeries(r, source);
-    const v = mapValue(r.metrics, ui.metric, series, fmt);
-    const band = densityBand(r.metrics?.polling_density);
-    const filteredOut = ui.band !== "all" && band !== ui.band;
-    cells.set(code, { code, name: STATES[code], value: v.value, raceId: r.race_id, filteredOut,
-      text: v.value === null ? `insufficient data (${v.reason})` : v.text });
+    cells.set(code, cellOf(code, r));
+    for (const x of rs) rows.push(x === r ? cells.get(code)! : cellOf(code, x));
+    if (rs.length > 1) multi.push(`${STATES[code]} by ${raceTitle({ race: r })}${code === ui.state ? " (the open race)" : ""}`);
   }
   const usesSource = ui.metric === "attention_total" || ui.metric === "attention_rho";
   document.getElementById("map-caption")!.innerHTML = `Colored by <strong>${esc(m.label)}</strong>${usesSource
     ? ` for <strong>${esc(SOURCE_LABEL[source] ?? source)}</strong>${source === "wikipedia" ? " (race page plus candidate pages, summed)" : ""}`
     : ""}; ${ui.office === "all" ? "all race types" : `${esc(ui.office)} races only`}; ${esc(BANDS[ui.band].toLowerCase())}.
     Totals and changes cover the non-excluded days of each race's window (election night left out). Bins are equal
-    width over the values shown.`;
+    width over the values shown.${multi.length ? ` A state with more than one race is colored by the open race, else by
+    Senate, then Governor, House, national: ${esc(multi.join("; "))}. The table lists every race.` : ""}`;
   renderMap(document.getElementById("map")!, cells, { diverging: m.diverging, metricLabel: m.label, selected: ui.state,
     fmt: fmtMap[ui.metric], onPick: (code) => pickState(ui, code) });
-  const withRace = [...cells.values()].filter((c) => c.raceId).sort((a, b) => a.name.localeCompare(b.name));
+  rows.sort((a, b) => a.name.localeCompare(b.name) || byOffice(index.races[a.raceId!], index.races[b.raceId!]));
   const tbody = document.querySelector("#map-table tbody")!;
-  tbody.innerHTML = withRace.map((c) => {
+  tbody.innerHTML = rows.map((c) => {
     const r = index.races[c.raceId!];
+    const fills = cells.get(c.code)!.raceId === c.raceId;
     const qs = r.metrics?.quality_summary;
     const band = densityBand(r.metrics?.polling_density);
-    return `<tr data-state="${c.code}"><th scope="row">${esc(c.name)}</th><td>${esc(raceTitle({ race: r }))}</td>
+    return `<tr data-state="${c.code}" data-race="${esc(r.race_id)}"${fills ? ' data-fill="true"' : ""}><th scope="row">${
+      esc(c.name)}</th><td>${esc(raceTitle({ race: r }))}${fills ? "" : ' <span class="note">(the map shows another race)</span>'}</td>
       <td data-k="value">${c.filteredOut ? `filtered out by the band; ${esc(c.text)}` : esc(c.text)}</td>
       <td>${band ?? "unknown"}${r.metrics?.polling_density != null ? ` (n=${r.metrics.polling_density} poll${r.metrics.polling_density === 1 ? "" : "s"})` : ""}</td>
       <td>${qs ? `${qs.ok} ok, ${qs.degraded} degraded, ${qs.unusable} unusable` : "n/a"}</td>
-      <td><button type="button" class="linkish" data-open="${c.code}" ${ui.state === c.code ? 'aria-current="true"' : ""}>Open
-        <span class="vh">${esc(c.name)}</span></button></td></tr>`;
+      <td><button type="button" class="linkish" data-open="${esc(r.race_id)}" ${ui.race === r.race_id ? 'aria-current="true"' : ""}>Open
+        <span class="vh">${esc(raceTitle({ race: r }))}</span></button></td></tr>`;
   }).join("");
-  tbody.querySelectorAll<HTMLButtonElement>("button[data-open]").forEach((b) =>
-    b.addEventListener("click", () => pickState(ui, b.dataset.open!)));
+  tbody.querySelectorAll<HTMLButtonElement>("button[data-open]").forEach((b) => b.addEventListener("click", () => {
+    ui.race = b.dataset.open!;
+    pickState(ui, index.races[ui.race].state);
+  }));
   const none = [...cells.values()].filter((c) => !c.raceId && c.code !== "DC" && c.code !== "PR").map((c) => c.name);
   document.getElementById("map-none")!.textContent = `${none.length} states (plus DC and Puerto Rico) have no processed
     race for this race type and are drawn as insufficient data: ${none.join(", ")}.`.replace(/\s+/g, " ");

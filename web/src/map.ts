@@ -75,6 +75,7 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     const p = document.createElementNS(NS, "path");
     p.setAttribute("d", path(f) ?? "");
     p.setAttribute("data-state", code);
+    if (c?.raceId) p.setAttribute("data-race", c.raceId);
     const fill = !c || c.filteredOut ? FILTERED_FILL : c.value === null || !scale ? INSUFFICIENT_FILL : scale(c.value);
     p.setAttribute("fill", c?.filteredOut ? FILTERED_FILL : fill);
     p.setAttribute("class", "st" + (c?.raceId ? " has-race" : "") + (opts.selected === code ? " selected" : ""));

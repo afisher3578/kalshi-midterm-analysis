@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { IndexData, RaceData } from "../src/types";
-import { clampRange, column, densityBand, eventStudy, keepMask, lagCellRho, mapValue, outcomes, passesFilter,
+import { byOffice, clampRange, column, densityBand, eventStudy, keepMask, lagCellRho, mapValue, outcomes, passesFilter,
   spearman, surprise, VOLUME, PRICE } from "../src/transforms";
 
 const PROCESSED = resolve(import.meta.dirname, "../../data/processed");
@@ -85,6 +85,18 @@ describe("filters and map values", () => {
     const v = mapValue(tx.metrics, "attention_rho", "wikipedia/pageviews_total", fmt);
     expect(v.value).toBeCloseTo(0.2383, 4);
     expect(v.n).toBe(56);
+  });
+});
+
+describe("default race per state", () => {
+  it("orders offices senate, governor, house, national, then others, not alphabetically", () => {
+    const rs = ["mayor", "national", "house", "governor", "senate", "attorney"].map((office) => ({ office, race_id: `xx-${office}` }));
+    expect(rs.sort(byOffice).map((r) => r.office)).toEqual(["senate", "governor", "house", "national", "attorney", "mayor"]);
+  });
+  it("picks the Senate race for Texas, which also has a Governor race", () => {
+    const tx = Object.values(index.races).filter((r) => r.state === "TX").sort(byOffice);
+    expect(tx.length).toBeGreaterThan(1);
+    expect(tx[0].race_id).toBe("tx-senate-2026");
   });
 });
 

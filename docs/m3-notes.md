@@ -209,6 +209,7 @@ The draft also has `status: needs_review` and a `discovery` block, which the han
 - Bins: five equal-width bins over the values shown; diverging metrics centered on 0.
 - Event study anchors: confirmed events, else spike days of the selected series.
 - Default view: the map with Texas Senate open below it (the M1 default race).
+- Default race for a state with several races: the open race if the state is open, else office order senate, governor, house, national, then others (was alphabetical, so Texas showed Governor); the map table lists every race and the caption names the race that colors each multi-race state.
 
 ## Unverified
 

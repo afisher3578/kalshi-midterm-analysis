@@ -108,7 +108,7 @@ function closeOn(d, date) {
   const idxStates = [...new Set(Object.values(index.races).map((r) => r.state))].sort();
   check("map: every state with a race is a focusable button", JSON.stringify(mapStates.sort()), JSON.stringify(idxStates),
     "index.json races[*].state", JSON.stringify(mapStates.sort()) === JSON.stringify(idxStates));
-  const txRow = (await page.locator('#map-table tr[data-state="TX"] td[data-k="value"]').innerText()).trim();
+  const txRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').innerText()).trim();
   const txTotal = index.races["tx-senate-2026"].metrics.attention_total;
   check("map table: TX total attention with n", txRow, `${txTotal.value} views, n ${txTotal.n_days}`,
     'index.races["tx-senate-2026"].metrics.attention_total', txRow.includes(`n=${txTotal.n_days} days`) && txRow.startsWith("3.08M"));
@@ -116,7 +116,7 @@ function closeOn(d, date) {
   check("map: states with no race are drawn as insufficient data", String(hatched), "> 0", "n/a", hatched > 0);
   // the rho metric: every number carries n; a state with n < 20 would read insufficient data
   await page.selectOption("#f-metric", "attention_rho");
-  const rhoRow = (await page.locator('#map-table tr[data-state="TX"] td[data-k="value"]').innerText()).trim();
+  const rhoRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').innerText()).trim();
   check("map table: TX rho with n and lag", rhoRow, "rho 0.24 (n=56 pairs, lag 0)", 'index...metrics.attention_vs_volume',
     rhoRow.includes("rho 0.24") && rhoRow.includes("n=56 pairs"));
   const labels = await page.$$eval("svg.usmap text.stlabel", (ts) => ts.map((t) => t.textContent));
@@ -182,6 +182,15 @@ function closeOn(d, date) {
   const url = new URL(page.url());
   check("URL carries race and state", url.search, `race=${other.race_id}&state=${other.state}`, "n/a",
     url.searchParams.get("race") === other.race_id && url.searchParams.get("state") === other.state);
+  // with another state open, a multi-race state is colored by its Senate race (office order), and the table lists every race
+  const txIds = Object.values(index.races).filter((r) => r.state === "TX").map((r) => r.race_id).sort();
+  const txFill = await page.locator('svg.usmap path[data-state="TX"]').getAttribute("data-race");
+  const txRows = await page.$$eval('#map-table tr[data-state="TX"]', (trs) => trs.map((t) => `${t.dataset.race}${t.dataset.fill ? "*" : ""}`));
+  const mapCap = (await page.locator("#map-caption").innerText()).replace(/\s+/g, " ");
+  check(`${other.state} open: TX colored by its Senate race; table has one row per TX race; caption says so`,
+    `fill ${txFill}; rows ${txRows.join(", ")}; caption ...${mapCap.slice(-160)}`, `fill tx-senate-2026; rows ${txIds.join(", ")}`,
+    "index races with state TX", txFill === "tx-senate-2026" && JSON.stringify(txRows.map((r) => r.replace("*", "")).sort()) === JSON.stringify(txIds)
+      && txRows.filter((r) => r.endsWith("*")).join() === "tx-senate-2026*" && mapCap.includes("Texas by Texas Senate 2026"));
   await page.screenshot({ path: resolve(SHOTS, `m3-race-${other.race_id}-1280.png`), fullPage: true });
   await axe(page, `1280 ${other.race_id}`);
 

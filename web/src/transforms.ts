@@ -296,6 +296,14 @@ export function mapValue(m: import("./types").IndexMetrics | undefined, metric: 
     text: `${fmt.pct(c.share)} (n=${c.n_series} series x ${c.window_days} days)` };
 }
 
+/** Office order for picking a state's default race: senate, governor, house, national, then others by name. */
+export const OFFICE_ORDER = ["senate", "governor", "house", "national"];
+
+export function byOffice(a: { office: string; race_id: string }, b: { office: string; race_id: string }): number {
+  const rank = (o: string) => { const i = OFFICE_ORDER.indexOf(o); return i < 0 ? OFFICE_ORDER.length : i; };
+  return rank(a.office) - rank(b.office) || a.office.localeCompare(b.office) || a.race_id.localeCompare(b.race_id);
+}
+
 export type DensityBand = "all" | "low" | "medium" | "high";
 /** Polling density bands for the map filter: low under 10 polls in the window, medium 10 to 29, high 30 or more. */
 export function densityBand(polls: number | null | undefined): Exclude<DensityBand, "all"> | null {
