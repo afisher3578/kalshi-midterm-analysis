@@ -1,0 +1,7 @@
+{
+ "_fixture": "synthetic from docs",
+ "title": "Client Forbidden",
+ "detail": "This request must be made using an approved developer account that is enrolled in the requested endpoint. Learn more by visiting our documentation.",
+ "reason": "client-not-enrolled",
+ "type": "https://api.x.com/2/problems/client-forbidden"
+}
