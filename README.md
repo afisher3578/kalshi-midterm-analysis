@@ -5,7 +5,9 @@ market data and attention data for it, puts them on one UTC clock and computes t
 The tool reports timing and association, not causation.
 
 Milestone M0 covers: race config schema, Kalshi and Wikipedia connectors, the metrics module, Texas end to end and
-a golden test that reproduces the stdlib pilot in `docs/reference/pilot/`. See `docs/spec.md` and `docs/m0-notes.md`.
+a golden test that reproduces the stdlib pilot in `docs/reference/pilot/`. M2 adds Kalshi trades, X (your own
+token), news (Media Cloud, Guardian, NYT, a manual CSV, optional GDELT), Bluesky, the event list generator and the
+event, spike and reversion metrics. See `docs/spec.md`, `docs/m0-notes.md` and `docs/m2-notes.md`.
 
 ## Setup
 
@@ -15,16 +17,35 @@ Do not use the macOS system Python (no CA certs, broken numpy). Use a venv:
     uv pip install --python .venv/bin/python -r requirements-dev.txt   # or requirements.txt without test tools
     ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit        # secrets check on every commit
 
-M0 needs no keys. Later connectors read keys from the environment or a git-ignored `.env`; see `.env.example`.
+No key is required. X, Media Cloud, Guardian and NYT read keys from the environment (export them in your shell, or
+keep a git-ignored `.env` and load it yourself); see `.env.example`. A connector whose key is missing is skipped
+with the reason, and the run still exits 0.
 
 ## Run
 
+    .venv/bin/python -m raceattn run --race tx-senate-2026                      # default sources
     .venv/bin/python -m raceattn run --race tx-senate-2026 --sources kalshi,wikipedia
+    .venv/bin/python -m raceattn run --race tx-senate-2026 --sources x --max-spend 1.00
     .venv/bin/python -m raceattn run --race path/to/other-race.yaml
     .venv/bin/python -m raceattn validate --race tx-senate-2026
+    .venv/bin/python -m raceattn events --race tx-senate-2026     # draft config/events/<race>.csv (needs_review)
+    .venv/bin/python -m raceattn publish                          # licensing and funding-flag check; sends nothing
 
-Options: `--refresh` (ignore the cache and re-fetch), `--yes` / `--max-spend USD` (required before any paid
-connector runs; both M0 connectors are free), `--raw-dir`, `--out-dir`.
+Default sources (`default_sources` in `config/project.yaml`): `kalshi, kalshi_trades, wikipedia, x,
+news_mediacloud, news_guardian, news_nyt, news_manual, bluesky`. `gdelt` is optional and not in the list.
+
+Options: `--refresh` (ignore the cache and re-fetch; a cached paid read is never re-pulled), `--yes` /
+`--max-spend USD` (required before any paid connector runs; X is the only paid one and prints its estimate first),
+`--raw-dir`, `--out-dir`. Connector settings (Bluesky page caps, small-trade threshold, block trades, NYT spacing)
+and the event metric settings are in `config/project.yaml`.
+
+A Bluesky pull without an app password is slow (about 1 to 2 s per page, one page per 100 posts; Texas took a few
+hours the first time). It is cached per day, so later runs are instant.
+
+Events: `events` reads the polling tables on the race's Wikipedia page at a fixed revision and writes one row per
+poll (`date_utc,type,source_url,note,status`), plus debates and filing deadlines only where the page lists them.
+Every row is `needs_review` and cites the revision. Change a row's status to `confirmed` after checking it; the
+event metrics ignore everything else. `events` refuses to overwrite a file that has confirmed rows (use `--force`).
 
 `--race` takes a race id (loads `config/races/<id>.yaml`) or a path to a yaml file. One file fully describes a
 race; connectors render every query from it and hard-code nothing.
@@ -32,16 +53,22 @@ race; connectors render every query from it and hard-code nothing.
 ## Test
 
     .venv/bin/pytest -q            # offline: recorded fixtures, network blocked
-    .venv/bin/pytest -q --live     # also runs the live smoke test against Kalshi and Wikimedia
+    .venv/bin/pytest -q --live     # also runs live smoke tests (Kalshi, Wikimedia, Bluesky; keyed ones skip without a key)
     .venv/bin/python scripts/check_secrets.py
 
 ## Outputs
 
 `data/raw/<source>/<race_id>/<start>_<end>/<query_hash>/*.json` (git-ignored): raw JSON responses with the request
-endpoint and params, fetch time and HTTP status. No headers or keys. Reused unless `--refresh`.
+endpoint and params, fetch time and HTTP status. No headers or keys (query-param keys are added at send time only).
+Reused unless `--refresh`. Bluesky stores one record per day with hourly counts only.
 
 `data/processed/<race_id>.json` (committed):
 - `race`: config summary. `window` (inclusive UTC dates) and `excluded_days`.
+- `sources` (connectors that ran), `sources_requested` and `skipped` (connector id -> reason, e.g. missing key or
+  missing manual CSV).
+- `polling`: `polling_density` from `config/events/<race>.meta.json` (polls in the window, needs review).
+- `licensing`: whether `licensing_confirmed` is set and the warning, when the output has counts from X, Bluesky,
+  Reddit or the news APIs (docs/licensing.md).
 - `queries`: per connector, every rendered request (endpoint, params, query hash), the connector query hash and the
   query hash behind each series. A reader can audit exactly what was fetched.
 - `series.hourly`: Kalshi hourly rows `[ts_utc, kalshi/price_close, kalshi/volume]`. `ts_utc` is the candle's
@@ -55,7 +82,15 @@ endpoint and params, fetch time and HTTP status. No headers or keys. Reused unle
   `price_change` at lags -2..+2 days (lag > 0: outcome after attention). Each cell has `rho` (null when n < 20),
   `n`, `noise_band` (2/sqrt(n)), `quality_status` and the attention and outcome query hashes. A series marked
   `unusable` is skipped with the reason.
-- `metrics.hourly`: empty in M0 (no hourly attention source yet). The hourly path is implemented and tested.
+- `series.hourly_grid`: every hour of the window for the other hourly series (`kalshi/trade_count`,
+  `kalshi/small_trade_share`, `x/post_count`, `bluesky/post_count`). `ts_utc` is the hour's end, the same convention
+  as the candles. These are also summed to UTC days (by bucket start; null if any hour is missing) in
+  `series.daily`; the daily small-trade share is small trades / all trades.
+- `metrics.hourly.<series>`: hourly lag tables (same-hour surprise, lags -3..+3 h) for X and Bluesky. Hourly
+  attention series also get daily lag tables in `metrics.daily`.
+- `metrics.events`: event windows, spikes, excess attention and reversion per daily attention series (see Method).
+  With no confirmed events, `status` is `"no confirmed events"` and the event-window and excess-attention entries say
+  so instead of giving a number; `n_needs_review_ignored` counts the draft rows that were ignored.
 
 `data/processed/index.json` (committed): one entry per race with window, quality statuses and the headline metric
 (Wikipedia total surprise vs Kalshi volume surprise). Re-running one race merges into the file and keeps the others.
@@ -71,6 +106,17 @@ endpoint and params, fetch time and HTTP status. No headers or keys. Reused unle
   2/sqrt(max(n - 7, 1)) with n = non-excluded days; that value is stored as `noise_band_pilot`. Daily series are
   autocorrelated, so either band is generous.
 
+Event metrics (spec section 8; settings in `config/project.yaml` under `events`):
+- Only events with status `confirmed` in `config/events/<race>.csv` are used.
+- Event window: days -k..+k around each confirmed event, k = 2. Per offset: mean attention surprise, mean volume
+  surprise, mean absolute and signed daily price change, each with n.
+- Spike: a day with attention surprise >= 1.0 (about 2.7 times the trailing 7-day mean, with the +1 in the formula).
+- Excess attention: a spike with no confirmed event within +-k days.
+- Reversion after a spike on day t: move = close[t] - close[t-1]; if |move| >= 0.01, reversal fraction =
+  -(close[t+3] - close[t]) / move; "reverted" if it is >= 0.5. Reported: spikes, n with a move, n reverted, share,
+  mean fraction, and each spike. Excluded days are masked first.
+- Every entry carries n, the quality status behind it and the query hashes.
+
 ## Quality thresholds
 
 Computed on daily buckets. Near zero = under 5% of the series median with a normal neighbor. `unusable` if coverage
@@ -81,9 +127,11 @@ near-zero stretch exists, or a gap is 3 days or longer. Otherwise `ok`. The near
 ## Layout
 
     config/races/          one yaml per race
-    raceattn/connectors/   base.py kalshi.py wikipedia.py
-    raceattn/metrics/      surprise.py lags.py quality.py
-    raceattn/pipeline.py   raceattn/cli.py
+    config/events/         event drafts per race (<race>.csv) and generator meta (<race>.meta.json)
+    config/project.yaml    default sources, connector settings, licensing and funding flags
+    raceattn/connectors/   base.py kalshi.py wikipedia.py x.py news.py bluesky.py
+    raceattn/metrics/      surprise.py lags.py quality.py events.py
+    raceattn/pipeline.py   raceattn/cli.py   raceattn/events.py (generator)
     data/processed/        committed outputs
     docs/sources/          terms and robots findings per source
     tests/fixtures/raw/    recorded public API responses (same layout as data/raw)

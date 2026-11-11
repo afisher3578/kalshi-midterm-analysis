@@ -27,4 +27,23 @@ Checked 2026-11-11.
 - Kalshi's terms of service on redistributing derived aggregates (daily closes, volume) were not read in this
   session. The output publishes only aggregates and metrics; confirm before publishing.
 - Any unauthenticated rate limit. Our usage (4 requests per race run) is tiny.
-- Trades endpoints (`/markets/trades`, `/historical/trades`, `/historical/cutoff`) are M2 and were not re-checked here.
+
+## Trades (M2, checked live 2026-11-11)
+- `GET /historical/cutoff` returned `{"trades_created_ts": "2026-09-11T00:00:00Z", ...}` (also
+  `market_settled_ts`, `orders_updated_ts`, `market_positions_last_updated_ts`).
+- `GET /historical/trades?ticker&min_ts&max_ts&limit&cursor` for trades before `trades_created_ts`, and
+  `GET /markets/trades?...` from it on. `limit` max is 1000 (`limit=1001` returned a validation error). Paging by
+  `cursor`; an empty cursor ends it. `/historical/trades` for a range after the cutoff returned no trades;
+  `/markets/trades` also returned trades from before the cutoff, so the connector splits the window at the cutoff and
+  dedupes on `trade_id` anyway.
+- Trade fields: `trade_id`, `created_time`, `count_fp` (string), `yes_price_dollars`, `no_price_dollars`,
+  `taker_side`, `taker_book_side`, `taker_outcome_side`, `is_block_trade`, `ticker`.
+- Texas SENATETX-26-D, 2026-09-01..11-04: 2,563 historical trades (3 pages) and 113,765 live trades (114 pages),
+  116,328 in the window after dedupe; 0 block trades.
+- Series: `kalshi/trade_count` (trades per hour, every hour of the window, 0 when none) and
+  `kalshi/small_trade_share` (trades with `count_fp` under 10 contracts divided by trades in the hour, null when the
+  hour has no trades). Hours are bucket starts in UTC. Threshold and block-trade handling (`exclude` by default; the
+  number excluded is in the quality object) are in `config/project.yaml`.
+- The cutoff is cached with the trade pages, so a cached run is a consistent snapshot. `--refresh` re-reads it.
+- Fixture: `tests/fixtures/raw/kalshi_trades/tx-trades-2day/...`, recorded live for 2026-09-10..11 (spans the
+  cutoff).

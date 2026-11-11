@@ -31,3 +31,12 @@ Checked 2026-11-11.
 ## Not verified
 - The exact per-client rate limit numbers on the "Wikimedia APIs/Rate limits" page were not read.
 - The contact part of the User-Agent is generic until the repo has a public URL.
+
+## Event generator (M2): MediaWiki parse API
+- `GET https://en.wikipedia.org/w/api.php?action=parse&page=<race page>&prop=wikitext|revid&format=json&formatversion=2&redirects=1`,
+  one request per run, cached under `data/raw/wikipedia_events/` (`--refresh` re-reads the current revision).
+  Same User-Agent and one-at-a-time rule as above.
+- Every row of `config/events/<race>.csv` cites the revision URL (`index.php?title=...&oldid=<revid>`), so the draft
+  can be checked against exactly the text it came from. Texas: revision 1384978385, fetched 2026-11-11.
+- Wikipedia text is CC BY-SA 4.0. The CSV stores facts (pollster name, fieldwork dates, a date) and a link, not
+  article text. Attribution is the revision link on every row.
