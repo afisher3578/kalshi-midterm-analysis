@@ -26,6 +26,13 @@ PATTERNS = [
         r"(?i)\b[A-Z0-9_]*(?:api[_-]?key|access[_-]?token|bearer[_-]?token|secret|password|client[_-]?secret|token)"
         r"[\"']?\s*[=:]\s*[\"']?(?:[A-Fa-f0-9]{24,}|[A-Za-z0-9+/_\-]{32,}={0,2})")),
     ("private key block", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")),
+    # M2 key formats
+    ("env key with a value", re.compile(
+        r"\b(?:X_BEARER_TOKEN|MEDIACLOUD_API_KEY|GUARDIAN_API_KEY|NYT_API_KEY|BSKY_APP_PASSWORD|REDDIT_CLIENT_SECRET"
+        r"|YOUTUBE_API_KEY)\s*=\s*[\"']?[^\s\"'#]{8,}")),
+    ("api-key in a URL", re.compile(r"[?&]api[-_]key=[A-Za-z0-9\-_]{12,}")),
+    ("Media Cloud style token header", re.compile(r"\bToken\s+[A-Fa-f0-9]{30,}")),
+    ("JWT (e.g. Bluesky session token)", re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}")),
 ]
 SKIP_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", "node_modules"}
 MAX_BYTES = 20 * 1024 * 1024

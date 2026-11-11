@@ -21,6 +21,11 @@ def test_patterns_catch_examples():
         "A" * 22 + "%2Fabc1234567890abcdefghij",
         "GUARDIAN_API_KEY" + "=" + "0123456789abcdef0123456789abcdef",
         "token" + ": " + "QWxhZGRpbjpvcGVuIHNlc2FtZQQWxhZGRpbjpvcGVuIHNlc2FtZQ==",
+        "NYT_API_KEY" + "=" + "abcd1234efgh",
+        "BSKY_APP_PASSWORD" + "=" + "abcd-efgh-ijkl-mnop",
+        "https://content.guardianapis.com/search?q=x&" + "api-key=" + "0f1e2d3c-4b5a-6978-8a9b",
+        "Authorization: " + "Token " + "0123456789abcdef0123456789abcdef01234567",
+        "eyJ" + "hbGciOiJIUzI1NiJ9" + ".eyJ" + "zdWIiOiJkaWQ6cGxjIn0" + "." + "c2lnbmF0dXJlLXZhbHVl",
     ]
     for s in samples:
         assert cs.scan_text(s), s
@@ -32,6 +37,10 @@ def test_patterns_ignore_benign():
         '"query_hash": "3a78a4d7647fd9c4"',
         "Token goes through an Authorization header from an environment variable",
         "api_key = os.environ.get('MEDIACLOUD_API_KEY')",
+        "BSKY_APP_PASSWORD=",
+        '"cursor": "eyJzIjpbMTc5MDg5NDcxODAwMCwiZGlkOnBsYzplb2FneGZvbzZnanhodW5sZmVscGJkeXAiXX0"',
+        '"trade_id": "07273658-a2b9-964e-6d5b-6d5587f6b376"',
+        'return {"Authorization": "Bearer " + self._access}',
     ]
     for s in benign:
         assert not cs.scan_text(s), s
