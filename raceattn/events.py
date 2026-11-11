@@ -38,7 +38,7 @@ MONTHS.update({k[:3]: v for k, v in list(MONTHS.items())})
 MONTHS["sept"] = 9
 RELEASE_MAX_LAG_DAYS = 30
 HEADING_RE = re.compile(r"^(={2,6})\s*(.*?)\s*\1\s*$", re.M)
-DASH_RE = re.compile(r"\s*(?:–|—|&ndash;|&mdash;|\{\{ndash\}\}|\{\{snd\}\}|\{\{spaced ndash\}\}|-)\s*")
+DASH_RE = re.compile(r"\s*(?:–|\u2014|&ndash;|&mdash;|\{\{ndash\}\}|\{\{snd\}\}|\{\{spaced ndash\}\}|-)\s*")
 
 
 # ------------------------------------------------------------------ wikitext helpers

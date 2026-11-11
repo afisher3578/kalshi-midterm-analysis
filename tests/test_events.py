@@ -31,7 +31,7 @@ def test_generator_from_recorded_revision(generated):
     assert all("date = release date" in r["note"] or "date = end of fieldwork" in r["note"] for r in rows)
     first = rows[0]
     assert first["date_utc"] == "2026-09-09" and first["note"].startswith("Univision/YouGov, fieldwork August 27")
-    assert all("–" not in r["note"] and "—" not in r["note"] for r in rows)
+    assert all("–" not in r["note"] and "\u2014" not in r["note"] for r in rows)
     assert meta["unparsed_poll_rows"] == ["Brad Parscale (R): 'Mid-April 2025'"]
 
 
