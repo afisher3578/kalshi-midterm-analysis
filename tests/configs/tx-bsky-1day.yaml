@@ -1,0 +1,20 @@
+# One-day Texas window used only for the recorded Bluesky fixture.
+race_id: tx-bsky-1day
+state: TX
+office: senate            # senate | house | governor | national
+election_date: 2026-11-03
+window: {start: 2026-10-01, end: 2026-10-01}
+exclude_days: []
+kalshi:
+  series: SENATETX
+  event: SENATETX-26
+  followed_market: SENATETX-26-D                # the contract the metrics follow
+entities:
+  - {name: "James Talarico", aliases: ["Talarico"]}
+  - {name: "Ken Paxton",     aliases: ["Paxton"]}
+wikipedia_pages:
+  - 2026_United_States_Senate_election_in_Texas
+  - James_Talarico
+  - Ken_Paxton
+subreddits: [texas, TexasPolitics]              # suggested, dev to verify they exist
+news_query: '("Talarico" OR "Ken Paxton") AND Senate'
