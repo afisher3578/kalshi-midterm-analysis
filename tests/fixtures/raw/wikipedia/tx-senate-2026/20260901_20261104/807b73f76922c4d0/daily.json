@@ -1,0 +1,598 @@
+{
+ "body": {
+  "items": [
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090100",
+    "views": 6919
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090200",
+    "views": 7604
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090300",
+    "views": 6884
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090400",
+    "views": 5682
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090500",
+    "views": 5631
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090600",
+    "views": 5970
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090700",
+    "views": 6582
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090800",
+    "views": 6492
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090900",
+    "views": 7711
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091000",
+    "views": 11539
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091100",
+    "views": 11422
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091200",
+    "views": 9536
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091300",
+    "views": 9725
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091400",
+    "views": 11138
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091500",
+    "views": 10194
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091600",
+    "views": 8831
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091700",
+    "views": 10809
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091800",
+    "views": 9223
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091900",
+    "views": 7538
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092000",
+    "views": 7056
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092100",
+    "views": 7785
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092200",
+    "views": 8484
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092300",
+    "views": 9402
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092400",
+    "views": 7870
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092500",
+    "views": 7909
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092600",
+    "views": 7413
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092700",
+    "views": 7588
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092800",
+    "views": 8714
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092900",
+    "views": 8617
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026093000",
+    "views": 9146
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100100",
+    "views": 9186
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100200",
+    "views": 8598
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100300",
+    "views": 10124
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100400",
+    "views": 9195
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100500",
+    "views": 10332
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100600",
+    "views": 10730
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100700",
+    "views": 11082
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100800",
+    "views": 11563
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100900",
+    "views": 10365
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101000",
+    "views": 9470
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101100",
+    "views": 9567
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101200",
+    "views": 11501
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101300",
+    "views": 12885
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101400",
+    "views": 12294
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101500",
+    "views": 14485
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101600",
+    "views": 12000
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101700",
+    "views": 9764
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101800",
+    "views": 10724
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101900",
+    "views": 13251
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102000",
+    "views": 13940
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102100",
+    "views": 14762
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102200",
+    "views": 15532
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102300",
+    "views": 13510
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102400",
+    "views": 11724
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102500",
+    "views": 11257
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102600",
+    "views": 12996
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102700",
+    "views": 14138
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102800",
+    "views": 14635
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102900",
+    "views": 16323
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103000",
+    "views": 16251
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103100",
+    "views": 15562
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110100",
+    "views": 16589
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110200",
+    "views": 27833
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110300",
+    "views": 36962
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "2026_United_States_Senate_election_in_Texas",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110400",
+    "views": 192509
+   }
+  ]
+ },
+ "fetched_at": "2026-11-11T05:49:19Z",
+ "query_hash": "807b73f76922c4d0",
+ "request": {
+  "endpoint": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/2026_United_States_Senate_election_in_Texas/daily/20260901/20261104",
+  "params": {}
+ },
+ "status": 200
+}

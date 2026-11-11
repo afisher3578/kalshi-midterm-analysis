@@ -1,0 +1,18 @@
+# Made-up race used only to prove that connectors re-target from config with no code edit.
+race_id: oh-dummy-2030
+state: OH
+office: governor
+election_date: 2030-11-05
+window: {start: 2030-08-10, end: 2030-09-30}
+exclude_days: [2030-09-30, 2030-10-01]
+kalshi:
+  series: KXGOVOHDUMMY
+  event: KXGOVOHDUMMY-30
+  followed_market: KXGOVOHDUMMY-30-R
+entities:
+  - {name: "Jane Example", aliases: ["Example"]}
+wikipedia_pages:
+  - 2030_Ohio_gubernatorial_election
+  - "Jane_Example_(politician)"
+news_query: '"Jane Example"'
+polling_density: 4

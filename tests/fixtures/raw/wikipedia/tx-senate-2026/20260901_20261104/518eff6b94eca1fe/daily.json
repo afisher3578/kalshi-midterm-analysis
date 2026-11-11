@@ -1,0 +1,598 @@
+{
+ "body": {
+  "items": [
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090100",
+    "views": 4701
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090200",
+    "views": 5761
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090300",
+    "views": 9344
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090400",
+    "views": 5904
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090500",
+    "views": 6861
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090600",
+    "views": 7009
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090700",
+    "views": 5631
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090800",
+    "views": 5199
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090900",
+    "views": 7903
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091000",
+    "views": 20978
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091100",
+    "views": 20020
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091200",
+    "views": 14510
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091300",
+    "views": 13387
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091400",
+    "views": 11560
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091500",
+    "views": 9568
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091600",
+    "views": 10389
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091700",
+    "views": 14365
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091800",
+    "views": 8492
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091900",
+    "views": 7684
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092000",
+    "views": 6752
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092100",
+    "views": 6710
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092200",
+    "views": 6227
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092300",
+    "views": 6008
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092400",
+    "views": 6577
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092500",
+    "views": 5484
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092600",
+    "views": 5383
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092700",
+    "views": 5025
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092800",
+    "views": 7714
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092900",
+    "views": 7718
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026093000",
+    "views": 9529
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100100",
+    "views": 8954
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100200",
+    "views": 7663
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100300",
+    "views": 8103
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100400",
+    "views": 15241
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100500",
+    "views": 12640
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100600",
+    "views": 9565
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100700",
+    "views": 11663
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100800",
+    "views": 13782
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100900",
+    "views": 10284
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101000",
+    "views": 10826
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101100",
+    "views": 9165
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101200",
+    "views": 11146
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101300",
+    "views": 17069
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101400",
+    "views": 12505
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101500",
+    "views": 16184
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101600",
+    "views": 12731
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101700",
+    "views": 8790
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101800",
+    "views": 9260
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101900",
+    "views": 13488
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102000",
+    "views": 14028
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102100",
+    "views": 13468
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102200",
+    "views": 14033
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102300",
+    "views": 12131
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102400",
+    "views": 13653
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102500",
+    "views": 11254
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102600",
+    "views": 11009
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102700",
+    "views": 13935
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102800",
+    "views": 15349
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102900",
+    "views": 15064
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103000",
+    "views": 16105
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103100",
+    "views": 16369
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110100",
+    "views": 17668
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110200",
+    "views": 22973
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110300",
+    "views": 39794
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "Ken_Paxton",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110400",
+    "views": 197914
+   }
+  ]
+ },
+ "fetched_at": "2026-11-11T05:49:20Z",
+ "query_hash": "518eff6b94eca1fe",
+ "request": {
+  "endpoint": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Ken_Paxton/daily/20260901/20261104",
+  "params": {}
+ },
+ "status": 200
+}

@@ -1,0 +1,598 @@
+{
+ "body": {
+  "items": [
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090100",
+    "views": 10636
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090200",
+    "views": 11518
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090300",
+    "views": 10940
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090400",
+    "views": 8456
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090500",
+    "views": 9392
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090600",
+    "views": 10666
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090700",
+    "views": 10699
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090800",
+    "views": 10158
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026090900",
+    "views": 14815
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091000",
+    "views": 41513
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091100",
+    "views": 62296
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091200",
+    "views": 44191
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091300",
+    "views": 42781
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091400",
+    "views": 31476
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091500",
+    "views": 25398
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091600",
+    "views": 22133
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091700",
+    "views": 21100
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091800",
+    "views": 17104
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026091900",
+    "views": 14264
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092000",
+    "views": 13320
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092100",
+    "views": 13176
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092200",
+    "views": 11794
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092300",
+    "views": 12653
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092400",
+    "views": 12878
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092500",
+    "views": 12452
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092600",
+    "views": 11980
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092700",
+    "views": 11795
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092800",
+    "views": 13569
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026092900",
+    "views": 13770
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026093000",
+    "views": 14833
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100100",
+    "views": 14609
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100200",
+    "views": 13101
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100300",
+    "views": 14278
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100400",
+    "views": 17361
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100500",
+    "views": 16845
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100600",
+    "views": 16210
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100700",
+    "views": 20285
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100800",
+    "views": 24631
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026100900",
+    "views": 31515
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101000",
+    "views": 29355
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101100",
+    "views": 30116
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101200",
+    "views": 40703
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101300",
+    "views": 43363
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101400",
+    "views": 47317
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101500",
+    "views": 98368
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101600",
+    "views": 39109
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101700",
+    "views": 25772
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101800",
+    "views": 28395
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026101900",
+    "views": 45169
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102000",
+    "views": 39065
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102100",
+    "views": 37142
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102200",
+    "views": 37853
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102300",
+    "views": 33918
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102400",
+    "views": 34334
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102500",
+    "views": 30081
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102600",
+    "views": 28682
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102700",
+    "views": 35699
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102800",
+    "views": 38715
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026102900",
+    "views": 39357
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103000",
+    "views": 42210
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026103100",
+    "views": 49602
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110100",
+    "views": 56366
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110200",
+    "views": 62655
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110300",
+    "views": 105766
+   },
+   {
+    "access": "all-access",
+    "agent": "user",
+    "article": "James_Talarico",
+    "granularity": "daily",
+    "project": "en.wikipedia",
+    "timestamp": "2026110400",
+    "views": 1256040
+   }
+  ]
+ },
+ "fetched_at": "2026-11-11T05:49:19Z",
+ "query_hash": "4bafc36bd2be38aa",
+ "request": {
+  "endpoint": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/James_Talarico/daily/20260901/20261104",
+  "params": {}
+ },
+ "status": 200
+}
