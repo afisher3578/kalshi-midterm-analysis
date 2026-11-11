@@ -1,418 +1,341 @@
 import "./style.css";
-import { format, utcFormat } from "d3";
-import { DEFAULT_RACE, FUNDING_DISCLOSURE, MIN_PAIRS, PROJECT_NAME, SHOW_FUNDING_DISCLOSURE, SOURCE_CATALOG,
-  SOURCE_NOTES } from "./config";
-import { attentionChart, dayCenter, type DayPoint, type Frame, type HourPoint, keptDomain, priceChart, volumeChart }
-  from "./charts";
-import type { LagCell, Num, Quality, RaceData } from "./types";
-import { attentionColumns, column, excludedSpans, extremes, metricsExport, PRICE, raceIdFromSearch, seriesLabel,
-  toCsv, transform, utcMs, type View, VOLUME, xDomain } from "./transforms";
+import { format } from "d3";
+import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, SHOW_FUNDING_DISCLOSURE, SOURCE_LABEL,
+  SOURCE_NOTES, STATES } from "./config";
+import { fmtMap, renderMap, type StateCell } from "./map";
+import { el, esc, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
+import type { IndexData, IndexRace, RaceData } from "./types";
+import { clampRange, densityBand, type DensityBand, mapValue, type MapMetric, PLATFORM_GROUP, raceIdFromSearch,
+  type View } from "./transforms";
 
-const STATES: Record<string, string> = {
-  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut",
-  DE: "Delaware", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa",
-  KS: "Kansas", KY: "Kentucky", LA: "Louisiana", ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan",
-  MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada",
-  NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York", NC: "North Carolina", ND: "North Dakota",
-  OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina",
-  SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virginia", WA: "Washington",
-  WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming",
+const METRICS: Record<MapMetric, { label: string; diverging: boolean }> = {
+  attention_total: { label: "Total attention over the window", diverging: false },
+  attention_rho: { label: "Attention surprise vs volume surprise, rho (lag 0)", diverging: true },
+  price_change: { label: "Price change of the followed contract over the window, cents", diverging: true },
+  polling_density: { label: "Polling density (polls in the window)", diverging: false },
+  data_coverage: { label: "Data coverage (share of days with data)", diverging: false },
 };
-const OUTCOMES: Record<string, { title: string; short: string }> = {
-  volume_surprise: { title: "(a) Kalshi volume surprise", short: "volume surprise" },
-  abs_price_change: { title: "(b) Absolute daily price change", short: "absolute price change" },
-  price_change: { title: "(c) Signed daily price change", short: "signed price change" },
-};
-const VIEW_LABEL: Record<View, string> = { raw: "Raw", z: "z-score", surprise: "Surprise" };
+const GROUPS: Record<string, string> = { all: "All platforms", looking: "Looking (Wikipedia)",
+  talking: "Talking (X, Bluesky, Reddit)", reporting: "Reporting (news)" };
+const BANDS: Record<DensityBand, string> = { all: "Any polling density", low: "Low (under 10 polls)",
+  medium: "Medium (10 to 29 polls)", high: "High (30 or more polls)" };
 
-const fmtDay = utcFormat("%b %-d");
-const fmtHour = utcFormat("%b %-d %H:%M UTC");
-const fmtInt = format(",.0f");
-const fmt2 = format(".2f");
-const fmtSi = format(".3~s");
-
-function esc(s: unknown): string {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-}
-function signed(n: number): string {
-  return n > 0 ? `+${n}` : String(n);
-}
-function cents(p: number): string {
-  return `${format(".1f")(p * 100)}¢`;
-}
-function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, html = "") {
-  const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
-  e.innerHTML = html;
-  return e;
-}
-
-interface State {
-  data: RaceData;
-  view: View;
-  width: number;
+interface Ui extends RaceUi {
+  office: string;
+  metric: MapMetric;
+  band: DensityBand;
+  state: string | null;
+  race: string | null;
 }
 
 const app = document.getElementById("app")!;
+const raceCache = new Map<string, RaceData>();
+let index: IndexData;
+let view: RaceView | null = null;
+
+async function getJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+async function loadRace(id: string): Promise<RaceData> {
+  if (!raceCache.has(id)) raceCache.set(id, await getJson<RaceData>(`data/${id}.json`));
+  return raceCache.get(id)!;
+}
+
+function readUi(): Ui {
+  const q = new URLSearchParams(location.search);
+  const pick = <T extends string>(k: string, ok: readonly T[], dflt: T): T => (ok.includes(q.get(k) as T) ? (q.get(k) as T) : dflt);
+  const raceParam = q.get("race") ? raceIdFromSearch(location.search, "") : "";
+  const st = (q.get("state") ?? "").toUpperCase();
+  return {
+    office: pick("office", ["all", "senate", "governor"], "all"),
+    metric: pick("metric", Object.keys(METRICS) as MapMetric[], "attention_total"),
+    band: pick("band", Object.keys(BANDS) as DensityBand[], "all"),
+    group: pick("group", Object.keys(GROUPS), "all"),
+    source: q.get("source") && /^[a-z_]+$/.test(q.get("source")!) ? q.get("source")! : "all",
+    view: pick("view", ["raw", "z", "surprise"] as View[], "raw"),
+    from: q.get("from") ?? "", to: q.get("to") ?? "",
+    overlay: q.get("events") === "on",
+    focus: q.get("focus") ?? "wikipedia/pageviews_total",
+    state: /^[A-Z]{2}$/.test(st) ? st : null,
+    race: raceParam || null,
+  };
+}
+
+function writeUrl(ui: Ui) {
+  const q = new URLSearchParams();
+  if (ui.race) q.set("race", ui.race);
+  if (ui.state) q.set("state", ui.state);
+  if (ui.office !== "all") q.set("office", ui.office);
+  if (ui.metric !== "attention_total") q.set("metric", ui.metric);
+  if (ui.band !== "all") q.set("band", ui.band);
+  if (ui.group !== "all") q.set("group", ui.group);
+  if (ui.source !== "all") q.set("source", ui.source);
+  if (ui.view !== "raw") q.set("view", ui.view);
+  if (ui.overlay) q.set("events", "on");
+  const r = ui.race ? index.races[ui.race] : undefined;
+  if (r && ui.from && ui.from !== r.window.start) q.set("from", ui.from);
+  if (r && ui.to && ui.to !== r.window.end) q.set("to", ui.to);
+  if (ui.focus !== "wikipedia/pageviews_total") q.set("focus", ui.focus);
+  history.replaceState(null, "", `${location.pathname}?${q.toString()}`);
+}
+
+function racesIn(state: string, office: string): IndexRace[] {
+  return Object.values(index.races).filter((r) => r.state === state && (office === "all" || r.office === office))
+    .sort((a, b) => a.office.localeCompare(b.office));
+}
+
+/** The attention series the map reads for the current platform and source filters. */
+function mapSource(ui: Ui): string {
+  return ui.source !== "all" ? ui.source : GROUP_DEFAULT_SOURCE[ui.group] ?? "wikipedia";
+}
+
+function mapSeries(r: IndexRace | undefined, source: string): string {
+  const att = r?.metrics?.attention ?? {};
+  if (source === "wikipedia") return "wikipedia/pageviews_total";
+  return Object.keys(att).find((s) => s.startsWith(source + "/")) ?? `${source}/post_count`;
+}
 
 async function main() {
-  const raceId = raceIdFromSearch(location.search, DEFAULT_RACE);
-  const url = `data/${raceId}.json`;
-  let data: RaceData;
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = await res.json();
+    index = await getJson<IndexData>("data/index.json");
   } catch (e) {
     app.innerHTML = `<main class="wrap"><h1>${esc(PROJECT_NAME)}</h1><p class="error" role="alert">Could not load
-      <code>${esc(url)}</code> (${esc((e as Error).message)}). Build the site and serve <code>web/dist</code> over
+      <code>data/index.json</code> (${esc((e as Error).message)}). Build the site and serve <code>web/dist</code> over
       http (for example <code>npm run preview</code>); opening index.html from disk blocks fetch.</p></main>`;
     return;
   }
-  document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
-  const state: State = { data, view: "raw", width: 0 };
-  renderShell(state);
-  const charts = document.getElementById("charts")!;
-  const draw = () => {
-    const w = Math.floor(charts.clientWidth);
-    if (w > 0 && w !== state.width) {
-      state.width = w;
-      renderCharts(state);
-    }
-  };
-  new ResizeObserver(draw).observe(charts);
-  draw();
-  document.querySelectorAll<HTMLInputElement>('input[name="view"]').forEach((r) =>
-    r.addEventListener("change", () => {
-      state.view = r.value as View;
-      renderCharts(state);
-    }));
+  const ui = readUi();
+  if (ui.race && !index.races[ui.race]) ui.race = null;
+  if (ui.race) ui.state = index.races[ui.race].state;
+  if (!ui.race && ui.state) ui.race = racesIn(ui.state, ui.office)[0]?.race_id ?? null;
+  if (!ui.race && !ui.state && index.races[DEFAULT_RACE]) {
+    ui.race = DEFAULT_RACE;
+    ui.state = index.races[DEFAULT_RACE].state;
+  }
+  renderShell(ui);
+  drawMap(ui);
+  await openRace(ui, false);
+  new ResizeObserver(() => view?.draw()).observe(document.getElementById("race")!);
   document.body.dataset.ready = "true";
 }
 
-function raceTitle(d: RaceData): string {
-  const office = d.race.office.charAt(0).toUpperCase() + d.race.office.slice(1);
-  return `${STATES[d.race.state] ?? d.race.state} ${office} ${d.race.election_date.slice(0, 4)}`;
+function sourcesInIndex(): string[] {
+  const s = new Set<string>();
+  for (const r of Object.values(index.races)) for (const a of Object.values(r.metrics?.attention ?? {})) s.add(a.source);
+  return [...s].sort();
 }
 
-function renderShell(s: State) {
-  const d = s.data;
-  const att = attentionColumns(d);
-  const ex = excludedSpans(d.excluded_days);
+function renderShell(ui: Ui) {
+  const offices = [...new Set(["senate", "governor", ...Object.values(index.races).map((r) => r.office)])];
+  const raceStates = [...new Set(Object.values(index.races).map((r) => r.state))].sort((a, b) =>
+    (STATES[a] ?? a).localeCompare(STATES[b] ?? b));
+  const opt = (v: string, label: string, cur: string) => `<option value="${esc(v)}" ${v === cur ? "selected" : ""}>${esc(label)}</option>`;
   app.innerHTML = "";
   const header = el("header", { class: "wrap head" }, `
     <p class="kicker">${esc(PROJECT_NAME)}: Kalshi market data next to attention data, on one UTC clock</p>
-    <h1>${esc(raceTitle(d))}</h1>
-    <dl class="facts">
-      <div><dt>Window</dt><dd>${esc(d.window.start)} to ${esc(d.window.end)} (UTC, inclusive, ${d.window.days} days)</dd></div>
-      <div><dt>Followed contract</dt><dd><code>${esc(d.race.kalshi.followed_market)}</code> (Kalshi event
-        <code>${esc(d.race.kalshi.event)}</code>)</dd></div>
-      <div><dt>Election day</dt><dd>${esc(d.race.election_date)}</dd></div>
-      <div><dt>Excluded from metrics</dt><dd>${ex.map((e) => e.first === e.last ? esc(e.first)
-        : `${esc(e.first)} to ${esc(e.last)}`).join(", ") || "none"} (election night; shaded on every chart)</dd></div>
-    </dl>
-    <p class="lede">Kalshi price and volume are hourly. Wikipedia pageviews are daily (drawn at noon UTC of each day).
-      All times are UTC. The tool reports timing and association, not causation.</p>`);
+    <h1>2026 races: market prices and attention</h1>
+    <p class="lede">${Object.keys(index.races).length} races with committed data. Pick a state on the map, in the table or
+      in the list. Every number shows its n; anything with fewer than 20 days or pairs reads "insufficient data". The tool
+      reports timing and association, not causation.</p>`);
   const main = el("main", { class: "wrap", id: "main" });
-  main.append(
-    el("section", { "aria-labelledby": "charts-h" }, `
-      <h2 id="charts-h">Series</h2>
-      <fieldset class="toggle">
-        <legend>Attention panels show</legend>
-        ${(["raw", "z", "surprise"] as View[]).map((v) => `<label><input type="radio" name="view" value="${v}"
-          ${v === s.view ? "checked" : ""}> ${VIEW_LABEL[v]}</label>`).join("")}
-        <p class="hint" id="view-hint"></p>
-      </fieldset>
-      <div id="charts"></div>`),
-    lagSection(d, att),
-    noDataSection(d),
-    dailyTableSection(d, att),
-    methodSection(d, att),
-    exportSection(d),
-  );
-  app.append(header, main, footer(d));
-  main.querySelector("#export-daily")!.addEventListener("click", () =>
-    download(`${d.race.race_id}-daily.csv`, toCsv(d.series.daily), "text/csv"));
-  main.querySelector("#export-hourly")!.addEventListener("click", () =>
-    download(`${d.race.race_id}-hourly.csv`, toCsv(d.series.hourly), "text/csv"));
-  main.querySelector("#export-metrics")!.addEventListener("click", () =>
-    download(`${d.race.race_id}-metrics.json`, JSON.stringify(metricsExport(d), null, 1) + "\n", "application/json"));
-}
-
-function frameFor(s: State): Frame {
-  const d = s.data;
-  return {
-    width: s.width,
-    domain: xDomain(d),
-    election: new Date(utcMs(d.race.election_date)),
-    excluded: excludedSpans(d.excluded_days),
-  };
-}
-
-function badge(q: Quality | undefined): string {
-  const st = q?.status ?? "unusable";
-  return `<span class="badge badge-${st}">Quality: ${st}</span>`;
-}
-
-function qualityLine(q: Quality | undefined): string {
-  if (!q) return `<p class="qual">No quality record for this series.</p>`;
-  const missing = q.missing_days.length ? `Missing days (${q.missing_days.length}): ${q.missing_days.join(", ")}`
-    : "None missing";
-  const reasons = q.reasons.length ? ` Reasons: ${esc(q.reasons.join("; "))}.` : "";
-  return `<p class="qual">Coverage <span data-k="coverage">${q.coverage_days}/${q.window_days} days
-    (${format(".0%")(q.coverage)})</span>. <span data-k="missing">${esc(missing)}</span>.
-    Longest gap ${q.longest_gap} day${q.longest_gap === 1 ? "" : "s"}.${reasons}</p>`;
-}
-
-function figure(id: string, title: string, head: string, summary: string, svg: Element, foot: string) {
-  const f = el("figure", { class: "panel", id, "aria-labelledby": `${id}-cap` });
-  const cap = el("figcaption", { id: `${id}-cap` }, `<span class="ptitle">${esc(title)}</span> ${head}
-    <span class="summary">${summary}</span>`);
-  f.append(cap, svg, el("p", { class: "pfoot" }, foot));
-  return f;
-}
-
-function renderCharts(s: State) {
-  const d = s.data;
-  const frame = frameFor(s);
-  const root = document.getElementById("charts")!;
-  root.innerHTML = "";
-  const hourly: HourPoint[] = d.series.hourly.rows.map((r) => ({ t: new Date(String(r[0])),
-    price: r[1] === null ? null : Number(r[1]), volume: r[2] === null ? null : Number(r[2]) }));
-  const dates = d.series.daily.rows.map((r) => String(r[0]));
-  const keep = d.series.daily.rows.map((r) => r[1] !== true);
-  const sh = (name: string) => d.series.meta[name]?.query_hash ?? "n/a";
-
-  // Price
-  const pe = extremes(hourly.map((h) => h.price));
-  const at = (i: number) => fmtHour(hourly[i].t);
-  const pSum = pe.last ? `First close ${cents(hourly[0].price ?? 0)} (${at(0)}); last ${cents(pe.last.v)}
-    (${at(pe.last.i)}); low ${cents(pe.min!.v)} (${at(pe.min!.i)}); high ${cents(pe.max!.v)} (${at(pe.max!.i)}).` : "No data.";
-  const pq = d.quality[PRICE];
-  const ffh = (pq?.extra?.forward_filled_hours as number | undefined) ?? 0;
-  root.append(figure("panel-price", `Kalshi ${d.race.kalshi.followed_market}: hourly close`, badge(pq), pSum,
-    priceChart(frame, hourly, [`Kalshi ${d.race.kalshi.followed_market} hourly closing price`,
-      `Line chart of the hourly Yes price in cents. ${pSum.replace(/\s+/g, " ")}`]),
-    `${qualityLine(pq)}<p class="meta">${hourly.length} hourly candles; ${ffh} hours with no trades carry the previous
-      close forward. Query hash <code>${esc(sh(PRICE))}</code>.</p>`));
-
-  // Volume
-  const vols = hourly.map((h) => h.volume);
-  const ve = extremes(vols);
-  const total = vols.reduce<number>((a, v) => a + (v ?? 0), 0);
-  const zeros = vols.filter((v) => v === 0).length;
-  const vq = d.quality[VOLUME];
-  const winHours = (vq?.extra?.window_hours as number | undefined) ?? hourly.length;
-  const vSum = ve.max ? `Total ${fmtSi(total)} contracts (${fmtInt(total)}). Busiest hour ${fmtInt(ve.max.v)} contracts
-    (hour ending ${at(ve.max.i)}). ${zeros} hours with zero volume; ${winHours - hourly.length} of ${winHours} window hours
-    have no candle.` : "No data.";
-  root.append(figure("panel-volume", "Kalshi volume: contracts per hour", badge(vq), vSum,
-    volumeChart(frame, hourly, ["Kalshi hourly volume, symlog scale",
-      `Bar chart, one bar per hour, symlog scale. ${vSum.replace(/\s+/g, " ")}`]),
-    `${qualityLine(vq)}<p class="meta">Symlog scale: the axis is sign(x) ln(1 + |x|), so hours with zero volume sit on the
-      baseline instead of dropping out. Bars span the hour that ends at the candle's end_period_ts. Query hash
-      <code>${esc(sh(VOLUME))}</code>.</p>`));
-
-  // Attention
-  const hint = document.getElementById("view-hint")!;
-  hint.textContent = "The y axis fits the days used in the metrics; election-night values above it are marked with a "
-    + "triangle and printed in the caption. " + {
-    raw: "Raw daily pageviews.",
-    z: "z-score: (x - mean) / sd, mean and sample sd over the non-excluded days of the window. Excluded days use the same scale.",
-    surprise: "Surprise: ln((x + 1) / (mean of the previous 7 days + 1)). Blank for the first 7 days and next to missing days.",
-  }[s.view];
-  attentionColumns(d).forEach((name, k) => {
-    const q = d.quality[name];
-    const unusable = !q || q.status === "unusable";
-    const vals = transform(column(d.series.daily, name), keep, s.view);
-    const rows: DayPoint[] = dates.map((dt, i) => ({ t: dayCenter(dt), v: vals[i], kept: keep[i] }));
-    const domain = keptDomain(rows, s.view === "raw");
-    const e = extremes(vals);
-    const show = (v: number) => (s.view === "raw" ? fmtInt(v) : fmt2(v));
-    const unit = s.view === "raw" ? " views" : "";
-    const off = domain ? rows.filter((r) => r.v !== null && (r.v > domain[1] || r.v < domain[0])) : [];
-    const summary = (e.max ? `${VIEW_LABEL[s.view]}: low ${show(e.min!.v)}${unit} (${fmtDay(rows[e.min!.i].t)}), high
-      ${show(e.max.v)}${unit} (${fmtDay(rows[e.max.i].t)}), last ${show(e.last!.v)}${unit} (${fmtDay(rows[e.last!.i].t)}).`
-      + (s.view === "raw" ? ` Total ${fmtInt(vals.reduce<number>((a, v) => a + (v ?? 0), 0))} views over ${e.count} days.` : "")
-      : "No values to show.")
-      + (off.length ? ` Off the chart's scale (excluded days, marked with a triangle): ${off.map((r) =>
-        `${fmtDay(r.t)} ${show(r.v!)}`).join(", ")}.` : "");
-    const label = { raw: "Pageviews per day", z: "z-score (sd units)", surprise: "Surprise, ln ratio" }[s.view];
-    const title = seriesLabel(name);
-    const reason = unusable ? (q?.reasons.join("; ") || "no data") : undefined;
-    root.append(figure(`panel-att-${k}`, title, badge(q),
-      (unusable ? `<span class="unusable-note">Unusable, left out of the lag tables: ${esc(reason)}.</span> ` : "") + summary,
-      attentionChart(frame, rows, { label, unusable, zeroRule: s.view !== "raw", reason, domain,
-        aria: [`${title}, ${VIEW_LABEL[s.view]} view`, `Daily line chart. ${summary.replace(/\s+/g, " ")}`] }),
-      `${qualityLine(q)}<p class="meta">Series <code>${esc(name)}</code>, query hash <code>${esc(sh(name))}</code>.</p>`));
-  });
-}
-
-function lagCell(c: LagCell | undefined, band: Num): string {
-  if (!c) return `<td class="blank">not computed</td>`;
-  if (c.n < MIN_PAIRS) return `<td class="blank" data-rho="" data-n="${c.n}">blank: n&lt;${MIN_PAIRS}<span class="n">n=${c.n}</span></td>`;
-  if (c.rho === null) return `<td class="blank" data-rho="" data-n="${c.n}">no variance<span class="n">n=${c.n}</span></td>`;
-  const out = band !== null && Math.abs(c.rho) > band;
-  return `<td class="${out ? "out" : ""}" data-rho="${c.rho}" data-n="${c.n}"><span class="rho">${fmt2(c.rho)}</span>${out
-    ? '<span class="vh"> (outside the noise band)</span><span aria-hidden="true">*</span>' : ""}<span class="n">n=${c.n}</span></td>`;
-}
-
-function lagSection(d: RaceData, att: string[]): HTMLElement {
-  const entries = att.map((a) => d.metrics.daily[a]).filter(Boolean);
-  const computed = entries.filter((e) => e.status === "computed");
-  const skipped = entries.filter((e) => e.status !== "computed");
-  const lags = computed[0]?.lags ?? [-2, -1, 0, 1, 2];
-  const sec = el("section", { "aria-labelledby": "lags-h", id: "lags" });
-  let html = `<h2 id="lags-h">Lag tables: attention surprise vs Kalshi, daily</h2>
-    <p>Spearman rho between each attention series' daily surprise and the outcome, with the outcome shifted by the lag.
-    <strong>Lag above 0 means the outcome is measured after the attention</strong> (lag +1: attention on day t, outcome on
-    day t+1). Election night is excluded on both sides. Each cell shows rho to 2 decimals and n, the number of day
-    pairs. Cells with fewer than ${MIN_PAIRS} pairs are blank. A * marks |rho| above the row's noise band.</p>`;
-  for (const [okey, o] of Object.entries(OUTCOMES)) {
-    if (!computed.some((e) => e.outcomes?.[okey])) continue;
-    html += `<h3 class="tcap" id="cap-${okey}">${esc(o.title)}: Spearman rho of attention surprise vs
-      ${esc(o.short)}</h3><div class="table-scroll" role="region" aria-labelledby="cap-${okey}" tabindex="0">
-      <table class="lag" data-outcome="${okey}" aria-labelledby="cap-${okey}">
-      <thead><tr><th scope="col">Attention series</th>${lags.map((l) => `<th scope="col">Lag ${signed(l)} d</th>`).join("")}
-      <th scope="col">Noise band</th></tr></thead><tbody>`;
-    for (const e of computed) {
-      const cells = e.outcomes?.[okey] ?? {};
-      const band = e.noise_band ?? null;
-      html += `<tr data-series="${esc(e.attention_series)}"><th scope="row">${esc(seriesLabel(e.attention_series))}
-        <span class="badge badge-${e.quality_status}">${e.quality_status}</span></th>
-        ${lags.map((l) => lagCell(cells[String(l)], band).replace("<td", `<td data-lag="${l}"`)).join("")}
-        <td class="band">${band === null ? "n/a" : `&plusmn;${fmt2(band)}`}<span class="n">2/sqrt(${e.noise_band_n})</span></td></tr>`;
+  const filters = el("form", { class: "filters", id: "filters", "aria-labelledby": "filters-h" }, `
+    <h2 id="filters-h" class="filters-h">Filters</h2>
+    <div class="fgrid">
+      <div class="f"><label for="f-state">State</label><select id="f-state">${opt("", "Pick a state", ui.state ?? "")}${
+        raceStates.map((s) => opt(s, STATES[s] ?? s, ui.state ?? "")).join("")}</select></div>
+      <div class="f"><label for="f-office">Race type</label><select id="f-office">${opt("all", "All race types", ui.office)}${
+        offices.map((o) => opt(o, o.charAt(0).toUpperCase() + o.slice(1), ui.office)).join("")}</select></div>
+      <div class="f"><label for="f-metric">Map metric</label><select id="f-metric">${Object.entries(METRICS).map(([k, m]) =>
+        opt(k, m.label, ui.metric)).join("")}</select></div>
+      <div class="f"><label for="f-band">Polling density band</label><select id="f-band">${Object.entries(BANDS).map(([k, l]) =>
+        opt(k, l, ui.band)).join("")}</select></div>
+      <div class="f"><label for="f-group">Platform group</label><select id="f-group">${Object.entries(GROUPS).map(([k, l]) =>
+        opt(k, l, ui.group)).join("")}</select></div>
+      <div class="f"><label for="f-source">Source</label><select id="f-source">${opt("all", "All sources in the group", ui.source)}${
+        sourcesInIndex().map((s) => opt(s, `${SOURCE_LABEL[s] ?? s} (${PLATFORM_GROUP[s] ?? "other"})`, ui.source)).join("")}</select></div>
+      <div class="f"><label for="f-from">Window from</label><input type="date" id="f-from"></div>
+      <div class="f"><label for="f-to">Window to</label><input type="date" id="f-to"></div>
+      <div class="f fcheck"><input type="checkbox" id="f-overlay" ${ui.overlay ? "checked" : ""}><label for="f-overlay">Show
+        information events on the charts</label></div>
+    </div>
+    <p class="hint" id="filter-hint"></p>`);
+  const mapSec = el("section", { "aria-labelledby": "map-h", id: "mapsec" }, `
+    <h2 id="map-h">Map</h2>
+    <p id="map-caption" class="note"></p>
+    <div id="map"></div>
+    <h3 class="tcap" id="maptable-cap">The map's values as a table</h3>
+    <div class="table-scroll" role="region" aria-labelledby="maptable-cap" tabindex="0"><table id="map-table"
+      aria-labelledby="maptable-cap"><thead><tr><th scope="col">State</th><th scope="col">Race</th><th scope="col">Value (n)</th>
+      <th scope="col">Polling band</th><th scope="col">Quality (series)</th><th scope="col">Open</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="map-none"></p>`);
+  const raceSec = el("section", { "aria-labelledby": "race-h", id: "racesec" }, `
+    <div id="race-switch"></div><div id="race" aria-live="polite"></div>`);
+  main.append(filters, mapSec, raceSec);
+  app.append(header, main, footer());
+  filters.addEventListener("submit", (e) => e.preventDefault());
+  const on = (id: string, f: (v: string, e: HTMLInputElement | HTMLSelectElement) => void, ev = "change") =>
+    document.getElementById(id)!.addEventListener(ev, (e) => f((e.target as HTMLInputElement).value, e.target as HTMLInputElement));
+  on("f-state", (v) => { if (v) pickState(ui, v); });
+  on("f-office", (v) => {
+    ui.office = v;
+    if (ui.state && !racesIn(ui.state, ui.office).some((r) => r.race_id === ui.race)) {
+      ui.race = racesIn(ui.state, ui.office)[0]?.race_id ?? ui.race;
     }
-    html += `</tbody></table></div>`;
+    drawMap(ui);
+    openRace(ui, true);
+  });
+  on("f-metric", (v) => { ui.metric = v as MapMetric; drawMap(ui); writeUrl(ui); });
+  on("f-band", (v) => { ui.band = v as DensityBand; drawMap(ui); writeUrl(ui); });
+  on("f-group", (v) => {
+    ui.group = v;
+    if (ui.source !== "all" && v !== "all" && PLATFORM_GROUP[ui.source] !== v) {
+      ui.source = "all";
+      (document.getElementById("f-source") as HTMLSelectElement).value = "all";
+    }
+    drawMap(ui);
+    refreshRace(ui);
+  });
+  on("f-source", (v) => { ui.source = v; drawMap(ui); refreshRace(ui); });
+  on("f-from", (v) => { ui.from = v; refreshRace(ui); });
+  on("f-to", (v) => { ui.to = v; refreshRace(ui); });
+  on("f-overlay", (_v, t) => { ui.overlay = (t as HTMLInputElement).checked; refreshRace(ui); });
+}
+
+function pickState(ui: Ui, code: string) {
+  ui.state = code;
+  const rs = racesIn(code, ui.office);
+  ui.race = (rs.find((r) => r.race_id === ui.race) ?? rs[0] ?? racesIn(code, "all")[0])?.race_id ?? null;
+  drawMap(ui);
+  openRace(ui, true);
+}
+
+function drawMap(ui: Ui) {
+  const source = mapSource(ui);
+  const m = METRICS[ui.metric];
+  const cells = new Map<string, StateCell>();
+  const fmt = { int: format(".3~s"), two: format(".2f"), pct: format(".0%") };
+  for (const code of Object.keys(STATES)) {
+    const rs = racesIn(code, ui.office);
+    const r = rs.find((x) => x.race_id === ui.race) ?? rs[0];
+    if (!r) {
+      cells.set(code, { code, name: STATES[code], value: null, text: "no processed race", raceId: null, filteredOut: false });
+      continue;
+    }
+    const series = mapSeries(r, source);
+    const v = mapValue(r.metrics, ui.metric, series, fmt);
+    const band = densityBand(r.metrics?.polling_density);
+    const filteredOut = ui.band !== "all" && band !== ui.band;
+    cells.set(code, { code, name: STATES[code], value: v.value, raceId: r.race_id, filteredOut,
+      text: v.value === null ? `insufficient data (${v.reason})` : v.text });
   }
-  const nb = computed[0];
-  html += `<p class="note">Noise band: about 2/sqrt(n)${nb?.noise_band != null ? `, here &plusmn;${fmt2(nb.noise_band)} at
-    n=${nb.noise_band_n}` : ""}. Daily series are autocorrelated, so the effective n is smaller and this band is
-    generous: a rho just outside it is weak evidence. The tool reports timing and association, not causation.</p>`;
-  if (skipped.length) {
-    html += `<p class="note">Left out of the lag tables: ${skipped.map((e) => `${esc(seriesLabel(e.attention_series))}
-      (${esc(e.reason ?? "skipped")})`).join("; ")}.</p>`;
-  }
-  if (!computed.length) html += `<p class="note">No lag table could be computed for this race.</p>`;
-  html += `<p class="note">Hourly lag tables: ${esc(d.metrics.hourly_note ?? "none")}.</p>`;
-  sec.innerHTML = html;
-  return sec;
-}
-
-function noDataSection(d: RaceData): HTMLElement {
-  const r = d.race;
-  const applies = (n: string) => (n === "entities" ? r.entities.length > 0 : n === "news_query" ? !!r.news_query
-    : (r.subreddits ?? []).length > 0);
-  const missing = SOURCE_CATALOG.filter((c) => applies(c.needs) && !d.sources.includes(c.id));
-  const sec = el("section", { "aria-labelledby": "nodata-h", id: "nodata" });
-  sec.innerHTML = `<h2 id="nodata-h">Sources with no cached data</h2>
-    <p>The race config implies these sources, but this file has no data for them. Nothing is estimated or filled in.
-    Run them locally with your own keys (keys stay in your shell or a git-ignored <code>.env</code>).</p>
-    <ul class="cards">${missing.map((c) => `<li class="card" data-source="${esc(c.id)}"><h3>No cached data for
-      ${esc(c.label)}</h3><p>Channel: ${esc(c.channel)}. Connector planned for ${esc(c.milestone)}.</p>
-      <p>Run: <code>python -m raceattn run --race ${esc(r.race_id)} --sources ${esc(c.id)}</code></p>
-      <p>Needs: ${c.env.length ? c.env.map((k) => `<code>${esc(k)}</code>`).join(" and ") : "no key"}${c.envNote
-        ? ` (${esc(c.envNote)})` : ""}.</p></li>`).join("")}</ul>`;
-  return sec;
-}
-
-function dailyTableSection(d: RaceData, att: string[]): HTMLElement {
-  const t = d.series.daily;
-  const idx = (c: string) => t.columns.indexOf(c);
-  const sec = el("section", { "aria-labelledby": "daily-h" });
-  const cell = (v: unknown, f: (n: number) => string) => (v === null || v === undefined ? "missing" : f(Number(v)));
-  sec.innerHTML = `<h2 id="daily-h">Daily values</h2>
-    <details><summary>Show every daily value behind the charts (${t.rows.length} days)</summary>
-    <p class="tcap" id="daily-cap">Daily aligned table (UTC dates). Price is the last hourly close of the day in cents;
-    volume is the sum of the day's hourly volume.</p>
-    <div class="table-scroll" role="region" aria-labelledby="daily-cap" tabindex="0"><table class="daily" id="daily-table"
-      aria-labelledby="daily-cap">
-    <thead><tr><th scope="col">Date</th><th scope="col">Excluded</th><th scope="col">Close (cents)</th>
-    <th scope="col">Volume</th>${att.map((a) => `<th scope="col">${esc(seriesLabel(a).replace("Wikipedia: ", ""))}</th>`).join("")}
-    </tr></thead><tbody>${t.rows.map((r) => `<tr data-date="${esc(r[0])}"><th scope="row">${esc(r[0])}</th>
-      <td>${r[1] ? "yes" : ""}</td><td data-col="${PRICE}">${cell(r[idx(PRICE)], (p) => format(".1f")(p * 100))}</td>
-      <td>${cell(r[idx(VOLUME)], fmtInt)}</td>${att.map((a) => `<td>${cell(r[idx(a)], fmtInt)}</td>`).join("")}</tr>`).join("")}
-    </tbody></table></div></details>`;
-  return sec;
-}
-
-function methodSection(d: RaceData, att: string[]): HTMLElement {
-  const sec = el("section", { "aria-labelledby": "method-h", id: "method" });
-  const series = [PRICE, VOLUME, ...att];
-  const hashRows = series.map((s) => {
-    const m = d.series.meta[s];
-    const conn = m ? d.queries[m.source]?.query_hash : undefined;
-    return `<tr><th scope="row"><code>${esc(s)}</code></th><td><code>${esc(m?.query_hash ?? "n/a")}</code></td>
-      <td><code>${esc(conn ?? "n/a")}</code></td><td>${esc(d.quality[s]?.status ?? "n/a")}</td><td>${esc(m?.fetched_at ?? "n/a")}</td></tr>`;
+  const usesSource = ui.metric === "attention_total" || ui.metric === "attention_rho";
+  document.getElementById("map-caption")!.innerHTML = `Colored by <strong>${esc(m.label)}</strong>${usesSource
+    ? ` for <strong>${esc(SOURCE_LABEL[source] ?? source)}</strong>${source === "wikipedia" ? " (race page plus candidate pages, summed)" : ""}`
+    : ""}; ${ui.office === "all" ? "all race types" : `${esc(ui.office)} races only`}; ${esc(BANDS[ui.band].toLowerCase())}.
+    Totals and changes cover the non-excluded days of each race's window (election night left out). Bins are equal
+    width over the values shown.`;
+  renderMap(document.getElementById("map")!, cells, { diverging: m.diverging, metricLabel: m.label, selected: ui.state,
+    fmt: fmtMap[ui.metric], onPick: (code) => pickState(ui, code) });
+  const withRace = [...cells.values()].filter((c) => c.raceId).sort((a, b) => a.name.localeCompare(b.name));
+  const tbody = document.querySelector("#map-table tbody")!;
+  tbody.innerHTML = withRace.map((c) => {
+    const r = index.races[c.raceId!];
+    const qs = r.metrics?.quality_summary;
+    const band = densityBand(r.metrics?.polling_density);
+    return `<tr data-state="${c.code}"><th scope="row">${esc(c.name)}</th><td>${esc(raceTitle({ race: r }))}</td>
+      <td data-k="value">${c.filteredOut ? `filtered out by the band; ${esc(c.text)}` : esc(c.text)}</td>
+      <td>${band ?? "unknown"}${r.metrics?.polling_density != null ? ` (n=${r.metrics.polling_density} poll${r.metrics.polling_density === 1 ? "" : "s"})` : ""}</td>
+      <td>${qs ? `${qs.ok} ok, ${qs.degraded} degraded, ${qs.unusable} unusable` : "n/a"}</td>
+      <td><button type="button" class="linkish" data-open="${c.code}" ${ui.state === c.code ? 'aria-current="true"' : ""}>Open
+        <span class="vh">${esc(c.name)}</span></button></td></tr>`;
   }).join("");
-  sec.innerHTML = `<h2 id="method-h">Method</h2>
-    <details id="drawer"><summary>How this is computed</summary><div class="drawer">
-    <h3>One clock</h3><p>Everything is in UTC. Kalshi candles are hourly; the hour's timestamp is the candle's end. A
-    day's Kalshi close is the last hourly close of that UTC date and its volume is the sum of that date's hourly volume.
-    Hours with no trades keep the previous close and count 0 volume. Wikipedia pageviews are daily only. Attention data is
-    never interpolated: a missing day stays missing.</p>
-    <h3>Surprise</h3><p>For each day, surprise = ln((x + 1) / (mean of the previous 7 days + 1)). It asks how unusual
-    today is compared with the past week, so a slow climb toward election day does not by itself look like a match
-    between two series. It is blank when the day or any of the 7 days before it is missing, and for the first 7 days of
-    the window. It is applied to every attention series and to Kalshi volume. (For hourly sources the 7 previous values
-    are the same hour on the previous 7 days.) The page computes it with the same formula as the pipeline.</p>
-    <h3>z-score view</h3><p>(x - mean) / sd, with the mean and sample standard deviation (n - 1) taken over the
-    non-missing, non-excluded days of the window. It is a display aid only and is not used in any metric.</p>
-    <h3>Election night</h3><p>Days in <code>exclude_days</code> (${esc(d.excluded_days.join(", "))}) are dropped from
-    every metric, on both the attention and the outcome side, after the surprise is computed. They stay on the charts,
-    shaded.</p>
-    <h3>Lag tables</h3><p>Spearman rank correlation (rho, ties get average ranks) between attention surprise on day t and
-    the outcome on day t + lag, for lags -2 to +2 days. Lag above 0 means the outcome comes after the attention. Outcomes:
-    (a) Kalshi volume surprise, (b) the absolute change in daily close, (c) the signed change in daily close. A cell with
-    fewer than ${MIN_PAIRS} day pairs is blank; n is always shown.</p>
-    <h3>Noise band</h3><p>About 2/sqrt(n): with no real relation, |rho| lands inside it most of the time. Daily series are
-    autocorrelated, so the true uncertainty is larger and the band is generous. The tool reports timing and association,
-    not causation.</p>
-    <h3>Quality</h3><p>Each series gets coverage (days with data out of window days), missing days, longest gap and
-    near-zero stretches (days under 5% of the series median next to normal days). Status is unusable if coverage is under
-    70%, there is no data, or near-zero days exceed 10% of the window; degraded if coverage is under 95%, any near-zero
-    stretch exists, or a gap is 3 days or longer; otherwise ok. Unusable series are greyed out and left out of the lag
-    tables. Every lag cell in the metrics JSON carries n, the worse of the two quality statuses and both query hashes.</p>
-    <h3>Query hashes</h3><p>Each series is tied to a hash of the exact requests that produced it (the full requests are in
-    the <code>queries</code> block of the race JSON).</p>
-    <div class="table-scroll" role="region" aria-labelledby="hash-cap" tabindex="0"><table class="hashes">
-    <caption id="hash-cap">Query hash per series</caption><thead><tr><th scope="col">Series</th>
-    <th scope="col">Series query hash</th><th scope="col">Connector query hash</th><th scope="col">Quality</th>
-    <th scope="col">Fetched at (UTC)</th></tr></thead><tbody>${hashRows}</tbody></table></div>
-    </div></details>`;
-  return sec;
+  tbody.querySelectorAll<HTMLButtonElement>("button[data-open]").forEach((b) =>
+    b.addEventListener("click", () => pickState(ui, b.dataset.open!)));
+  const none = [...cells.values()].filter((c) => !c.raceId && c.code !== "DC" && c.code !== "PR").map((c) => c.name);
+  document.getElementById("map-none")!.textContent = `${none.length} states (plus DC and Puerto Rico) have no processed
+    race for this race type and are drawn as insufficient data: ${none.join(", ")}.`.replace(/\s+/g, " ");
 }
 
-function exportSection(d: RaceData): HTMLElement {
-  return el("section", { "aria-labelledby": "export-h", id: "export" }, `<h2 id="export-h">Download</h2>
-    <p>Files are built in your browser from the data already loaded. Plain CSV with a header row and UTC timestamps.</p>
-    <div class="buttons">
-      <button type="button" id="export-daily">Download CSV: daily table (${d.series.daily.rows.length} days)</button>
-      <button type="button" id="export-hourly">Download CSV: hourly Kalshi (${d.series.hourly.rows.length} hours)</button>
-      <button type="button" id="export-metrics">Download metrics JSON</button>
-    </div>`);
+async function openRace(ui: Ui, scroll: boolean) {
+  const root = document.getElementById("race")!;
+  const sw = document.getElementById("race-switch")!;
+  (document.getElementById("f-state") as HTMLSelectElement).value = ui.state ?? "";
+  if (!ui.race) {
+    sw.innerHTML = "";
+    root.innerHTML = `<p class="note" id="race-h">No race selected. Pick a state above.</p>`;
+    writeUrl(ui);
+    return;
+  }
+  const rs = racesIn(ui.state ?? index.races[ui.race].state, "all");
+  sw.innerHTML = rs.length > 1 ? `<fieldset class="toggle" id="race-type"><legend>Race type in ${esc(STATES[ui.state!] ?? ui.state)}</legend>${
+    rs.map((r) => `<label><input type="radio" name="racetype" value="${esc(r.race_id)}" ${r.race_id === ui.race ? "checked" : ""}>
+      ${esc(r.office.charAt(0).toUpperCase() + r.office.slice(1))}</label>`).join("")}</fieldset>`
+    : `<p class="note" id="race-type">${esc(STATES[ui.state!] ?? "")}: one race with data (${esc(index.races[ui.race].office)}).</p>`;
+  sw.querySelectorAll<HTMLInputElement>('input[name="racetype"]').forEach((i) => i.addEventListener("change", () => {
+    ui.race = i.value;
+    openRace(ui, false);
+  }));
+  let data: RaceData;
+  try {
+    data = await loadRace(ui.race);
+  } catch (e) {
+    root.innerHTML = `<p class="error" role="alert">Could not load <code>data/${esc(ui.race)}.json</code>
+      (${esc((e as Error).message)}).</p>`;
+    return;
+  }
+  [ui.from, ui.to] = clampRange(ui.from || null, ui.to || null, data.window.start, data.window.end);
+  syncDateInputs(ui, data);
+  if (!shownSeries(data, ui).includes(ui.focus)) ui.focus = shownSeries(data, ui)[0] ?? ui.focus;
+  document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
+  view = new RaceView(root, data, ui);
+  root.addEventListener("uichange", () => writeUrl(ui));
+  view.render();
+  view.draw(true);
+  writeUrl(ui);
+  updateHint(ui, data);
+  if (scroll) document.getElementById("race-h")?.scrollIntoView({ block: "start" });
 }
 
-function footer(d: RaceData): HTMLElement {
-  const notes = d.sources.map((s) => SOURCE_NOTES[s]).filter(Boolean);
+function syncDateInputs(ui: Ui, data: RaceData) {
+  for (const [id, v] of [["f-from", ui.from], ["f-to", ui.to]] as const) {
+    const i = document.getElementById(id) as HTMLInputElement;
+    i.min = data.window.start;
+    i.max = data.window.end;
+    i.value = v;
+  }
+}
+
+function updateHint(ui: Ui, data: RaceData) {
+  const n = shownSeries(data, ui).length;
+  document.getElementById("filter-hint")!.textContent = `Showing ${n} attention series of ${raceTitle(data)} for these
+    filters; window ${ui.from} to ${ui.to}. Platform group, source, window and the event overlay change the race panels;
+    race type, metric, source and polling band change the map.`.replace(/\s+/g, " ");
+}
+
+function refreshRace(ui: Ui) {
+  if (!view) return;
+  [ui.from, ui.to] = clampRange(ui.from || null, ui.to || null, view.data.window.start, view.data.window.end);
+  syncDateInputs(ui, view.data);
+  if (!shownSeries(view.data, ui).includes(ui.focus)) ui.focus = shownSeries(view.data, ui)[0] ?? ui.focus;
+  view.ui = ui;
+  view.render();
+  view.draw(true);
+  writeUrl(ui);
+  updateHint(ui, view.data);
+}
+
+function footer(): HTMLElement {
+  const notes = ["kalshi", "wikipedia"].map((s) => SOURCE_NOTES[s]).filter(Boolean);
   return el("footer", { class: "wrap foot" }, `
-    <p><strong>${esc(PROJECT_NAME)}</strong> (working name), version ${esc(d.version)}. Data generated at
-      ${esc(d.generated_at)}.</p>
+    <p><strong>${esc(PROJECT_NAME)}</strong> (working name). Index updated ${esc(index.updated_at)}.</p>
     <ul>${notes.map((n) => `<li>${esc(n.name)}: ${esc(n.note)} <a href="${esc(n.url)}" rel="noreferrer">Source
       terms</a></li>`).join("")}</ul>
+    <p>Map geometry: us-atlas 3.0.1 (US Census Bureau cartographic boundaries, ISC license), bundled with the page.</p>
     <p>Only counts and metrics are published, never post text or user data. Code and data licenses are not yet decided.</p>
     ${SHOW_FUNDING_DISCLOSURE ? `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>` : ""}`);
-}
-
-function download(name: string, body: string, type: string) {
-  const url = URL.createObjectURL(new Blob([body], { type }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 main();

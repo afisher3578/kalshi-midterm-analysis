@@ -1,4 +1,4 @@
-// Shape of data/processed/<race_id>.json (schema_version 1), as written by raceattn/pipeline.py.
+// Shape of data/processed/<race_id>.json (schema_version 2) and index.json, as written by raceattn/pipeline.py.
 
 export type Num = number | null;
 export type Status = "ok" | "degraded" | "unusable";
@@ -14,6 +14,7 @@ export interface RaceSummary {
   subreddits: string[];
   news_query: string | null;
   polling_density: number | null;
+  status?: string;
 }
 
 export interface Quality {
@@ -55,6 +56,7 @@ export interface MetricEntry {
 
 export interface SeriesMeta {
   source: string;
+  connector?: string;
   granularity: string;
   unit: string;
   query_hash: string;
@@ -67,6 +69,22 @@ export interface Table {
   note?: string;
 }
 
+export interface QueryLog {
+  query_hash: string;
+  queries: { label: string; endpoint: string; params?: Record<string, unknown>; query_hash: string }[];
+  series_query_hash: Record<string, string>;
+  terms?: string[];
+  queries_note?: string;
+}
+
+export interface OverlayEvent { date: string; type: string; status: string; note: string }
+
+export interface EventSeries {
+  status: string;
+  reason?: string;
+  spikes?: { n: number; dates: string[]; surprise: number[] };
+}
+
 export interface RaceData {
   project: string;
   version: string;
@@ -76,10 +94,63 @@ export interface RaceData {
   window: { start: string; end: string; days: number; inclusive: boolean; timezone: string };
   excluded_days: string[];
   sources: string[];
-  queries: Record<string, { query_hash: string; queries: { label: string; endpoint: string; query_hash: string }[];
-    series_query_hash: Record<string, string> }>;
-  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table };
+  sources_requested?: string[];
+  skipped?: Record<string, string>;
+  polling?: { polling_density: number | null; source?: string; revision_url?: string; status?: string; note?: string };
+  run_overrides?: { skip?: Record<string, string>; connectors?: Record<string, unknown>; note?: string };
+  events_overlay?: { rows: OverlayEvent[]; n: number; n_confirmed: number; note: string; exists: boolean };
+  queries: Record<string, QueryLog>;
+  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table; hourly_grid?: Table };
   quality: Record<string, Quality>;
-  metrics: { daily: Record<string, MetricEntry>; hourly: Record<string, MetricEntry>; hourly_note?: string };
+  metrics: { daily: Record<string, MetricEntry>; hourly: Record<string, MetricEntry>; hourly_note?: string;
+    events?: { status?: string; n_confirmed: number; n_needs_review_ignored: number; series: Record<string, EventSeries> } };
   notes: string[];
+}
+
+// index.json: one entry per race, headline numbers for the map.
+export interface IndexAttention {
+  source: string;
+  group: string;
+  total: Num;
+  n_days: number;
+  coverage: Num;
+  status: Status;
+  rho_volume_surprise: Num;
+  n_pairs: number;
+  lag: number;
+  metric_status: string;
+  reason?: string | null;
+}
+
+export interface IndexMetrics {
+  attention_total: { series: string; value: Num; n_days: number; unit: string; note: string };
+  attention_vs_volume: { series: string; outcome: string; lag: number; rho: Num; n: number; noise_band: Num; note: string };
+  price_change: { cents: number; from: string; to: string; n_days: number; full_window_cents: number; note: string } | null;
+  polling_density: number | null;
+  polling_source?: string;
+  data_coverage: { share: Num; n_series: number; window_days: number; note: string };
+  quality_summary: { ok: number; degraded: number; unusable: number; unusable_series: Record<string, string[]>;
+    skipped_sources: Record<string, string> };
+  attention: Record<string, IndexAttention>;
+}
+
+export interface IndexRace {
+  race_id: string;
+  state: string;
+  office: string;
+  election_date: string;
+  followed_market: string;
+  window: RaceData["window"];
+  path: string;
+  generated_at: string;
+  sources: string[];
+  quality: Record<string, Status>;
+  headline: { status: string; lags?: Record<string, { rho: Num; n: number }> };
+  metrics?: IndexMetrics;
+}
+
+export interface IndexData {
+  project: string;
+  races: Record<string, IndexRace>;
+  updated_at: string;
 }

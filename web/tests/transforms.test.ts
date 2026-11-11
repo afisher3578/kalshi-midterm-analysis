@@ -92,7 +92,7 @@ describe("helpers", () => {
     expect(raceIdFromSearch("", "tx")).toBe("tx");
   });
   it("lists the Texas attention series and Kalshi columns", () => {
-    expect(attentionColumns(data)).toHaveLength(4);
+    expect(attentionColumns(data)).toHaveLength(5); // Wikipedia total, three pages, Bluesky (M2)
     expect(column(data.series.daily, PRICE)).toHaveLength(65);
   });
 });
