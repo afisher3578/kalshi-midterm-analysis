@@ -1,0 +1,24 @@
+{
+ "_fixture": "synthetic from docs",
+ "response": {
+  "status": "ok",
+  "userTier": "developer",
+  "total": 7,
+  "startIndex": 1,
+  "pageSize": 1,
+  "currentPage": 1,
+  "pages": 7,
+  "orderBy": "newest",
+  "results": [
+   {
+    "id": "us-news/2026/oct/01/synthetic",
+    "type": "article",
+    "webPublicationDate": "2026-10-01T12:00:00Z",
+    "webTitle": "Synthetic result",
+    "webUrl": "https://www.theguardian.com/us-news/synthetic",
+    "apiUrl": "https://content.guardianapis.com/us-news/synthetic",
+    "isHosted": false
+   }
+  ]
+ }
+}

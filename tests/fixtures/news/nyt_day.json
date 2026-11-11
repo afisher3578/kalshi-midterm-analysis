@@ -1,0 +1,13 @@
+{
+ "_fixture": "synthetic from docs",
+ "status": "OK",
+ "copyright": "Copyright (c) The New York Times Company. All Rights Reserved.",
+ "response": {
+  "docs": [],
+  "meta": {
+   "hits": 4,
+   "offset": 0,
+   "time": 12
+  }
+ }
+}
