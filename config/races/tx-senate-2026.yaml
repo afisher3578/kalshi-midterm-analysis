@@ -1,0 +1,20 @@
+race_id: tx-senate-2026
+state: TX
+office: senate            # senate | house | governor | national
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, used for the main metrics
+kalshi:
+  series: SENATETX
+  event: SENATETX-26
+  followed_market: SENATETX-26-D                # the contract the metrics follow
+entities:
+  - {name: "James Talarico", aliases: ["Talarico"]}
+  - {name: "Ken Paxton",     aliases: ["Paxton"]}
+wikipedia_pages:
+  - 2026_United_States_Senate_election_in_Texas
+  - James_Talarico
+  - Ken_Paxton
+subreddits: [texas, TexasPolitics]              # suggested, dev to verify they exist
+news_query: '("Talarico" OR "Ken Paxton") AND Senate'
+polling_density: null                           # filled from the polling table count (section 7)

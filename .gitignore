@@ -1,0 +1,24 @@
+# local environment
+.venv/
+.env
+*.env.local
+
+# cached raw API responses (may be large, re-fetchable)
+data/raw/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# os / editors
+.DS_Store
+.idea/
+.vscode/
+
+# front end (later milestones)
+web/node_modules/
+web/dist/
