@@ -36,3 +36,25 @@ events:
   reversion_days: 3                # N: did the price move back within N days after a spike
   reversion_fraction: 0.5          # "moved back" = at least this share of the spike-day move reversed
   min_price_move: 0.01             # spike-day price moves under this (1 cent) have nothing to revert
+
+# Per-race run settings (M3). `skip` leaves a source out with the reason (it shows in the race JSON under `skipped`
+# and on the dashboard); `connectors` overrides the settings above for that race only. Texas keeps the defaults.
+# The extra races cap the Bluesky walk so a multi-state run finishes in reasonable time: a capped day is a lower
+# bound and the series is marked degraded with the capped days listed (docs/m3-notes.md).
+race_overrides:
+  oh-senate-2026:
+    connectors: {bluesky: {max_pages_per_day: 10, max_pages: 1500}}
+    note: Bluesky capped at 10 pages (1,000 posts) per term and day to bound runtime
+  nc-senate-2026:
+    connectors: {bluesky: {max_pages_per_day: 10, max_pages: 1500}}
+    note: Bluesky capped at 10 pages (1,000 posts) per term and day to bound runtime
+  fl-senate-2026:
+    connectors: {bluesky: {max_pages_per_day: 10, max_pages: 1500}}
+    note: Bluesky capped at 10 pages (1,000 posts) per term and day to bound runtime
+  ky-senate-2026:
+    connectors: {bluesky: {max_pages_per_day: 10, max_pages: 1500}}
+    note: Bluesky capped at 10 pages (1,000 posts) per term and day to bound runtime
+  tx-governor-2026:
+    skip:
+      bluesky: "left out of the M3 run to bound runtime (the Texas Senate Bluesky walk alone took 22 minutes); run it locally with the command on the card"
+    note: second race type for Texas, so the dashboard's race-type switcher has real data

@@ -1,0 +1,64 @@
+# Draft written by `python -m raceattn discover` at 2026-11-11T08:18:54Z. Review every field against the sources in the
+# discovery block, then move the file to config/races/ and set status: confirmed.
+race_id: ri-senate-2026
+state: RI
+office: senate
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
+kalshi:
+  series: SENATERI
+  event: SENATERI-26
+  followed_market: SENATERI-26-D
+entities:
+  - {name: "Jack Reed", aliases: ["Reed"]}
+wikipedia_pages:
+  - 2026_United_States_Senate_election_in_Rhode_Island
+  - Jack_Reed_(Rhode_Island_politician)
+subreddits: []
+news_query: '("Jack Reed") AND Senate'
+polling_density: null
+status: needs_review
+discovery:
+  generated_at: '2026-11-11T08:18:54Z'
+  race_id:
+    confidence: high
+    why: <state>-<office>-2026
+    source: rule
+  election_date:
+    confidence: high
+    why: infobox election_date
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Rhode_Island&oldid=1384661521
+  window:
+    confidence: high
+    why: 'same rule as Texas: September 1 to the day after election day'
+    source: rule
+  exclude_days:
+    confidence: high
+    why: 'same rule as Texas: election day and the day after (election night in UTC)'
+    source: rule
+  kalshi:
+    confidence: high
+    why: event matched by title 'Rhode Island Senate winner?' (sub title 'In 2026'); followed market is the Democratic party contract (default rule, same as Texas); its candidate 'Jack Reed' is a nominee in the Wikipedia infobox
+    source: https://external-api.kalshi.com/trade-api/v2/events/SENATERI-26
+  entities:
+    confidence: medium
+    why: infobox nominees with at least 5% of the vote (Jack Reed 66.8%, Raymond McKay 29.3%); aliases default to the surname
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Rhode_Island&oldid=1384661521
+  wikipedia_pages:
+    confidence: high
+    why: 'race article: the article exists; candidate articles from the infobox links, redirects resolved'
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Rhode_Island&oldid=1384661521
+  subreddits:
+    confidence: low
+    why: 'left empty: no reliable source; add by hand after checking each subreddit exists'
+    source: none
+  news_query:
+    confidence: medium
+    why: 'Jack Reed: ''Reed'' is a disambiguation page, so the full name'
+    source: https://en.wikipedia.org/w/api.php
+  polling_density:
+    confidence: low
+    why: null until `python -m raceattn events --race ri-senate-2026` counts the polls
+    source: rule
+  revision: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Rhode_Island&oldid=1384661521

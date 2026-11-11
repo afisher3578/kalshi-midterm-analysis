@@ -175,6 +175,38 @@ def polling_info(race: Race, events_dir: str) -> dict[str, Any]:
             "note": "run `python -m raceattn events --race %s` to count polls from Wikipedia" % race.race_id}
 
 
+def race_override(race: Race, settings: dict[str, Any]) -> dict[str, Any]:
+    """Per-race run settings from `race_overrides.<race_id>` in config/project.yaml: `skip` (source -> reason) and
+    `connectors` (connector id -> settings merged over the project ones)."""
+    return dict(((settings.get("race_overrides") or {}).get(race.race_id)) or {})
+
+
+def override_summary(override: dict[str, Any]) -> dict[str, Any]:
+    return {"skip": dict(override.get("skip") or {}), "connectors": dict(override.get("connectors") or {}),
+            "note": override.get("note")} if override else {}
+
+
+def events_overlay(path: str, race: Race) -> dict[str, Any]:
+    """Every row of config/events/<race>.csv inside the window, with its status, for the dashboard overlay.
+    Metrics only ever use confirmed rows; the overlay shows draft rows marked as needs_review."""
+    import csv
+
+    rows = []
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8", newline="") as f:
+            for r in csv.DictReader(f):
+                try:
+                    d = dt.date.fromisoformat((r.get("date_utc") or "").strip()[:10])
+                except ValueError:
+                    continue
+                if race.window.start <= d <= race.window.end:
+                    rows.append({"date": d.isoformat(), "type": (r.get("type") or "").strip(),
+                                 "status": (r.get("status") or "").strip(), "note": (r.get("note") or "").strip()})
+    return {"file": os.path.relpath(path, ROOT) if path.startswith(ROOT) else path, "exists": os.path.isfile(path),
+            "rows": rows, "n": len(rows), "n_confirmed": sum(1 for r in rows if r["status"] == "confirmed"),
+            "note": "draft rows (needs_review) are shown for orientation only; metrics use confirmed rows"}
+
+
 def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW, out_dir: str = DEFAULT_OUT,
         refresh: bool = False, yes: bool = False, max_spend: float | None = None, http: HttpClient | None = None,
         log: Callable[[str], None] = print, write: bool = True, settings: dict[str, Any] | None = None,
@@ -185,8 +217,20 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     days = window.days()
     http = http or HttpClient()
     cache = Cache(raw_dir)
-    all_connectors = make_connectors(sources, http, cache, refresh, settings, env)
+    override = race_override(race, settings)
     skipped: dict[str, str] = {}
+    for src, why in (override.get("skip") or {}).items():
+        if src in sources:
+            reason = "left out by race_overrides in config/project.yaml: %s" % why
+            skipped[src] = reason
+            log("== %s: skipped (%s)" % (src, reason))
+    run_settings = dict(settings)
+    run_settings["connectors"] = {k: dict(v or {}) for k, v in (settings.get("connectors") or {}).items()}
+    for cid, conf in (override.get("connectors") or {}).items():
+        run_settings["connectors"].setdefault(cid, {}).update(conf or {})
+    ev_path = os.path.join(events_dir, race.race_id + ".csv")
+    all_connectors = make_connectors([s_ for s_ in sources if s_ not in skipped], http, cache, refresh,
+                                     run_settings, env)
     connectors = []
     for c in all_connectors:
         c.log = log
@@ -301,7 +345,6 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
             log("   metrics skipped for %s (%s): %s" % (name, entry["granularity"], entry["reason"]))
 
     # event windows, excess attention and reversion (daily)
-    ev_path = os.path.join(events_dir, race.race_id + ".csv")
     events = load_events(ev_path)
     ev_settings = settings["events"]
     ev_out: dict[str, Any] = {
@@ -347,6 +390,8 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
         "sources_requested": list(sources),
         "skipped": skipped,
         "polling": polling_info(race, events_dir),
+        "run_overrides": override_summary(override),
+        "events_overlay": events_overlay(ev_path, race),
         "licensing": {"confirmed": bool(settings.get("licensing_confirmed")), "warning": warning,
                       "sources_with_unconfirmed_terms": [] if settings.get("licensing_confirmed") else licensed},
         "queries": queries,
@@ -411,6 +456,74 @@ def headline(result: dict[str, Any]) -> dict[str, Any]:
     return h
 
 
+# platform groups (spec section 6): who is talking, who is reporting, who is looking
+PLATFORM_GROUPS = {"x": "talking", "bluesky": "talking", "reddit": "talking", "news_mediacloud": "reporting",
+                   "news_guardian": "reporting", "news_nyt": "reporting", "news_manual": "reporting",
+                   "gdelt": "reporting", "wikipedia": "looking", "youtube": "video"}
+HEADLINE_LAG = "0"
+
+
+def _kept_values(result: dict[str, Any], col: str) -> list[tuple[str, Any]]:
+    t = result["series"]["daily"]
+    i = t["columns"].index(col)
+    return [(r[0], r[i]) for r in t["rows"] if not r[1]]
+
+
+def index_metrics(result: dict[str, Any]) -> dict[str, Any]:
+    """Headline numbers for the map. All over the non-excluded days of the window (election night is left out,
+    as in the main metrics), each with its n."""
+    t = result["series"]["daily"]
+    meta = result["series"]["meta"]
+    att = [c for c in t["columns"][2:] if is_attention(c)]
+    per: dict[str, Any] = {}
+    for c in att:
+        vals = [v for _, v in _kept_values(result, c) if v is not None]
+        q = result["quality"].get(c, {})
+        entry = result["metrics"]["daily"].get(c) or {}
+        cell = ((entry.get("outcomes") or {}).get("volume_surprise") or {}).get(HEADLINE_LAG) or {}
+        conn = (meta.get(c) or {}).get("connector") or c.split("/")[0]
+        per[c] = {"source": conn, "group": PLATFORM_GROUPS.get(conn, "other"),
+                  "total": round(sum(vals), 4) if vals else None, "n_days": len(vals),
+                  "coverage": q.get("coverage"), "status": q.get("status", "unusable"),
+                  "rho_volume_surprise": cell.get("rho"), "n_pairs": cell.get("n", 0), "lag": int(HEADLINE_LAG),
+                  "metric_status": entry.get("status", "not computed"), "reason": entry.get("reason")}
+    head = per.get(HEADLINE_ATTENTION) or {}
+    closes = [(d, v) for d, v in _kept_values(result, SERIES_PRICE) if v is not None]
+    all_closes = [(r[0], r[t["columns"].index(SERIES_PRICE)]) for r in t["rows"]
+                  if r[t["columns"].index(SERIES_PRICE)] is not None]
+    pc = None
+    if len(closes) >= 2:
+        pc = {"cents": round((closes[-1][1] - closes[0][1]) * 100, 2), "from": closes[0][0], "to": closes[-1][0],
+              "first_close": closes[0][1], "last_close": closes[-1][1], "n_days": len(closes),
+              "full_window_cents": round((all_closes[-1][1] - all_closes[0][1]) * 100, 2),
+              "full_window_to": all_closes[-1][0],
+              "note": "last close on the last non-excluded day minus the first close in the window (cents); "
+                      "full_window_cents runs to the window end and includes election night"}
+    usable = [v for v in per.values() if v["coverage"] is not None]
+    statuses = [q["status"] for q in result["quality"].values()]
+    return {
+        "attention_total": {"series": HEADLINE_ATTENTION, "value": head.get("total"), "n_days": head.get("n_days", 0),
+                            "unit": "views", "note": "sum over the non-excluded days of the window"},
+        "attention_vs_volume": {"series": HEADLINE_ATTENTION, "outcome": "volume_surprise", "lag": int(HEADLINE_LAG),
+                                "rho": head.get("rho_volume_surprise"), "n": head.get("n_pairs", 0),
+                                "noise_band": (result["metrics"]["daily"].get(HEADLINE_ATTENTION) or {}).get("noise_band"),
+                                "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day "
+                                        "(lag 0, chosen before looking at the numbers); every lag is in the race file"},
+        "price_change": pc,
+        "polling_density": result["polling"].get("polling_density"),
+        "polling_source": result["polling"].get("source"),
+        "data_coverage": {"share": round(sum(v["coverage"] for v in usable) / len(usable), 4) if usable else None,
+                          "n_series": len(usable), "window_days": result["window"]["days"],
+                          "note": "mean coverage (days with data / window days) over the attention series that ran"},
+        "quality_summary": {"ok": statuses.count("ok"), "degraded": statuses.count("degraded"),
+                            "unusable": statuses.count("unusable"),
+                            "unusable_series": {k: q["reasons"] for k, q in result["quality"].items()
+                                                if q["status"] == "unusable"},
+                            "skipped_sources": result["skipped"]},
+        "attention": per,
+    }
+
+
 def write_outputs(result: dict[str, Any], out_dir: str) -> tuple[str, str]:
     os.makedirs(out_dir, exist_ok=True)
     rid = result["race"]["race_id"]
@@ -430,6 +543,8 @@ def write_outputs(result: dict[str, Any], out_dir: str) -> tuple[str, str]:
         "generated_at": result["generated_at"], "sources": result["sources"],
         "quality": {s: q["status"] for s, q in result["quality"].items()},
         "headline": headline(result),
+        "kalshi": k, "status": r.get("status", "confirmed"),
+        "metrics": index_metrics(result),
     }
     idx["project"] = PROJECT_NAME
     idx["updated_at"] = result["generated_at"]

@@ -1,0 +1,66 @@
+# Draft written by `python -m raceattn discover` at 2026-11-11T08:18:44Z. Review every field against the sources in the
+# discovery block, then move the file to config/races/ and set status: confirmed.
+race_id: ny-governor-2026
+state: NY
+office: governor
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
+kalshi:
+  series: GOVPARTYNY
+  event: GOVPARTYNY-26
+  followed_market: GOVPARTYNY-26-D
+entities:
+  - {name: "Kathy Hochul", aliases: ["Hochul"]}
+  - {name: "Bruce Blakeman", aliases: ["Blakeman"]}
+wikipedia_pages:
+  - 2026_New_York_gubernatorial_election
+  - Kathy_Hochul
+  - Bruce_Blakeman
+subreddits: []
+news_query: '("Hochul" OR "Blakeman") AND Governor'
+polling_density: null
+status: needs_review
+discovery:
+  generated_at: '2026-11-11T08:18:44Z'
+  race_id:
+    confidence: high
+    why: <state>-<office>-2026
+    source: rule
+  election_date:
+    confidence: high
+    why: infobox election_date
+    source: https://en.wikipedia.org/w/index.php?title=2026_New_York_gubernatorial_election&oldid=1384530416
+  window:
+    confidence: high
+    why: 'same rule as Texas: September 1 to the day after election day'
+    source: rule
+  exclude_days:
+    confidence: high
+    why: 'same rule as Texas: election day and the day after (election night in UTC)'
+    source: rule
+  kalshi:
+    confidence: high
+    why: event matched by title 'New York Governor winner?' (sub title 'In 2026'); followed market is the Democratic party contract (default rule, same as Texas); its candidate 'Kathy Hochul' is a nominee in the Wikipedia infobox
+    source: https://external-api.kalshi.com/trade-api/v2/events/GOVPARTYNY-26
+  entities:
+    confidence: high
+    why: infobox nominees with at least 5% of the vote (Kathy Hochul 59.7%, Bruce Blakeman 40.1%); aliases default to the surname
+    source: https://en.wikipedia.org/w/index.php?title=2026_New_York_gubernatorial_election&oldid=1384530416
+  wikipedia_pages:
+    confidence: high
+    why: 'race article: the article exists; candidate articles from the infobox links, redirects resolved'
+    source: https://en.wikipedia.org/w/index.php?title=2026_New_York_gubernatorial_election&oldid=1384530416
+  subreddits:
+    confidence: low
+    why: 'left empty: no reliable source; add by hand after checking each subreddit exists'
+    source: none
+  news_query:
+    confidence: medium
+    why: 'Kathy Hochul: ''Hochul'' redirects to the candidate, so the surname alone; Bruce Blakeman: ''Blakeman'' is a surname list page, so the surname alone'
+    source: https://en.wikipedia.org/w/api.php
+  polling_density:
+    confidence: low
+    why: null until `python -m raceattn events --race ny-governor-2026` counts the polls
+    source: rule
+  revision: https://en.wikipedia.org/w/index.php?title=2026_New_York_gubernatorial_election&oldid=1384530416

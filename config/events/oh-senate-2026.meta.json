@@ -1,0 +1,29 @@
+{
+ "race_id": "oh-senate-2026",
+ "page": "2026 United States Senate special election in Ohio",
+ "revid": 1384940947,
+ "revision_url": "https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_special_election_in_Ohio&oldid=1384940947",
+ "fetched_at": "2026-11-11T07:43:35Z",
+ "generated_at": "2026-11-11T07:44:38Z",
+ "window": [
+  "2026-09-01",
+  "2026-11-04"
+ ],
+ "polling_density": 36,
+ "polling_density_definition": "distinct polls (pollster + end of fieldwork) whose chosen date is in the window, from the polling tables on this revision",
+ "polls_on_page": 54,
+ "poll_tables_read": 2,
+ "polling_sections": [
+  "General election > Polling"
+ ],
+ "unparsed_poll_rows": [
+  "Bowling Green State University/YouGov {{Cite web|url=https://scholarworks.bgsu.edu/cgi/viewcontent.cgi?article=1007&context=depo|title=Survey of 800 Ohio Registered voters 18+, April 2025 Toplines: 'last1=Alexander|first2=Melissa |last2=Miller|first3=David|last3=Jackson|first4=Joshua|last4=Boston|website=Bowling Green State University|date=April 29, 2025|access-date=August 10, 2025}}'"
+ ],
+ "counts": {
+  "poll": 36,
+  "debate": 0,
+  "filing_deadline": 0
+ },
+ "status": "needs_review",
+ "note": "Draft. Every row needs a human check against the cited revision before its status is set to confirmed. Debates and filing deadlines appear only if the page lists them with a date."
+}

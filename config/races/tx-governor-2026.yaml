@@ -1,0 +1,70 @@
+# Discovered by `python -m raceattn discover`, reviewed and confirmed on 2026-11-11 (see the review note in
+# the discovery block and docs/m3-notes.md).
+race_id: tx-governor-2026
+state: TX
+office: governor
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
+kalshi:
+  series: GOVPARTYTX
+  event: GOVPARTYTX-26
+  followed_market: GOVPARTYTX-26-D
+entities:
+  - {name: "Gina Hinojosa", aliases: ["Gina Hinojosa"]}
+  - {name: "Greg Abbott", aliases: ["Greg Abbott"]}
+wikipedia_pages:
+  - 2026_Texas_gubernatorial_election
+  - Gina_Hinojosa
+  - Greg_Abbott
+subreddits: []
+news_query: '("Gina Hinojosa" OR "Greg Abbott") AND Governor'
+polling_density: null
+status: confirmed
+discovery:
+  generated_at: '2026-11-11T08:18:44Z'
+  race_id:
+    confidence: high
+    why: <state>-<office>-2026
+    source: rule
+  election_date:
+    confidence: medium
+    why: general election day 2026 (infobox has no parseable election_date)
+    source: https://en.wikipedia.org/w/index.php?title=2026_Texas_gubernatorial_election&oldid=1384938513
+  window:
+    confidence: high
+    why: 'same rule as Texas: September 1 to the day after election day'
+    source: rule
+  exclude_days:
+    confidence: high
+    why: 'same rule as Texas: election day and the day after (election night in UTC)'
+    source: rule
+  kalshi:
+    confidence: high
+    why: event matched by title 'Texas Governor winner?' (sub title 'In 2026'); followed market is the Democratic party contract (default rule, same as Texas); its candidate 'Gina Hinojosa' is a nominee in the Wikipedia infobox
+    source: https://external-api.kalshi.com/trade-api/v2/events/GOVPARTYTX-26
+  entities:
+    confidence: high
+    why: infobox nominees with at least 5% of the vote (Gina Hinojosa 52.82%, Greg Abbott 45.68%); aliases default to the surname
+    source: https://en.wikipedia.org/w/index.php?title=2026_Texas_gubernatorial_election&oldid=1384938513
+  wikipedia_pages:
+    confidence: high
+    why: 'race article: the article exists; candidate articles from the infobox links, redirects resolved'
+    source: https://en.wikipedia.org/w/index.php?title=2026_Texas_gubernatorial_election&oldid=1384938513
+  subreddits:
+    confidence: low
+    why: 'left empty: no reliable source; add by hand after checking each subreddit exists'
+    source: none
+  news_query:
+    confidence: medium
+    why: 'Gina Hinojosa: ''Hinojosa'' is a disambiguation page, so the full name; Greg Abbott: ''Abbott'' is a disambiguation page, so the full name'
+    source: https://en.wikipedia.org/w/api.php
+  polling_density:
+    confidence: low
+    why: null until `python -m raceattn events --race tx-governor-2026` counts the polls
+    source: rule
+  revision: https://en.wikipedia.org/w/index.php?title=2026_Texas_gubernatorial_election&oldid=1384938513
+  review:
+    date: '2026-11-11'
+    checked: Kalshi event GOVPARTYTX-26 and its party markets (finalized), the race article and both candidate articles, the infobox nominees and vote shares
+    changes: "aliases 'Hinojosa' -> 'Gina Hinojosa' and 'Abbott' -> 'Greg Abbott' (both bare surnames are disambiguation pages on Wikipedia; same rule as the news query)"

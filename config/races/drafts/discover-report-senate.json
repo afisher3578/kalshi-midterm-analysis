@@ -1,0 +1,1226 @@
+{
+ "office": "senate",
+ "generated_at": "2026-11-11T08:18:54Z",
+ "kalshi_event_walk": {
+  "open": {
+   "pages": 100,
+   "events_seen": 19948,
+   "kept": 1741,
+   "fetched_at": "2026-11-11T07:07:27Z"
+  },
+  "closed": {
+   "pages": 3,
+   "events_seen": 440,
+   "kept": 5,
+   "fetched_at": "2026-11-11T07:07:29Z"
+  },
+  "settled": {
+   "pages": 267,
+   "events_seen": 53246,
+   "kept": 226,
+   "fetched_at": "2026-11-11T07:43:32Z"
+  }
+ },
+ "requests": {
+  "fetched": 0,
+  "from_cache": 161
+ },
+ "resolved": [
+  {
+   "state": "AL",
+   "race_id": "al-senate-2026",
+   "draft": "config/races/drafts/al-senate-2026.yaml",
+   "kalshi_event": "SENATEAL-26",
+   "followed_market": "SENATEAL-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Alabama",
+   "entities": [
+    "Barry Moore"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "AR",
+   "race_id": "ar-senate-2026",
+   "draft": "config/races/drafts/ar-senate-2026.yaml",
+   "kalshi_event": "SENATEAR-26",
+   "followed_market": "SENATEAR-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Arkansas",
+   "entities": [
+    "Tom Cotton",
+    "Hallie Shoffner"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "CO",
+   "race_id": "co-senate-2026",
+   "draft": "config/races/drafts/co-senate-2026.yaml",
+   "kalshi_event": "SENATECO-26",
+   "followed_market": "SENATECO-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Colorado",
+   "entities": [
+    "John Hickenlooper",
+    "Mark Baisley"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "DE",
+   "race_id": "de-senate-2026",
+   "draft": "config/races/drafts/de-senate-2026.yaml",
+   "kalshi_event": "SENATEDE-26",
+   "followed_market": "SENATEDE-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Delaware",
+   "entities": [
+    "Chris Coons",
+    "Michael Katz"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "FL",
+   "race_id": "fl-senate-2026",
+   "draft": "config/races/drafts/fl-senate-2026.yaml",
+   "kalshi_event": "SENATEFLS-26",
+   "followed_market": "SENATEFLS-26-D",
+   "wikipedia_page": "2026_United_States_Senate_special_election_in_Florida",
+   "entities": [
+    "Ashley Moody",
+    "Angie Nixon"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "GA",
+   "race_id": "ga-senate-2026",
+   "draft": "config/races/drafts/ga-senate-2026.yaml",
+   "kalshi_event": "SENATEGA-26",
+   "followed_market": "SENATEGA-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Georgia",
+   "entities": [
+    "Jon Ossoff",
+    "Mike Collins"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "IA",
+   "race_id": "ia-senate-2026",
+   "draft": "config/races/drafts/ia-senate-2026.yaml",
+   "kalshi_event": "SENATEIA-26",
+   "followed_market": "SENATEIA-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Iowa",
+   "entities": [
+    "Josh Turek",
+    "Ashley Hinson"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "ID",
+   "race_id": "id-senate-2026",
+   "draft": "config/races/drafts/id-senate-2026.yaml",
+   "kalshi_event": "SENATEID-26",
+   "followed_market": "SENATEID-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Idaho",
+   "entities": [
+    "Jim Risch",
+    "Todd Achilles"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "IL",
+   "race_id": "il-senate-2026",
+   "draft": "config/races/drafts/il-senate-2026.yaml",
+   "kalshi_event": "SENATEIL-26",
+   "followed_market": "SENATEIL-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Illinois",
+   "entities": [
+    "Juliana Stratton",
+    "Don Tracy"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "KS",
+   "race_id": "ks-senate-2026",
+   "draft": "config/races/drafts/ks-senate-2026.yaml",
+   "kalshi_event": "SENATEKS-26",
+   "followed_market": "SENATEKS-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Kansas",
+   "entities": [
+    "Adam Hamilton",
+    "Roger Marshall"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "KY",
+   "race_id": "ky-senate-2026",
+   "draft": "config/races/drafts/ky-senate-2026.yaml",
+   "kalshi_event": "SENATELA-26",
+   "followed_market": "SENATELA-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Kentucky",
+   "entities": [
+    "Andy Barr",
+    "Charles Booker"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "LA",
+   "race_id": "la-senate-2026",
+   "draft": "config/races/drafts/la-senate-2026.yaml",
+   "kalshi_event": "KXSENATELA-26NOV",
+   "followed_market": "KXSENATELA-26NOV-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Louisiana",
+   "entities": [
+    "Julia Letlow",
+    "Jamie Davis"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MA",
+   "race_id": "ma-senate-2026",
+   "draft": "config/races/drafts/ma-senate-2026.yaml",
+   "kalshi_event": "SENATEMA-26",
+   "followed_market": "SENATEMA-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Massachusetts",
+   "entities": [
+    "Ed Markey",
+    "John Deaton"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "ME",
+   "race_id": "me-senate-2026",
+   "draft": "config/races/drafts/me-senate-2026.yaml",
+   "kalshi_event": "SENATEME-26",
+   "followed_market": "SENATEME-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Maine",
+   "entities": [
+    "Troy Jackson",
+    "Susan Collins"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "medium",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MI",
+   "race_id": "mi-senate-2026",
+   "draft": "config/races/drafts/mi-senate-2026.yaml",
+   "kalshi_event": "SENATEMI-26",
+   "followed_market": "SENATEMI-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Michigan",
+   "entities": [
+    "Abdul El-Sayed",
+    "Mike Rogers"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MN",
+   "race_id": "mn-senate-2026",
+   "draft": "config/races/drafts/mn-senate-2026.yaml",
+   "kalshi_event": "SENATEMN-26",
+   "followed_market": "SENATEMN-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Minnesota",
+   "entities": [
+    "Peggy Flanagan",
+    "Michele Tafoya"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MS",
+   "race_id": "ms-senate-2026",
+   "draft": "config/races/drafts/ms-senate-2026.yaml",
+   "kalshi_event": "SENATEMS-26",
+   "followed_market": "SENATEMS-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Mississippi",
+   "entities": [
+    "Scott Colom",
+    "Cindy Hyde-Smith"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MT",
+   "race_id": "mt-senate-2026",
+   "draft": "config/races/drafts/mt-senate-2026.yaml",
+   "kalshi_event": "SENATEMT-26",
+   "followed_market": "SENATEMT-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Montana",
+   "entities": [
+    "Kurt Alme",
+    "Seth Bodnar"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NC",
+   "race_id": "nc-senate-2026",
+   "draft": "config/races/drafts/nc-senate-2026.yaml",
+   "kalshi_event": "SENATENC-26",
+   "followed_market": "SENATENC-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_North_Carolina",
+   "entities": [
+    "Roy Cooper",
+    "Michael Whatley"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NE",
+   "race_id": "ne-senate-2026",
+   "draft": "config/races/drafts/ne-senate-2026.yaml",
+   "kalshi_event": "SENATENE-26",
+   "followed_market": "SENATENE-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Nebraska",
+   "entities": [
+    "Pete Ricketts",
+    "Dan Osborn"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NH",
+   "race_id": "nh-senate-2026",
+   "draft": "config/races/drafts/nh-senate-2026.yaml",
+   "kalshi_event": "SENATENH-26",
+   "followed_market": "SENATENH-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_New_Hampshire",
+   "entities": [
+    "Chris Pappas",
+    "John E. Sununu"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NJ",
+   "race_id": "nj-senate-2026",
+   "draft": "config/races/drafts/nj-senate-2026.yaml",
+   "kalshi_event": "SENATENJ-26",
+   "followed_market": "SENATENJ-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_New_Jersey",
+   "entities": [
+    "Cory Booker"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NM",
+   "race_id": "nm-senate-2026",
+   "draft": "config/races/drafts/nm-senate-2026.yaml",
+   "kalshi_event": "SENATENM-26",
+   "followed_market": "SENATENM-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_New_Mexico",
+   "entities": [
+    "Ben Ray Luj\u00e1n"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OH",
+   "race_id": "oh-senate-2026",
+   "draft": "config/races/drafts/oh-senate-2026.yaml",
+   "kalshi_event": "SENATEOHS-26",
+   "followed_market": "SENATEOHS-26-D",
+   "wikipedia_page": "2026_United_States_Senate_special_election_in_Ohio",
+   "entities": [
+    "Sherrod Brown",
+    "Jon Husted"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OK",
+   "race_id": "ok-senate-2026",
+   "draft": "config/races/drafts/ok-senate-2026.yaml",
+   "kalshi_event": "SENATEOK-26",
+   "followed_market": "SENATEOK-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Oklahoma",
+   "entities": [
+    "Kevin Hern"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "medium",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OR",
+   "race_id": "or-senate-2026",
+   "draft": "config/races/drafts/or-senate-2026.yaml",
+   "kalshi_event": "SENATEOR-26",
+   "followed_market": "SENATEOR-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Oregon",
+   "entities": [
+    "Jeff Merkley",
+    "David Brock Smith"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "RI",
+   "race_id": "ri-senate-2026",
+   "draft": "config/races/drafts/ri-senate-2026.yaml",
+   "kalshi_event": "SENATERI-26",
+   "followed_market": "SENATERI-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Rhode_Island",
+   "entities": [
+    "Jack Reed"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "SC",
+   "race_id": "sc-senate-2026",
+   "draft": "config/races/drafts/sc-senate-2026.yaml",
+   "kalshi_event": "SENATESC-26",
+   "followed_market": "SENATESC-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_South_Carolina",
+   "entities": [
+    "Annie Andrews",
+    "Darline Graham"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "SD",
+   "race_id": "sd-senate-2026",
+   "draft": "config/races/drafts/sd-senate-2026.yaml",
+   "kalshi_event": "SENATESD-26",
+   "followed_market": "SENATESD-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_South_Dakota",
+   "entities": [
+    "Mike Rounds"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "TN",
+   "race_id": "tn-senate-2026",
+   "draft": "config/races/drafts/tn-senate-2026.yaml",
+   "kalshi_event": "SENATETN-26",
+   "followed_market": "SENATETN-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Tennessee",
+   "entities": [
+    "Bill Hagerty",
+    "Marquita Bradshaw"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "medium",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "TX",
+   "race_id": "tx-senate-2026",
+   "draft": "config/races/drafts/tx-senate-2026.yaml",
+   "kalshi_event": "SENATETX-26",
+   "followed_market": "SENATETX-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Texas",
+   "entities": [
+    "James Talarico",
+    "Ken Paxton"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "VA",
+   "race_id": "va-senate-2026",
+   "draft": "config/races/drafts/va-senate-2026.yaml",
+   "kalshi_event": "SENATEVA-26",
+   "followed_market": "SENATEVA-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Virginia",
+   "entities": [
+    "Mark Warner",
+    "Bert Mizusawa"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "WV",
+   "race_id": "wv-senate-2026",
+   "draft": "config/races/drafts/wv-senate-2026.yaml",
+   "kalshi_event": "SENATEWV-26",
+   "followed_market": "SENATEWV-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_West_Virginia",
+   "entities": [
+    "Shelley Moore Capito"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "WY",
+   "race_id": "wy-senate-2026",
+   "draft": "config/races/drafts/wy-senate-2026.yaml",
+   "kalshi_event": "SENATEWY-26",
+   "followed_market": "SENATEWY-26-D",
+   "wikipedia_page": "2026_United_States_Senate_election_in_Wyoming",
+   "entities": [
+    "Harriet Hageman",
+    "James W. Byrd"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "medium",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  }
+ ],
+ "unresolved": [
+  {
+   "state": "AK",
+   "race_id": "ak-senate-2026",
+   "reasons": [
+    "no candidates found: the infobox of 2026 United States Senate election in Alaska lists no nominee with an article link"
+   ],
+   "found": {
+    "kalshi_title_matches": [
+     {
+      "event": "SENATEAK-26",
+      "title": "Alaska Senate winner?",
+      "sub_title": "In 2026"
+     },
+     {
+      "event": "KXAKSENATE-26NOV03",
+      "title": "Alaska Senate winner? (Person)",
+      "sub_title": "in 2026"
+     }
+    ],
+    "kalshi_note": "picked the party event over the (Person) event(s)",
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Alaska": "2026 United States Senate election in Alaska",
+     "2026 United States Senate special election in Alaska": null
+    },
+    "infobox_nominees": []
+   }
+  },
+  {
+   "state": "AZ",
+   "race_id": "az-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Arizona Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Arizona / 2026 United States Senate special election in Arizona"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Arizona": null,
+     "2026 United States Senate special election in Arizona": null
+    }
+   }
+  },
+  {
+   "state": "CA",
+   "race_id": "ca-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'California Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in California / 2026 United States Senate special election in California"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in California": null,
+     "2026 United States Senate special election in California": null
+    }
+   }
+  },
+  {
+   "state": "CT",
+   "race_id": "ct-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Connecticut Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Connecticut / 2026 United States Senate special election in Connecticut"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Connecticut": null,
+     "2026 United States Senate special election in Connecticut": null
+    }
+   }
+  },
+  {
+   "state": "HI",
+   "race_id": "hi-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Hawaii Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Hawaii / 2026 United States Senate special election in Hawaii"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Hawaii": null,
+     "2026 United States Senate special election in Hawaii": null
+    }
+   }
+  },
+  {
+   "state": "IN",
+   "race_id": "in-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Indiana Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Indiana / 2026 United States Senate special election in Indiana"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Indiana": null,
+     "2026 United States Senate special election in Indiana": null
+    }
+   }
+  },
+  {
+   "state": "MD",
+   "race_id": "md-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Maryland Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Maryland / 2026 United States Senate special election in Maryland"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Maryland": null,
+     "2026 United States Senate special election in Maryland": null
+    }
+   }
+  },
+  {
+   "state": "MO",
+   "race_id": "mo-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Missouri Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Missouri / 2026 United States Senate special election in Missouri"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Missouri": null,
+     "2026 United States Senate special election in Missouri": null
+    }
+   }
+  },
+  {
+   "state": "ND",
+   "race_id": "nd-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'North Dakota Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in North Dakota / 2026 United States Senate special election in North Dakota"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in North Dakota": null,
+     "2026 United States Senate special election in North Dakota": null
+    }
+   }
+  },
+  {
+   "state": "NV",
+   "race_id": "nv-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Nevada Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Nevada / 2026 United States Senate special election in Nevada"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Nevada": null,
+     "2026 United States Senate special election in Nevada": null
+    }
+   }
+  },
+  {
+   "state": "NY",
+   "race_id": "ny-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'New York Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in New York / 2026 United States Senate special election in New York"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in New York": null,
+     "2026 United States Senate special election in New York": null
+    }
+   }
+  },
+  {
+   "state": "PA",
+   "race_id": "pa-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Pennsylvania Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Pennsylvania / 2026 United States Senate special election in Pennsylvania"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Pennsylvania": null,
+     "2026 United States Senate special election in Pennsylvania": null
+    }
+   }
+  },
+  {
+   "state": "UT",
+   "race_id": "ut-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Utah Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Utah / 2026 United States Senate special election in Utah"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Utah": null,
+     "2026 United States Senate special election in Utah": null
+    }
+   }
+  },
+  {
+   "state": "VT",
+   "race_id": "vt-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Vermont Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Vermont / 2026 United States Senate special election in Vermont"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Vermont": null,
+     "2026 United States Senate special election in Vermont": null
+    }
+   }
+  },
+  {
+   "state": "WA",
+   "race_id": "wa-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Washington Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Washington / 2026 United States Senate special election in Washington"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Washington": null,
+     "2026 United States Senate special election in Washington": null
+    }
+   }
+  },
+  {
+   "state": "WI",
+   "race_id": "wi-senate-2026",
+   "reasons": [
+    "no Kalshi event titled 'Wisconsin Senate winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 United States Senate election in Wisconsin / 2026 United States Senate special election in Wisconsin"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 United States Senate election in Wisconsin": null,
+     "2026 United States Senate special election in Wisconsin": null
+    }
+   }
+  }
+ ],
+ "comparisons": {
+  "tx-senate-2026": [
+   {
+    "field": "race_id",
+    "match": true,
+    "draft": "tx-senate-2026",
+    "hand": "tx-senate-2026"
+   },
+   {
+    "field": "state",
+    "match": true,
+    "draft": "TX",
+    "hand": "TX"
+   },
+   {
+    "field": "office",
+    "match": true,
+    "draft": "senate",
+    "hand": "senate"
+   },
+   {
+    "field": "election_date",
+    "match": true,
+    "draft": "2026-11-03",
+    "hand": "2026-11-03"
+   },
+   {
+    "field": "window",
+    "match": true,
+    "draft": {
+     "start": "2026-09-01",
+     "end": "2026-11-04"
+    },
+    "hand": {
+     "start": "2026-09-01",
+     "end": "2026-11-04"
+    }
+   },
+   {
+    "field": "exclude_days",
+    "match": true,
+    "draft": [
+     "2026-11-03",
+     "2026-11-04"
+    ],
+    "hand": [
+     "2026-11-03",
+     "2026-11-04"
+    ]
+   },
+   {
+    "field": "kalshi",
+    "match": true,
+    "draft": {
+     "series": "SENATETX",
+     "event": "SENATETX-26",
+     "followed_market": "SENATETX-26-D"
+    },
+    "hand": {
+     "series": "SENATETX",
+     "event": "SENATETX-26",
+     "followed_market": "SENATETX-26-D"
+    }
+   },
+   {
+    "field": "entities",
+    "match": true,
+    "draft": [
+     {
+      "name": "James Talarico",
+      "aliases": [
+       "Talarico"
+      ]
+     },
+     {
+      "name": "Ken Paxton",
+      "aliases": [
+       "Paxton"
+      ]
+     }
+    ],
+    "hand": [
+     {
+      "name": "James Talarico",
+      "aliases": [
+       "Talarico"
+      ]
+     },
+     {
+      "name": "Ken Paxton",
+      "aliases": [
+       "Paxton"
+      ]
+     }
+    ]
+   },
+   {
+    "field": "wikipedia_pages",
+    "match": true,
+    "draft": [
+     "2026_United_States_Senate_election_in_Texas",
+     "James_Talarico",
+     "Ken_Paxton"
+    ],
+    "hand": [
+     "2026_United_States_Senate_election_in_Texas",
+     "James_Talarico",
+     "Ken_Paxton"
+    ]
+   },
+   {
+    "field": "subreddits",
+    "match": false,
+    "draft": [],
+    "hand": [
+     "texas",
+     "TexasPolitics"
+    ]
+   },
+   {
+    "field": "news_query",
+    "match": true,
+    "draft": "(\"Talarico\" OR \"Ken Paxton\") AND Senate",
+    "hand": "(\"Talarico\" OR \"Ken Paxton\") AND Senate"
+   },
+   {
+    "field": "polling_density",
+    "match": true,
+    "draft": null,
+    "hand": null
+   }
+  ]
+ }
+}

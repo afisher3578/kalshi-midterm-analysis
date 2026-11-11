@@ -1,0 +1,1075 @@
+{
+ "office": "governor",
+ "generated_at": "2026-11-11T08:18:44Z",
+ "kalshi_event_walk": {
+  "open": {
+   "pages": 100,
+   "events_seen": 19948,
+   "kept": 1741,
+   "fetched_at": "2026-11-11T07:07:27Z"
+  },
+  "closed": {
+   "pages": 3,
+   "events_seen": 440,
+   "kept": 5,
+   "fetched_at": "2026-11-11T07:07:29Z"
+  },
+  "settled": {
+   "pages": 267,
+   "events_seen": 53246,
+   "kept": 226,
+   "fetched_at": "2026-11-11T07:43:32Z"
+  }
+ },
+ "requests": {
+  "fetched": 0,
+  "from_cache": 157
+ },
+ "resolved": [
+  {
+   "state": "AL",
+   "race_id": "al-governor-2026",
+   "draft": "config/races/drafts/al-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYAL-26",
+   "followed_market": "GOVPARTYAL-26-D",
+   "wikipedia_page": "2026_Alabama_gubernatorial_election",
+   "entities": [
+    "Tommy Tuberville",
+    "Doug Jones"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "AZ",
+   "race_id": "az-governor-2026",
+   "draft": "config/races/drafts/az-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYAZ-26",
+   "followed_market": "GOVPARTYAZ-26-D",
+   "wikipedia_page": "2026_Arizona_gubernatorial_election",
+   "entities": [
+    "Katie Hobbs",
+    "Andy Biggs"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "CO",
+   "race_id": "co-governor-2026",
+   "draft": "config/races/drafts/co-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYCO-26",
+   "followed_market": "GOVPARTYCO-26-D",
+   "wikipedia_page": "2026_Colorado_gubernatorial_election",
+   "entities": [
+    "Phil Weiser",
+    "Victor Marx"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "CT",
+   "race_id": "ct-governor-2026",
+   "draft": "config/races/drafts/ct-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYCT-26",
+   "followed_market": "GOVPARTYCT-26-D",
+   "wikipedia_page": "2026_Connecticut_gubernatorial_election",
+   "entities": [
+    "Ned Lamont",
+    "Ryan Fazio"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "medium",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "FL",
+   "race_id": "fl-governor-2026",
+   "draft": "config/races/drafts/fl-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYFL-26",
+   "followed_market": "GOVPARTYFL-26-D",
+   "wikipedia_page": "2026_Florida_gubernatorial_election",
+   "entities": [
+    "Byron Donalds",
+    "David Jolly"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "GA",
+   "race_id": "ga-governor-2026",
+   "draft": "config/races/drafts/ga-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYGA-26",
+   "followed_market": "GOVPARTYGA-26-D",
+   "wikipedia_page": "2026_Georgia_gubernatorial_election",
+   "entities": [
+    "Keisha Lance Bottoms",
+    "Rick Jackson"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "HI",
+   "race_id": "hi-governor-2026",
+   "draft": "config/races/drafts/hi-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYHI-26",
+   "followed_market": "GOVPARTYHI-26-D",
+   "wikipedia_page": "2026_Hawaii_gubernatorial_election",
+   "entities": [
+    "Josh Green"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "IA",
+   "race_id": "ia-governor-2026",
+   "draft": "config/races/drafts/ia-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYIA-26",
+   "followed_market": "GOVPARTYIA-26-D",
+   "wikipedia_page": "2026_Iowa_gubernatorial_election",
+   "entities": [
+    "Rob Sand"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "ID",
+   "race_id": "id-governor-2026",
+   "draft": "config/races/drafts/id-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYID-26",
+   "followed_market": "GOVPARTYID-26-D",
+   "wikipedia_page": "2026_Idaho_gubernatorial_election",
+   "entities": [
+    "Brad Little",
+    "John Stegner"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "IL",
+   "race_id": "il-governor-2026",
+   "draft": "config/races/drafts/il-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYIL-26",
+   "followed_market": "GOVPARTYIL-26-D",
+   "wikipedia_page": "2026_Illinois_gubernatorial_election",
+   "entities": [
+    "JB Pritzker",
+    "Darren Bailey"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MA",
+   "race_id": "ma-governor-2026",
+   "draft": "config/races/drafts/ma-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYMA-26",
+   "followed_market": "GOVPARTYMA-26-D",
+   "wikipedia_page": "2026_Massachusetts_gubernatorial_election",
+   "entities": [
+    "Maura Healey"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MD",
+   "race_id": "md-governor-2026",
+   "draft": "config/races/drafts/md-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYMD-26",
+   "followed_market": "GOVPARTYMD-26-D",
+   "wikipedia_page": "2026_Maryland_gubernatorial_election",
+   "entities": [
+    "Wes Moore",
+    "Dan Cox"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "ME",
+   "race_id": "me-governor-2026",
+   "draft": "config/races/drafts/me-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYME-26",
+   "followed_market": "GOVPARTYME-26-D",
+   "wikipedia_page": "2026_Maine_gubernatorial_election",
+   "entities": [
+    "Hannah Pingree",
+    "Bobby Charles",
+    "Rick Bennett"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MI",
+   "race_id": "mi-governor-2026",
+   "draft": "config/races/drafts/mi-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYMI-26",
+   "followed_market": "GOVPARTYMI-26-D",
+   "wikipedia_page": "2026_Michigan_gubernatorial_election",
+   "entities": [
+    "Jocelyn Benson",
+    "John James"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "MN",
+   "race_id": "mn-governor-2026",
+   "draft": "config/races/drafts/mn-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYMN-26",
+   "followed_market": "GOVPARTYMN-26-D",
+   "wikipedia_page": "2026_Minnesota_gubernatorial_election",
+   "entities": [
+    "Amy Klobuchar",
+    "Lisa Demuth"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NE",
+   "race_id": "ne-governor-2026",
+   "draft": "config/races/drafts/ne-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYNE-26",
+   "followed_market": "GOVPARTYNE-26-D",
+   "wikipedia_page": "2026_Nebraska_gubernatorial_election",
+   "entities": [
+    "Jim Pillen",
+    "Lynne Walz"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NH",
+   "race_id": "nh-governor-2026",
+   "draft": "config/races/drafts/nh-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYNH-28",
+   "followed_market": "GOVPARTYNH-28-D",
+   "wikipedia_page": "2026_New_Hampshire_gubernatorial_election",
+   "entities": [
+    "Kelly Ayotte",
+    "Cinde Warmington"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NM",
+   "race_id": "nm-governor-2026",
+   "draft": "config/races/drafts/nm-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYNM-26",
+   "followed_market": "GOVPARTYNM-26-D",
+   "wikipedia_page": "2026_New_Mexico_gubernatorial_election",
+   "entities": [
+    "Deb Haaland",
+    "Gregg Hull"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NV",
+   "race_id": "nv-governor-2026",
+   "draft": "config/races/drafts/nv-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYNV-26",
+   "followed_market": "GOVPARTYNV-26-D",
+   "wikipedia_page": "2026_Nevada_gubernatorial_election",
+   "entities": [
+    "Aaron Ford",
+    "Joe Lombardo"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "NY",
+   "race_id": "ny-governor-2026",
+   "draft": "config/races/drafts/ny-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYNY-26",
+   "followed_market": "GOVPARTYNY-26-D",
+   "wikipedia_page": "2026_New_York_gubernatorial_election",
+   "entities": [
+    "Kathy Hochul",
+    "Bruce Blakeman"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OH",
+   "race_id": "oh-governor-2026",
+   "draft": "config/races/drafts/oh-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYOH-26",
+   "followed_market": "GOVPARTYOH-26-D",
+   "wikipedia_page": "2026_Ohio_gubernatorial_election",
+   "entities": [
+    "Amy Acton",
+    "Vivek Ramaswamy"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OK",
+   "race_id": "ok-governor-2026",
+   "draft": "config/races/drafts/ok-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYOK-26",
+   "followed_market": "GOVPARTYOK-26-D",
+   "wikipedia_page": "2026_Oklahoma_gubernatorial_election",
+   "entities": [
+    "Mike Mazzei",
+    "Cyndi Munson"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "OR",
+   "race_id": "or-governor-2026",
+   "draft": "config/races/drafts/or-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYOR-26",
+   "followed_market": "GOVPARTYOR-26-D",
+   "wikipedia_page": "2026_Oregon_gubernatorial_election",
+   "entities": [
+    "Tina Kotek",
+    "Christine Drazan"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "PA",
+   "race_id": "pa-governor-2026",
+   "draft": "config/races/drafts/pa-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYPA-26",
+   "followed_market": "GOVPARTYPA-26-D",
+   "wikipedia_page": "2026_Pennsylvania_gubernatorial_election",
+   "entities": [
+    "Josh Shapiro",
+    "Stacy Garrity"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "RI",
+   "race_id": "ri-governor-2026",
+   "draft": "config/races/drafts/ri-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYRI-26",
+   "followed_market": "GOVPARTYRI-26-D",
+   "wikipedia_page": "2026_Rhode_Island_gubernatorial_election",
+   "entities": [
+    "Helena Foulkes",
+    "Ken Block"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "SC",
+   "race_id": "sc-governor-2026",
+   "draft": "config/races/drafts/sc-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYSC-26",
+   "followed_market": "GOVPARTYSC-26-D",
+   "wikipedia_page": "2026_South_Carolina_gubernatorial_election",
+   "entities": [
+    "Alan Wilson",
+    "Jermaine Johnson"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "SD",
+   "race_id": "sd-governor-2026",
+   "draft": "config/races/drafts/sd-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYSD-26",
+   "followed_market": "GOVPARTYSD-26-D",
+   "wikipedia_page": "2026_South_Dakota_gubernatorial_election",
+   "entities": [
+    "Larry Rhoden",
+    "Dan Ahlers"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "TN",
+   "race_id": "tn-governor-2026",
+   "draft": "config/races/drafts/tn-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYTN-26",
+   "followed_market": "GOVPARTYTN-26-D",
+   "wikipedia_page": "2026_Tennessee_gubernatorial_election",
+   "entities": [
+    "Marsha Blackburn"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "TX",
+   "race_id": "tx-governor-2026",
+   "draft": "config/races/drafts/tx-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYTX-26",
+   "followed_market": "GOVPARTYTX-26-D",
+   "wikipedia_page": "2026_Texas_gubernatorial_election",
+   "entities": [
+    "Gina Hinojosa",
+    "Greg Abbott"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "medium",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "VT",
+   "race_id": "vt-governor-2026",
+   "draft": "config/races/drafts/vt-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYVT-26",
+   "followed_market": "GOVPARTYVT-26-D",
+   "wikipedia_page": "2026_Vermont_gubernatorial_election",
+   "entities": [
+    "Phil Scott"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "WI",
+   "race_id": "wi-governor-2026",
+   "draft": "config/races/drafts/wi-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYWI-26",
+   "followed_market": "GOVPARTYWI-26-D",
+   "wikipedia_page": "2026_Wisconsin_gubernatorial_election",
+   "entities": [
+    "David Crowley",
+    "Tom Tiffany"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "high",
+    "entities": "high",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  },
+  {
+   "state": "WY",
+   "race_id": "wy-governor-2026",
+   "draft": "config/races/drafts/wy-governor-2026.yaml",
+   "kalshi_event": "GOVPARTYWY-26",
+   "followed_market": "GOVPARTYWY-26-D",
+   "wikipedia_page": "2026_Wyoming_gubernatorial_election",
+   "entities": [
+    "Eric Barlow"
+   ],
+   "confidence": {
+    "race_id": "high",
+    "election_date": "high",
+    "window": "high",
+    "exclude_days": "high",
+    "kalshi": "low",
+    "entities": "medium",
+    "wikipedia_pages": "high",
+    "subreddits": "low",
+    "news_query": "medium",
+    "polling_density": "low"
+   }
+  }
+ ],
+ "unresolved": [
+  {
+   "state": "AK",
+   "race_id": "ak-governor-2026",
+   "reasons": [
+    "no candidates found: the infobox of 2026 Alaska gubernatorial election lists no nominee with an article link"
+   ],
+   "found": {
+    "kalshi_title_matches": [
+     {
+      "event": "KXGOVAK-26",
+      "title": "Alaska Governor winner?",
+      "sub_title": "In 2026"
+     },
+     {
+      "event": "KXGOVPARTYAK-26",
+      "title": "Alaska Governor winner? (Party)",
+      "sub_title": "In 2026"
+     }
+    ],
+    "wikipedia_titles_checked": {
+     "2026 Alaska gubernatorial election": "2026 Alaska gubernatorial election"
+    },
+    "infobox_nominees": []
+   }
+  },
+  {
+   "state": "AR",
+   "race_id": "ar-governor-2026",
+   "reasons": [
+    "no candidates found: the infobox of 2026 Arkansas gubernatorial election lists no nominee with an article link"
+   ],
+   "found": {
+    "kalshi_title_matches": [
+     {
+      "event": "GOVPARTYAR-26",
+      "title": "Arkansas Governor winner?",
+      "sub_title": "In 2026"
+     }
+    ],
+    "wikipedia_titles_checked": {
+     "2026 Arkansas gubernatorial election": "2026 Arkansas gubernatorial election"
+    },
+    "infobox_nominees": []
+   }
+  },
+  {
+   "state": "CA",
+   "race_id": "ca-governor-2026",
+   "reasons": [
+    "no candidates found: the infobox of 2026 California gubernatorial election lists no nominee with an article link"
+   ],
+   "found": {
+    "kalshi_title_matches": [
+     {
+      "event": "GOVPARTYCA-26",
+      "title": "California Governor winner?",
+      "sub_title": "In 2026"
+     },
+     {
+      "event": "KXGOVCA-26",
+      "title": "California Governor winner? (Person)",
+      "sub_title": "In 2026"
+     }
+    ],
+    "wikipedia_titles_checked": {
+     "2026 California gubernatorial election": "2026 California gubernatorial election"
+    },
+    "infobox_nominees": []
+   }
+  },
+  {
+   "state": "DE",
+   "race_id": "de-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Delaware Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Delaware gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Delaware gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "IN",
+   "race_id": "in-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Indiana Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Indiana gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Indiana gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "KS",
+   "race_id": "ks-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Kansas Governor winner?' with 2026 in the sub title"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Kansas gubernatorial election": "2026 Kansas gubernatorial election"
+    }
+   }
+  },
+  {
+   "state": "KY",
+   "race_id": "ky-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Kentucky Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Kentucky gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Kentucky gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "LA",
+   "race_id": "la-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Louisiana Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Louisiana gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Louisiana gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "MO",
+   "race_id": "mo-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Missouri Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Missouri gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Missouri gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "MS",
+   "race_id": "ms-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Mississippi Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Mississippi gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Mississippi gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "MT",
+   "race_id": "mt-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Montana Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Montana gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Montana gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "NC",
+   "race_id": "nc-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'North Carolina Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 North Carolina gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 North Carolina gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "ND",
+   "race_id": "nd-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'North Dakota Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 North Dakota gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 North Dakota gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "NJ",
+   "race_id": "nj-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'New Jersey Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 New Jersey gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 New Jersey gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "UT",
+   "race_id": "ut-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Utah Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Utah gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Utah gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "VA",
+   "race_id": "va-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Virginia Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Virginia gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Virginia gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "WA",
+   "race_id": "wa-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'Washington Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 Washington gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 Washington gubernatorial election": null
+    }
+   }
+  },
+  {
+   "state": "WV",
+   "race_id": "wv-governor-2026",
+   "reasons": [
+    "no Kalshi event titled 'West Virginia Governor winner?' with 2026 in the sub title",
+    "no Wikipedia page: 2026 West Virginia gubernatorial election"
+   ],
+   "found": {
+    "kalshi_title_matches": [],
+    "wikipedia_titles_checked": {
+     "2026 West Virginia gubernatorial election": null
+    }
+   }
+  }
+ ],
+ "comparisons": {}
+}

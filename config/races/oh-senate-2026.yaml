@@ -1,0 +1,70 @@
+# Discovered by `python -m raceattn discover`, reviewed and confirmed on 2026-11-11 (see the review note in
+# the discovery block and docs/m3-notes.md).
+race_id: oh-senate-2026
+state: OH
+office: senate
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
+kalshi:
+  series: SENATEOHS
+  event: SENATEOHS-26
+  followed_market: SENATEOHS-26-D
+entities:
+  - {name: "Sherrod Brown", aliases: ["Sherrod Brown"]}
+  - {name: "Jon Husted", aliases: ["Husted"]}
+wikipedia_pages:
+  - 2026_United_States_Senate_special_election_in_Ohio
+  - Sherrod_Brown
+  - Jon_Husted
+subreddits: []
+news_query: '("Sherrod Brown" OR "Husted") AND Senate'
+polling_density: null
+status: confirmed
+discovery:
+  generated_at: '2026-11-11T07:44:14Z'
+  race_id:
+    confidence: high
+    why: <state>-<office>-2026
+    source: rule
+  election_date:
+    confidence: high
+    why: infobox election_date
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_special_election_in_Ohio&oldid=1384940947
+  window:
+    confidence: high
+    why: 'same rule as Texas: September 1 to the day after election day'
+    source: rule
+  exclude_days:
+    confidence: high
+    why: 'same rule as Texas: election day and the day after (election night in UTC)'
+    source: rule
+  kalshi:
+    confidence: high
+    why: event matched by title 'Ohio Senate winner?' (sub title 'In 2026'); followed market is the Democratic party contract (default rule, same as Texas); its candidate 'Sherrod Brown' is a nominee in the Wikipedia infobox
+    source: https://external-api.kalshi.com/trade-api/v2/events/SENATEOHS-26
+  entities:
+    confidence: high
+    why: infobox nominees with at least 5% of the vote (Sherrod Brown 50.01%, Jon Husted 45.15%); aliases default to the surname
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_special_election_in_Ohio&oldid=1384940947
+  wikipedia_pages:
+    confidence: high
+    why: 'race article: the article exists; ''2026 United States Senate election in Ohio'' redirects to it; candidate articles from the infobox links, redirects resolved'
+    source: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_special_election_in_Ohio&oldid=1384940947
+  subreddits:
+    confidence: low
+    why: 'left empty: no reliable source; add by hand after checking each subreddit exists'
+    source: none
+  news_query:
+    confidence: medium
+    why: 'Sherrod Brown: ''Brown'' is another topic''s article, so the full name; Jon Husted: ''Husted'' is a surname list page, so the surname alone'
+    source: https://en.wikipedia.org/w/api.php
+  polling_density:
+    confidence: low
+    why: null until `python -m raceattn events --race oh-senate-2026` counts the polls
+    source: rule
+  revision: https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_special_election_in_Ohio&oldid=1384940947
+  review:
+    date: '2026-11-11'
+    checked: Kalshi event and markets (party contracts, candidate names, status finalized), the race article and candidate articles (exist, infobox nominees and vote shares), the pageviews API returns data for every page
+    changes: "alias 'Brown' -> 'Sherrod Brown' (the bare surname is a common word or another topic on Wikipedia, so a Bluesky search for it would count unrelated posts; same rule as the news query)"

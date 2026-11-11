@@ -1,0 +1,64 @@
+# Draft written by `python -m raceattn discover` at 2026-11-11T08:18:44Z. Review every field against the sources in the
+# discovery block, then move the file to config/races/ and set status: confirmed.
+race_id: ia-governor-2026
+state: IA
+office: governor
+election_date: 2026-11-03
+window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
+kalshi:
+  series: GOVPARTYIA
+  event: GOVPARTYIA-26
+  followed_market: GOVPARTYIA-26-D
+entities:
+  - {name: "Rob Sand", aliases: ["Sand"]}
+wikipedia_pages:
+  - 2026_Iowa_gubernatorial_election
+  - Rob_Sand
+subreddits: []
+news_query: '("Rob Sand") AND Governor'
+polling_density: null
+status: needs_review
+discovery:
+  generated_at: '2026-11-11T08:18:44Z'
+  race_id:
+    confidence: high
+    why: <state>-<office>-2026
+    source: rule
+  election_date:
+    confidence: high
+    why: infobox election_date
+    source: https://en.wikipedia.org/w/index.php?title=2026_Iowa_gubernatorial_election&oldid=1384843833
+  window:
+    confidence: high
+    why: 'same rule as Texas: September 1 to the day after election day'
+    source: rule
+  exclude_days:
+    confidence: high
+    why: 'same rule as Texas: election day and the day after (election night in UTC)'
+    source: rule
+  kalshi:
+    confidence: high
+    why: event matched by title 'Iowa Governor winner?' (sub title 'In 2026'); followed market is the Democratic party contract (default rule, same as Texas); its candidate 'Rob Sand' is a nominee in the Wikipedia infobox
+    source: https://external-api.kalshi.com/trade-api/v2/events/GOVPARTYIA-26
+  entities:
+    confidence: medium
+    why: infobox nominees with at least 5% of the vote (Rob Sand 55.53%, Zach Lahn 44.47%); aliases default to the surname
+    source: https://en.wikipedia.org/w/index.php?title=2026_Iowa_gubernatorial_election&oldid=1384843833
+  wikipedia_pages:
+    confidence: high
+    why: 'race article: the article exists; candidate articles from the infobox links, redirects resolved'
+    source: https://en.wikipedia.org/w/index.php?title=2026_Iowa_gubernatorial_election&oldid=1384843833
+  subreddits:
+    confidence: low
+    why: 'left empty: no reliable source; add by hand after checking each subreddit exists'
+    source: none
+  news_query:
+    confidence: medium
+    why: 'Rob Sand: ''Sand'' is another topic''s article, so the full name'
+    source: https://en.wikipedia.org/w/api.php
+  polling_density:
+    confidence: low
+    why: null until `python -m raceattn events --race ia-governor-2026` counts the polls
+    source: rule
+  revision: https://en.wikipedia.org/w/index.php?title=2026_Iowa_gubernatorial_election&oldid=1384843833
