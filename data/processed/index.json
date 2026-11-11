@@ -1,6 +1,898 @@
 {
  "project": "race-attention",
  "races": {
+  "fl-senate-2026": {
+   "race_id": "fl-senate-2026",
+   "state": "FL",
+   "office": "senate",
+   "election_date": "2026-11-03",
+   "followed_market": "SENATEFLS-26-D",
+   "window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04",
+    "days": 65,
+    "inclusive": true,
+    "timezone": "UTC"
+   },
+   "path": "fl-senate-2026.json",
+   "generated_at": "2026-11-11T08:22:36Z",
+   "sources": [
+    "kalshi",
+    "kalshi_trades",
+    "wikipedia",
+    "bluesky"
+   ],
+   "quality": {
+    "bluesky/post_count": "degraded",
+    "kalshi/price_close": "ok",
+    "kalshi/small_trade_share": "ok",
+    "kalshi/trade_count": "ok",
+    "kalshi/volume": "ok",
+    "wikipedia/pageviews/2026_United_States_Senate_special_election_in_Florida": "ok",
+    "wikipedia/pageviews/Angie_Nixon": "ok",
+    "wikipedia/pageviews/Ashley_Moody": "ok",
+    "wikipedia/pageviews_total": "ok"
+   },
+   "headline": {
+    "attention_series": "wikipedia/pageviews_total",
+    "outcome": "volume_surprise",
+    "status": "computed",
+    "quality_status": "ok",
+    "noise_band": 0.2673,
+    "lags": {
+     "-2": {
+      "rho": -0.1301,
+      "n": 54
+     },
+     "-1": {
+      "rho": 0.1501,
+      "n": 55
+     },
+     "0": {
+      "rho": 0.232,
+      "n": 56
+     },
+     "1": {
+      "rho": 0.191,
+      "n": 55
+     },
+     "2": {
+      "rho": 0.1923,
+      "n": 54
+     }
+    }
+   },
+   "kalshi": {
+    "series": "SENATEFLS",
+    "event": "SENATEFLS-26",
+    "followed_market": "SENATEFLS-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 643030.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": 0.232,
+     "n": 56,
+     "noise_band": 0.2673,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": 6.3,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.087,
+     "last_close": 0.15,
+     "n_days": 63,
+     "full_window_cents": -8.6,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 29,
+    "polling_source": "config/events/fl-senate-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 5,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 8,
+     "degraded": 1,
+     "unusable": 0,
+     "unusable_series": {},
+     "skipped_sources": {
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/fl-senate-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 643030.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.232,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/2026_United_States_Senate_special_election_in_Florida": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 202384.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.415,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Angie_Nixon": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 283261.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.1522,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Ashley_Moody": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 157385.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.047,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "bluesky/post_count": {
+      "source": "bluesky",
+      "group": "talking",
+      "total": 12152.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "degraded",
+      "rho_volume_surprise": 0.1748,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     }
+    }
+   }
+  },
+  "ky-senate-2026": {
+   "race_id": "ky-senate-2026",
+   "state": "KY",
+   "office": "senate",
+   "election_date": "2026-11-03",
+   "followed_market": "SENATELA-26-D",
+   "window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04",
+    "days": 65,
+    "inclusive": true,
+    "timezone": "UTC"
+   },
+   "path": "ky-senate-2026.json",
+   "generated_at": "2026-11-11T08:22:36Z",
+   "sources": [
+    "kalshi",
+    "kalshi_trades",
+    "wikipedia",
+    "bluesky"
+   ],
+   "quality": {
+    "bluesky/post_count": "ok",
+    "kalshi/price_close": "ok",
+    "kalshi/small_trade_share": "ok",
+    "kalshi/trade_count": "ok",
+    "kalshi/volume": "degraded",
+    "wikipedia/pageviews/2026_United_States_Senate_election_in_Kentucky": "ok",
+    "wikipedia/pageviews/Andy_Barr": "ok",
+    "wikipedia/pageviews/Charles_Booker_(American_politician)": "ok",
+    "wikipedia/pageviews_total": "ok"
+   },
+   "headline": {
+    "attention_series": "wikipedia/pageviews_total",
+    "outcome": "volume_surprise",
+    "status": "computed",
+    "quality_status": "ok",
+    "noise_band": 0.2673,
+    "lags": {
+     "-2": {
+      "rho": -0.0864,
+      "n": 54
+     },
+     "-1": {
+      "rho": 0.0028,
+      "n": 55
+     },
+     "0": {
+      "rho": 0.0503,
+      "n": 56
+     },
+     "1": {
+      "rho": -0.0754,
+      "n": 55
+     },
+     "2": {
+      "rho": -0.1301,
+      "n": 54
+     }
+    }
+   },
+   "kalshi": {
+    "series": "SENATELA",
+    "event": "SENATELA-26",
+    "followed_market": "SENATELA-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 178589.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": 0.0503,
+     "n": 56,
+     "noise_band": 0.2673,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": -2.0,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.063,
+     "last_close": 0.043,
+     "n_days": 63,
+     "full_window_cents": -6.1,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 1,
+    "polling_source": "config/events/ky-senate-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 5,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 8,
+     "degraded": 1,
+     "unusable": 0,
+     "unusable_series": {},
+     "skipped_sources": {
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/ky-senate-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 178589.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.0503,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/2026_United_States_Senate_election_in_Kentucky": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 94770.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.0423,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Andy_Barr": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 47988.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.0246,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Charles_Booker_(American_politician)": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 35831.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.0822,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "bluesky/post_count": {
+      "source": "bluesky",
+      "group": "talking",
+      "total": 1257.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.1171,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     }
+    }
+   }
+  },
+  "nc-senate-2026": {
+   "race_id": "nc-senate-2026",
+   "state": "NC",
+   "office": "senate",
+   "election_date": "2026-11-03",
+   "followed_market": "SENATENC-26-D",
+   "window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04",
+    "days": 65,
+    "inclusive": true,
+    "timezone": "UTC"
+   },
+   "path": "nc-senate-2026.json",
+   "generated_at": "2026-11-11T08:22:36Z",
+   "sources": [
+    "kalshi",
+    "kalshi_trades",
+    "wikipedia",
+    "bluesky"
+   ],
+   "quality": {
+    "bluesky/post_count": "degraded",
+    "kalshi/price_close": "ok",
+    "kalshi/small_trade_share": "ok",
+    "kalshi/trade_count": "ok",
+    "kalshi/volume": "unusable",
+    "wikipedia/pageviews/2026_United_States_Senate_election_in_North_Carolina": "ok",
+    "wikipedia/pageviews/Michael_Whatley": "ok",
+    "wikipedia/pageviews/Roy_Cooper": "ok",
+    "wikipedia/pageviews_total": "ok"
+   },
+   "headline": {
+    "attention_series": "wikipedia/pageviews_total",
+    "outcome": "volume_surprise",
+    "status": "insufficient data",
+    "reason": "Kalshi series unusable or missing: kalshi/volume"
+   },
+   "kalshi": {
+    "series": "SENATENC",
+    "event": "SENATENC-26",
+    "followed_market": "SENATENC-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 411991.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": null,
+     "n": 0,
+     "noise_band": null,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": 6.1,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.912,
+     "last_close": 0.973,
+     "n_days": 63,
+     "full_window_cents": 8.6,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 25,
+    "polling_source": "config/events/nc-senate-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 5,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 7,
+     "degraded": 1,
+     "unusable": 1,
+     "unusable_series": {
+      "kalshi/volume": [
+       "7 near-zero days (over 10% of the window)"
+      ]
+     },
+     "skipped_sources": {
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/nc-senate-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 411991.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": null,
+      "n_pairs": 0,
+      "lag": 0,
+      "metric_status": "skipped",
+      "reason": "Kalshi series unusable or missing: kalshi/volume"
+     },
+     "wikipedia/pageviews/2026_United_States_Senate_election_in_North_Carolina": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 176373.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": null,
+      "n_pairs": 0,
+      "lag": 0,
+      "metric_status": "skipped",
+      "reason": "Kalshi series unusable or missing: kalshi/volume"
+     },
+     "wikipedia/pageviews/Michael_Whatley": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 92092.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": null,
+      "n_pairs": 0,
+      "lag": 0,
+      "metric_status": "skipped",
+      "reason": "Kalshi series unusable or missing: kalshi/volume"
+     },
+     "wikipedia/pageviews/Roy_Cooper": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 143526.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": null,
+      "n_pairs": 0,
+      "lag": 0,
+      "metric_status": "skipped",
+      "reason": "Kalshi series unusable or missing: kalshi/volume"
+     },
+     "bluesky/post_count": {
+      "source": "bluesky",
+      "group": "talking",
+      "total": 4031.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "degraded",
+      "rho_volume_surprise": null,
+      "n_pairs": 0,
+      "lag": 0,
+      "metric_status": "skipped",
+      "reason": "Kalshi series unusable or missing: kalshi/volume"
+     }
+    }
+   }
+  },
+  "oh-senate-2026": {
+   "race_id": "oh-senate-2026",
+   "state": "OH",
+   "office": "senate",
+   "election_date": "2026-11-03",
+   "followed_market": "SENATEOHS-26-D",
+   "window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04",
+    "days": 65,
+    "inclusive": true,
+    "timezone": "UTC"
+   },
+   "path": "oh-senate-2026.json",
+   "generated_at": "2026-11-11T08:22:36Z",
+   "sources": [
+    "kalshi",
+    "kalshi_trades",
+    "wikipedia",
+    "bluesky"
+   ],
+   "quality": {
+    "bluesky/post_count": "degraded",
+    "kalshi/price_close": "ok",
+    "kalshi/small_trade_share": "ok",
+    "kalshi/trade_count": "ok",
+    "kalshi/volume": "degraded",
+    "wikipedia/pageviews/2026_United_States_Senate_special_election_in_Ohio": "ok",
+    "wikipedia/pageviews/Jon_Husted": "ok",
+    "wikipedia/pageviews/Sherrod_Brown": "ok",
+    "wikipedia/pageviews_total": "ok"
+   },
+   "headline": {
+    "attention_series": "wikipedia/pageviews_total",
+    "outcome": "volume_surprise",
+    "status": "computed",
+    "quality_status": "ok",
+    "noise_band": 0.2673,
+    "lags": {
+     "-2": {
+      "rho": -0.0027,
+      "n": 54
+     },
+     "-1": {
+      "rho": -0.0179,
+      "n": 55
+     },
+     "0": {
+      "rho": -0.0288,
+      "n": 56
+     },
+     "1": {
+      "rho": -0.1084,
+      "n": 55
+     },
+     "2": {
+      "rho": -0.1602,
+      "n": 54
+     }
+    }
+   },
+   "kalshi": {
+    "series": "SENATEOHS",
+    "event": "SENATEOHS-26",
+    "followed_market": "SENATEOHS-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 915262.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": -0.0288,
+     "n": 56,
+     "noise_band": 0.2673,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": 17.0,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.53,
+     "last_close": 0.7,
+     "n_days": 63,
+     "full_window_cents": 46.8,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 36,
+    "polling_source": "config/events/oh-senate-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 5,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 7,
+     "degraded": 2,
+     "unusable": 0,
+     "unusable_series": {},
+     "skipped_sources": {
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/oh-senate-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 915262.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": -0.0288,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/2026_United_States_Senate_special_election_in_Ohio": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 281374.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": -0.0247,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Jon_Husted": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 358732.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": -0.0234,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Sherrod_Brown": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 275156.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": -0.1642,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "bluesky/post_count": {
+      "source": "bluesky",
+      "group": "talking",
+      "total": 14490.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "degraded",
+      "rho_volume_surprise": -0.0108,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     }
+    }
+   }
+  },
+  "tx-governor-2026": {
+   "race_id": "tx-governor-2026",
+   "state": "TX",
+   "office": "governor",
+   "election_date": "2026-11-03",
+   "followed_market": "GOVPARTYTX-26-D",
+   "window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04",
+    "days": 65,
+    "inclusive": true,
+    "timezone": "UTC"
+   },
+   "path": "tx-governor-2026.json",
+   "generated_at": "2026-11-11T08:22:36Z",
+   "sources": [
+    "kalshi",
+    "kalshi_trades",
+    "wikipedia"
+   ],
+   "quality": {
+    "kalshi/price_close": "ok",
+    "kalshi/small_trade_share": "ok",
+    "kalshi/trade_count": "ok",
+    "kalshi/volume": "ok",
+    "wikipedia/pageviews/2026_Texas_gubernatorial_election": "ok",
+    "wikipedia/pageviews/Gina_Hinojosa": "ok",
+    "wikipedia/pageviews/Greg_Abbott": "ok",
+    "wikipedia/pageviews_total": "ok"
+   },
+   "headline": {
+    "attention_series": "wikipedia/pageviews_total",
+    "outcome": "volume_surprise",
+    "status": "computed",
+    "quality_status": "ok",
+    "noise_band": 0.2673,
+    "lags": {
+     "-2": {
+      "rho": 0.17,
+      "n": 54
+     },
+     "-1": {
+      "rho": 0.0163,
+      "n": 55
+     },
+     "0": {
+      "rho": 0.153,
+      "n": 56
+     },
+     "1": {
+      "rho": 0.2176,
+      "n": 55
+     },
+     "2": {
+      "rho": 0.1054,
+      "n": 54
+     }
+    }
+   },
+   "kalshi": {
+    "series": "GOVPARTYTX",
+    "event": "GOVPARTYTX-26",
+    "followed_market": "GOVPARTYTX-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 925282.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": 0.153,
+     "n": 56,
+     "noise_band": 0.2673,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": 21.0,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.17,
+     "last_close": 0.38,
+     "n_days": 63,
+     "full_window_cents": 82.7,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 42,
+    "polling_source": "config/events/tx-governor-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 4,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 8,
+     "degraded": 0,
+     "unusable": 0,
+     "unusable_series": {},
+     "skipped_sources": {
+      "bluesky": "left out by race_overrides in config/project.yaml: left out of the M3 run to bound runtime (the Texas Senate Bluesky walk alone took 22 minutes); run it locally with the command on the card",
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/tx-governor-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 925282.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.153,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/2026_Texas_gubernatorial_election": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 287980.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.2563,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Gina_Hinojosa": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 407456.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.0352,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Greg_Abbott": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 229846.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.1249,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     }
+    }
+   }
+  },
   "tx-senate-2026": {
    "race_id": "tx-senate-2026",
    "state": "TX",
@@ -15,7 +907,7 @@
     "timezone": "UTC"
    },
    "path": "tx-senate-2026.json",
-   "generated_at": "2026-11-11T06:52:04Z",
+   "generated_at": "2026-11-11T08:22:37Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -61,8 +953,131 @@
       "n": 54
      }
     }
+   },
+   "kalshi": {
+    "series": "SENATETX",
+    "event": "SENATETX-26",
+    "followed_market": "SENATETX-26-D"
+   },
+   "status": "confirmed",
+   "metrics": {
+    "attention_total": {
+     "series": "wikipedia/pageviews_total",
+     "value": 3084010.0,
+     "n_days": 63,
+     "unit": "views",
+     "note": "sum over the non-excluded days of the window"
+    },
+    "attention_vs_volume": {
+     "series": "wikipedia/pageviews_total",
+     "outcome": "volume_surprise",
+     "lag": 0,
+     "rho": 0.2383,
+     "n": 56,
+     "noise_band": 0.2673,
+     "note": "Spearman rho of daily attention surprise vs Kalshi volume surprise, same day (lag 0, chosen before looking at the numbers); every lag is in the race file"
+    },
+    "price_change": {
+     "cents": 23.0,
+     "from": "2026-09-01",
+     "to": "2026-11-02",
+     "first_close": 0.49,
+     "last_close": 0.72,
+     "n_days": 63,
+     "full_window_cents": 50.7,
+     "full_window_to": "2026-11-04",
+     "note": "last close on the last non-excluded day minus the first close in the window (cents); full_window_cents runs to the window end and includes election night"
+    },
+    "polling_density": 53,
+    "polling_source": "config/events/tx-senate-2026.meta.json",
+    "data_coverage": {
+     "share": 1.0,
+     "n_series": 5,
+     "window_days": 65,
+     "note": "mean coverage (days with data / window days) over the attention series that ran"
+    },
+    "quality_summary": {
+     "ok": 8,
+     "degraded": 1,
+     "unusable": 0,
+     "unusable_series": {},
+     "skipped_sources": {
+      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
+      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
+      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
+      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
+      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/tx-senate-2026.csv"
+     }
+    },
+    "attention": {
+     "wikipedia/pageviews_total": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 3084010.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.2383,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/2026_United_States_Senate_election_in_Texas": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 671582.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.4161,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/James_Talarico": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 1723937.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.1585,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "wikipedia/pageviews/Ken_Paxton": {
+      "source": "wikipedia",
+      "group": "looking",
+      "total": 688491.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "ok",
+      "rho_volume_surprise": 0.3919,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     },
+     "bluesky/post_count": {
+      "source": "bluesky",
+      "group": "talking",
+      "total": 146472.0,
+      "n_days": 63,
+      "coverage": 1.0,
+      "status": "degraded",
+      "rho_volume_surprise": 0.2429,
+      "n_pairs": 56,
+      "lag": 0,
+      "metric_status": "computed",
+      "reason": null
+     }
+    }
    }
   }
  },
- "updated_at": "2026-11-11T06:52:04Z"
+ "updated_at": "2026-11-11T08:22:37Z"
 }

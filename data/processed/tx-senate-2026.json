@@ -2,7 +2,7 @@
  "project": "race-attention",
  "version": "0.1.0",
  "schema_version": 2,
- "generated_at": "2026-11-11T06:52:04Z",
+ "generated_at": "2026-11-11T08:22:37Z",
  "race": {
   "race_id": "tx-senate-2026",
   "state": "TX",
@@ -37,7 +37,8 @@
    "TexasPolitics"
   ],
   "news_query": "(\"Talarico\" OR \"Ken Paxton\") AND Senate",
-  "polling_density": null
+  "polling_density": null,
+  "status": "confirmed"
  },
  "window": {
   "start": "2026-09-01",
@@ -78,8 +79,336 @@
   "polling_density": 53,
   "source": "config/events/tx-senate-2026.meta.json",
   "revision_url": "https://en.wikipedia.org/w/index.php?title=2026_United_States_Senate_election_in_Texas&oldid=1384978385",
-  "generated_at": "2026-11-11T06:32:52Z",
+  "generated_at": "2026-11-11T06:52:30Z",
   "status": "needs_review"
+ },
+ "run_overrides": {},
+ "events_overlay": {
+  "file": "config/events/tx-senate-2026.csv",
+  "exists": true,
+  "rows": [
+   {
+    "date": "2026-09-09",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Univision/YouGov, fieldwork August 27 - September 4, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-10",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Fabrizio Ward (R)/ Impact Research (D), fieldwork August 30 - September 1, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-10",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "InsiderAdvantage, fieldwork September 8-9, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-13",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "SoCal Strategies, fieldwork September 12-13, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-15",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Mason-Dixon, fieldwork September 8-10, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-17",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Emerson College, fieldwork September 12-14, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-17",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "ReconMR/Siena University, fieldwork September 8-11, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-18",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Trafalgar Group (R), fieldwork September 15-17, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-19",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Texas Southern University, fieldwork September 15-19, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-09-20",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Marist University, fieldwork September 17-20, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-09-24",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Stratus Intelligence (R), fieldwork September 22-24, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-09-25",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Texas Public Opinion Research (D), fieldwork September 19-22, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-27",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Big Data Poll, fieldwork September 24-26, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-29",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Pulse Decision Science (R), fieldwork September 24-27, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-09-30",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Rasmussen Reports, fieldwork September 28-29, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-01",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Beacon Research (D)/ Shaw & Co. Research (R), fieldwork September 24-28, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-02",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "New York Times/Siena University, fieldwork September 21-30, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-06",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Guidant Polling & Strategy (R), fieldwork September 20-28, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-06",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "YouGov, fieldwork September 28 - October 5, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-08",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "UMass Lowell/YouGov, fieldwork September 18-28, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-10",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Trafalgar Group (R), fieldwork October 6-8, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-11",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Marist University, fieldwork October 8-11, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-11",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Quantus Insights, fieldwork October 9-11, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-13",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "ReconMR/Siena University, fieldwork October 5-8, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-13",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "University of Texas/Texas Politics Project, fieldwork September 25 - October 5, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-15",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "ActiVote, fieldwork September 30 - October 14, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-15",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Cor Strategies (R), fieldwork October 10-15, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-15",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "InsiderAdvantage, fieldwork October 13-14, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-18",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "CBS News/YouGov, fieldwork October 8-16, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-19",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "University of Houston, fieldwork October 10-14, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-20",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Verasight/VoteHub, fieldwork October 1-20, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-21",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "ActiVote, fieldwork October 17-21, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-21",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Beacon Research (D)/ Shaw & Co. Research (R), fieldwork October 15-19, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-21",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "GS Strategy Group (R)/ New River Strategies (D), fieldwork October 9-13, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-22",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Emerson College, fieldwork October 17-19, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-22",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Pollfinity Research, fieldwork October 15-18, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-23",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Rasmussen Reports, fieldwork October 20-21, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-23",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Texas Public Opinion Research (D), fieldwork October 15-18, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-25",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Texas Southern University, fieldwork October 21-25, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-27",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "A2 Insights, fieldwork October 23-27, 2026; date = end of fieldwork (no release date listed)"
+   },
+   {
+    "date": "2026-10-27",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Univision/YouGov, fieldwork October 13-21, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-28",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "YouGov Blue (D), fieldwork October 21-26, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-29",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "ActiVote, fieldwork October 22-28, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-29",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "SSRS, fieldwork October 20-27, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-30",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Data for Progress (D), fieldwork October 23-26, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-30",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Kreate Strategies, fieldwork October 27-30, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-10-30",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Quantus Insights, fieldwork October 26-28, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-01",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "AtlasIntel, fieldwork October 28 - November 1, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-01",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "New York Times/Siena University, fieldwork October 27 - November 1, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-01",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Trafalgar Group (R), fieldwork October 31 - November 1, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-01",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "YouGov, fieldwork October 26-29, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-02",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Emerson College, fieldwork October 31 - November 1, 2026; date = release date (date field of the cited source)"
+   },
+   {
+    "date": "2026-11-02",
+    "type": "poll",
+    "status": "needs_review",
+    "note": "Research Co., fieldwork October 31 - November 2, 2026; date = release date (date field of the cited source)"
+   }
+  ],
+  "n": 53,
+  "n_confirmed": 0,
+  "note": "draft rows (needs_review) are shown for orientation only; metrics use confirmed rows"
  },
  "licensing": {
   "confirmed": false,
