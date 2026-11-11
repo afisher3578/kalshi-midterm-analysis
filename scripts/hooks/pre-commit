@@ -1,0 +1,6 @@
+#!/bin/sh
+# Installed with: ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit
+ROOT="$(git rev-parse --show-toplevel)"
+PY="$ROOT/.venv/bin/python"
+[ -x "$PY" ] || PY=python3
+exec "$PY" "$ROOT/scripts/check_secrets.py" --staged
