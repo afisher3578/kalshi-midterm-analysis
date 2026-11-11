@@ -29,7 +29,7 @@ PATTERNS = [
     # M2 key formats
     ("env key with a value", re.compile(
         r"\b(?:X_BEARER_TOKEN|MEDIACLOUD_API_KEY|GUARDIAN_API_KEY|NYT_API_KEY|BSKY_APP_PASSWORD|REDDIT_CLIENT_SECRET"
-        r"|YOUTUBE_API_KEY)\s*=\s*[\"']?[^\s\"'#]{8,}")),
+        r"|YOUTUBE_API_KEY)\s*=\s*[\"']?(?![^\s\"'#]*\$)[^\s\"'#]{8,}")),
     ("api-key in a URL", re.compile(r"[?&]api[-_]key=[A-Za-z0-9\-_]{12,}")),
     ("Media Cloud style token header", re.compile(r"\bToken\s+[A-Fa-f0-9]{30,}")),
     ("JWT (e.g. Bluesky session token)", re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}")),

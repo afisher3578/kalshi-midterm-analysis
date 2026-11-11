@@ -38,6 +38,7 @@ def test_patterns_ignore_benign():
         "Token goes through an Authorization header from an environment variable",
         "api_key = os.environ.get('MEDIACLOUD_API_KEY')",
         "BSKY_APP_PASSWORD=",
+        "X_BEARER_TOKEN" + "=fake-$(uuidgen) python -m raceattn run",  # shell substitution, not a value
         '"cursor": "eyJzIjpbMTc5MDg5NDcxODAwMCwiZGlkOnBsYzplb2FneGZvbzZnanhodW5sZmVscGJkeXAiXX0"',
         '"trade_id": "07273658-a2b9-964e-6d5b-6d5587f6b376"',
         'return {"Authorization": "Bearer " + self._access}',
