@@ -1,0 +1,38 @@
+# Project-wide settings. Race-specific settings live in config/races/<race>.yaml.
+
+# Licensing (docs/licensing.md). Leave false until Alex has read the terms of each source and confirmed that
+# publishing aggregate counts is allowed. While false, `run` and `publish` print a warning for X, Bluesky,
+# Reddit and the news APIs.
+licensing_confirmed: false
+
+# Kalshi grant funding disclosure (spec section 12). Off until the grant is awarded.
+funding_disclosure_enabled: false
+funding_disclosure_text: >-
+  This research was funded in part by a grant from Kalshi Inc. under the Kalshi Midterm Election Research
+  Grant Program. Kalshi did not direct, review, or approve the research or its conclusions.
+
+# Sources `run` uses when --sources is not given. Connectors whose key or file is missing are skipped with a reason.
+default_sources: [kalshi, kalshi_trades, wikipedia, x, news_mediacloud, news_guardian, news_nyt, news_manual, bluesky]
+
+# Per-connector settings (passed to the connector as keyword arguments).
+connectors:
+  kalshi_trades:
+    small_trade_threshold: 10      # contracts; a trade with count_fp under this is "small"
+    block_trades: exclude          # exclude | include
+  bluesky:
+    max_pages_per_day: 50          # per search term and UTC day; hitting it marks the series degraded
+    max_pages: 6000                # total pages per run (about an hour at the polite request rate)
+    page_size: 100                 # API maximum
+    lang: en
+  news_nyt:
+    sleep_seconds: 12              # NYT allows 5 requests a minute
+  gdelt:
+    sleep_seconds: 6               # GDELT asks for one request per 5 seconds
+
+# Event and spike metrics (spec section 8).
+events:
+  window_days: 2                   # event window is days -k..+k around each confirmed event
+  spike_threshold: 1.0             # a spike is a day with attention surprise >= this (about 2.7x the trailing mean)
+  reversion_days: 3                # N: did the price move back within N days after a spike
+  reversion_fraction: 0.5          # "moved back" = at least this share of the spike-day move reversed
+  min_price_move: 0.01             # spike-day price moves under this (1 cent) have nothing to revert
