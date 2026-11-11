@@ -39,8 +39,8 @@ Options: `--refresh` (ignore the cache and re-fetch; a cached paid read is never
 `--raw-dir`, `--out-dir`. Connector settings (Bluesky page caps, small-trade threshold, block trades, NYT spacing)
 and the event metric settings are in `config/project.yaml`.
 
-A Bluesky pull without an app password is slow (about 1 to 2 s per page, one page per 100 posts; Texas took a few
-hours the first time). It is cached per day, so later runs are instant.
+A Bluesky pull pages through every matching post (one request per 100 posts; Texas was about 2,000 requests and
+22 minutes). It is cached per day, so later runs make no requests.
 
 Events: `events` reads the polling tables on the race's Wikipedia page at a fixed revision and writes one row per
 poll (`date_utc,type,source_url,note,status`), plus debates and filing deadlines only where the page lists them.

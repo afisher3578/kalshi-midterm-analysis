@@ -20,7 +20,8 @@ Checked live 2026-11-11, unauthenticated only (no app password here).
 - `since`/`until` filtered as expected back to 2026-09-01. `createdAt` and `indexedAt` mostly agree; a few posts
   were indexed hours after `createdAt`.
 - Volume for Texas: 1,100 to 6,400 distinct posts a day for the two terms in early September (from the full run).
-  Each request took about 1 to 2 seconds, so a 65-day window takes a few hours unauthenticated.
+  Requests took 0.2 to 0.6 s plus our 0.3 s spacing; the full Texas window took 22 minutes. Throughput matched our spacing, so no 429
+  backoff slowed it (responses were not logged one by one).
 - robots.txt on api.bsky.app: "Crawling the public parts of the API is allowed. HTTP 429 ("backoff") status codes
   are used for rate-limiting. Up to a handful concurrent requests should be ok." We send one at a time.
 
