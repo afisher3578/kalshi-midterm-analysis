@@ -1,0 +1,33 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "query": {
+   "pages": [
+    {
+     "ns": 0,
+     "pageid": 78297995,
+     "title": "2026 United States Senate special election in Ohio"
+    }
+   ],
+   "redirects": [
+    {
+     "from": "2026 United States Senate election in Ohio",
+     "to": "2026 United States Senate special election in Ohio"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:43:34Z",
+ "query_hash": "fd5329f7367d655a",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "format": "json",
+   "formatversion": 2,
+   "redirects": 1,
+   "titles": "2026 United States Senate election in Ohio|2026 United States Senate special election in Ohio"
+  }
+ },
+ "status": 200
+}

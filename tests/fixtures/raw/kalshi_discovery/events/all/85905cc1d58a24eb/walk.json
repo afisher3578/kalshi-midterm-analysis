@@ -1,0 +1,17 @@
+{
+ "events": [],
+ "events_seen": 440,
+ "fetched_at": "2026-11-11T07:07:29Z",
+ "fixture_note": "reduced for tests to events whose title starts with Texas, Ohio, Florida, Kentucky, Arizona (0 of 5 kept)",
+ "kept": "category == Elections and the title mentions Senate, Governor or gubernatorial",
+ "pages": 3,
+ "query_hash": "85905cc1d58a24eb",
+ "request": {
+  "endpoint": "https://external-api.kalshi.com/trade-api/v2/events",
+  "params": {
+   "limit": 200,
+   "status": "closed"
+  }
+ },
+ "status": 200
+}

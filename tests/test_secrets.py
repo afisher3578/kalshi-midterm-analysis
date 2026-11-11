@@ -45,3 +45,15 @@ def test_patterns_ignore_benign():
     ]
     for s in benign:
         assert not cs.scan_text(s), s
+
+
+def test_wikitext_url_tokens_exempt_only_in_wikitext_caches():
+    import importlib.util, os
+    spec = importlib.util.spec_from_file_location("cs", os.path.join(os.path.dirname(__file__), "..", "scripts", "check_secrets.py"))
+    cs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cs)
+    hexval = "6f7af619" * 4
+    line = "|url=https://x.gov/a.php?task=file.download&" + "token=" + hexval + "&preview=1}}"
+    assert cs.scan_text(line)  # flagged anywhere else
+    assert not cs.scan_text(line, wikitext=True)
+    assert cs.scan_text("api_" + "token=" + hexval, wikitext=True)  # not inside a URL: still flagged

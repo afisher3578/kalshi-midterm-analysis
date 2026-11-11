@@ -1,0 +1,617 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "limits": {
+   "categories": 500
+  },
+  "query": {
+   "pages": [
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1913 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:1952 United States vice-presidential candidates"
+      },
+      {
+       "ns": 14,
+       "title": "Category:1956 United States vice-presidential candidates"
+      },
+      {
+       "ns": 14,
+       "title": "Category:1960s in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:1994 deaths"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century American lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century American memoirists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century American naval officers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century Quakers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century United States representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century United States senators"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century vice presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American Quakers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American conspiracy theorists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with Internet Archive links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with LibriVox links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with Project Gutenberg links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with excerpts"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with hAudio microformats"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:California Republicans"
+      },
+      {
+       "ns": 14,
+       "title": "Category:California lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 1960 United States presidential election"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 1968 United States presidential election"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 1972 United States presidential election"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Cannabis law reform in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Cornell family"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Disbarred New York (state) lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Duke University School of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Eisenhower administration cabinet members"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Featured articles"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Fullerton Union High School alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Lawyers disbarred in the Watergate scandal"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Lawyers from New York City"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Members of the House Un-American Activities Committee"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Military personnel from Orange County, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:New York Times topic template using Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Nixon administration personnel involved in the Watergate scandal"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Nixon family"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Pages using Sister project links with default search"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Park Ridge, New Jersey"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Saddle River, New Jersey"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from San Clemente, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Whittier, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Yorba Linda, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People of the Cold War"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People of the Laotian Civil War"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People of the Yom Kippur War"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People pardoned by Gerald Ford"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Los Angeles County, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Orange County, California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party (United States) presidential nominees"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party (United States) vice presidential nominees"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party United States representatives from California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party United States senators from California"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party vice presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Richard Nixon"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:United States Navy personnel of World War II"
+      },
+      {
+       "ns": 14,
+       "title": "Category:United States Navy reservists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:United States government officials of the Vietnam War"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from February 2019"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from February 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Vice presidents of the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:War on drugs"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Webarchive template wayback links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Whittier High School alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Whittier Poets football players"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia indefinitely move-protected pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia pages semi-protected against vandalism"
+      }
+     ],
+     "ns": 0,
+     "pageid": 25473,
+     "title": "Richard Nixon"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:All article disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Place name disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      }
+     ],
+     "ns": 0,
+     "pageid": 868013,
+     "pageprops": {
+      "disambiguation": ""
+     },
+     "title": "Moody"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1975 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:2024 United States presidential electors"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American judges"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American women judges"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American women politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century Florida politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century United States senators"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles in need of updating"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American politicians who switched parties"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American women prosecutors"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Christians from Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Female United States senators"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Florida Republicans"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Florida attorneys general"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Florida state court judges"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Fredric G. Levin College of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Plant City, Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party United States senators from Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Stetson University College of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from November 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from January 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Warrington College of Business alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia articles in need of updating from November 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Women in Florida politics"
+      }
+     ],
+     "ns": 0,
+     "pageid": 58858471,
+     "title": "Ashley Moody"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1984 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century African-American politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century African-American women politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American trade unionists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century members of the Florida Legislature"
+      },
+      {
+       "ns": 14,
+       "title": "Category:African-American state legislators in Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:African-American trade unionists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All articles with self-published sources"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American community activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American women trade unionists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with self-published sources from July 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:CS1 maint: url-status"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 2026 United States Senate elections"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Democratic Party members of the Florida House of Representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Members of the Democratic Socialists of America from Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Jacksonville, Florida"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Progressivism in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Service Employees International Union people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description matches Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from January 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from April 2022"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Women state legislators in Florida"
+      }
+     ],
+     "ns": 0,
+     "pageid": 65000395,
+     "title": "Angie Nixon"
+    }
+   ],
+   "redirects": [
+    {
+     "from": "Nixon",
+     "to": "Richard Nixon"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:43:37Z",
+ "query_hash": "8ef9dd7e2a352819",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "cllimit": "max",
+   "format": "json",
+   "formatversion": 2,
+   "ppprop": "disambiguation",
+   "prop": "pageprops|categories",
+   "redirects": 1,
+   "titles": "Ashley Moody|Angie Nixon|Moody|Nixon"
+  }
+ },
+ "status": 200
+}

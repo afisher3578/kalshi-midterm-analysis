@@ -1,0 +1,695 @@
+{
+ "events": [
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXTXSENOUTCOME-27JAN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-28T00:18:10.386244Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXTXSENOUTCOME",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.state.tx.us/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Before Jan 2027",
+   "title": "Texas Senate: Exact outcome"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXOHSENGOVCOMBO-26NOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-28T00:18:10.386244Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Ohio Elections",
+    "competition_scope": "Gov/Senate Combo"
+   },
+   "series_ticker": "KXOHSENGOVCOMBO",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Nov 3, 2026",
+   "title": "Ohio Governor-Senate combo"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-TXSENR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-31T21:12:23.393892Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Texas Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-TXGOVR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-01T16:09:05.763488Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas Governor",
+   "title": "Texas Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-OHSENR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T02:54:09.274961Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Ohio Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-OHGOVR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T03:00:14.402628Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio Governor",
+   "title": "Ohio Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-FLSEND",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T02:26:22.452472Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Florida Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-FLGOVD",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T02:57:38.514065Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida Governor",
+   "title": "Florida Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-AZGOVR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T02:21:26.602566Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona Governor",
+   "title": "Arizona Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXTXSENGOVCOMBO-26NOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-28T00:18:10.386244Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Texas Elections",
+    "competition_scope": "Gov/Senate Combo"
+   },
+   "series_ticker": "KXTXSENGOVCOMBO",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Nov 3, 2026",
+   "title": "Texas Governor-Senate combo"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATETX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:58.133306Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Texas Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATEOHS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:58.164421Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Ohio Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATEFLS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.924162Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Florida Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYTX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.921317Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Texas Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYOH-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.894446Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Ohio Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYFL-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.887789Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Florida Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXFLSENGOVCOMBO-26NOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-28T00:18:10.386244Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Florida Elections",
+    "competition_scope": "Gov/Senate Combo"
+   },
+   "series_ticker": "KXFLSENGOVCOMBO",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Nov 3, 2026",
+   "title": "Florida Governor-Senate combo"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "GOVPARTYTX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T12:36:13.714392Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "GOVPARTYTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Texas Governor winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXTXRAILROADCOMBO-26NOV03",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-28T00:18:10.386244Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXTXRAILROADCOMBO",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Texas Railroad Commissioner & Senate combo"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "GOVPARTYOH-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T11:06:54.895489Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "GOVPARTYOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Ohio Governor winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "GOVPARTYFL-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T11:06:54.977603Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "GOVPARTYFL",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Florida Governor winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATETX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T12:38:22.711071Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "SENATETX",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Texas Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATEOHS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-19T16:49:54.708342Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "SENATEOHS",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Ohio Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATELA-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T12:38:22.711071Z",
+   "mutually_exclusive": true,
+   "series_ticker": "SENATELA",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Kentucky Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATEFLS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-19T16:49:36.913476Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "SENATEFLS",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Florida Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "GOVPARTYAZ-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-27T11:09:11.749033Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "GOVPARTYAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Arizona Governor winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXLTGOVTX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-10-23T14:24:13.30472Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXLTGOVTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.state.tx.us/elections/historical/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Texas Lieutenant Governor winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEG-TXSENA26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:54.840215Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEG",
+   "settlement_sources": [
+    {
+     "name": "Texas Senate",
+     "url": "https://capitol.texas.gov/members/members.aspx?Chamber=S"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas Senate",
+   "title": "Texas State Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEG-OHSEN26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:54.814093Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEG",
+   "settlement_sources": [
+    {
+     "name": "Ohio Senate",
+     "url": "https://ohiosenate.gov/members/directory"
+    },
+    {
+     "name": "The New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio State Senate",
+   "title": "Ohio State Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEG-FLSENA26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:53.689745Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEG",
+   "settlement_sources": [
+    {
+     "name": "Florida Senate",
+     "url": "https://www.flsenate.gov/Senators"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida Senate",
+   "title": "Florida State Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEG-AZSEN26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:53.605964Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEG",
+   "settlement_sources": [
+    {
+     "name": "Arizona State Senate",
+     "url": "https://www.azleg.gov/memberroster/?body=S"
+    },
+    {
+     "name": "The New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona State Senate",
+   "title": "Arizona State Senate winner?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGOVAZNOMR-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-08-28T01:05:00.93654Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXGOVAZNOMR",
+   "settlement_sources": [
+    {
+     "name": "State governments",
+     "url": "https://www.myfloridahouse.gov/Sections/Bills/billsdetail.aspx?BillId=79719"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Arizona Republican Governor nominee?"
+  }
+ ],
+ "events_seen": 53246,
+ "fetched_at": "2026-11-11T07:43:32Z",
+ "fixture_note": "reduced for tests to events whose title starts with Texas, Ohio, Florida, Kentucky, Arizona (32 of 226 kept)",
+ "kept": "category == Elections and the title mentions Senate, Governor or gubernatorial",
+ "pages": 267,
+ "query_hash": "496c4042dc351dab",
+ "request": {
+  "endpoint": "https://external-api.kalshi.com/trade-api/v2/events",
+  "params": {
+   "limit": 200,
+   "min_close_ts": 1793664000,
+   "status": "settled"
+  }
+ },
+ "status": 200
+}

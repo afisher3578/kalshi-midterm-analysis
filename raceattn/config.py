@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 OFFICES = ("senate", "house", "governor", "national")
+STATUSES = ("confirmed", "needs_review")
 RACES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "races")
 RACE_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 STATE_RE = re.compile(r"^[A-Z]{2}$")
@@ -76,6 +77,8 @@ class Race:
     subreddits: tuple[str, ...] = ()
     news_query: str | None = None
     polling_density: int | None = None
+    status: str = "confirmed"  # a file without a status (the hand-written Texas config) counts as confirmed
+    discovery: dict[str, Any] | None = field(default=None, compare=False)
     source_path: str | None = field(default=None, compare=False)
 
     def summary(self) -> dict[str, Any]:
@@ -94,6 +97,7 @@ class Race:
             "subreddits": list(self.subreddits),
             "news_query": self.news_query,
             "polling_density": self.polling_density,
+            "status": self.status,
         }
 
 
@@ -203,8 +207,15 @@ def validate(data: Any, source_path: str | None = None) -> Race:
     if pd_ is not None and (isinstance(pd_, bool) or not isinstance(pd_, int) or pd_ < 0):
         raise ConfigError("%s.polling_density: expected null or a non-negative integer, got %r" % (where, pd_))
 
+    status = data.get("status", "confirmed")
+    if status not in STATUSES:
+        raise ConfigError("%s.status: must be one of %s, got %r" % (where, " | ".join(STATUSES), status))
+    discovery = data.get("discovery")
+    if discovery is not None and not isinstance(discovery, dict):
+        raise ConfigError("%s.discovery: expected a mapping of field -> confidence note, got %r" % (where, discovery))
+
     known = {"race_id", "state", "office", "election_date", "window", "exclude_days", "kalshi", "entities",
-             "wikipedia_pages", "subreddits", "news_query", "polling_density"}
+             "wikipedia_pages", "subreddits", "news_query", "polling_density", "status", "discovery"}
     unknown = sorted(set(data) - known)
     if unknown:
         raise ConfigError("%s: unknown keys %s (typo?)" % (where, ", ".join(unknown)))
@@ -212,7 +223,7 @@ def validate(data: Any, source_path: str | None = None) -> Race:
     return Race(race_id=race_id, state=state, office=office, election_date=election_date, window=window,
                 exclude_days=tuple(sorted(set(exclude))), kalshi=kalshi, entities=tuple(entities),
                 wikipedia_pages=pages, subreddits=subreddits, news_query=news_query, polling_density=pd_,
-                source_path=source_path)
+                status=status, discovery=discovery, source_path=source_path)
 
 
 def resolve_race_path(race: str, races_dir: str = RACES_DIR) -> str:
@@ -227,6 +238,21 @@ def resolve_race_path(race: str, races_dir: str = RACES_DIR) -> str:
         raise ConfigError("no race config for id %r (looked for %s). Available: %s"
                           % (race, path, ", ".join(avail) or "none"))
     return path
+
+
+def confirmed_races(races_dir: str = RACES_DIR) -> tuple[list[Race], dict[str, str]]:
+    """Every config/races/*.yaml with status confirmed (drafts/ is a subdirectory and is not read).
+    Returns the races and {file name: reason} for files that were left out."""
+    races, left_out = [], {}
+    for fn in sorted(os.listdir(races_dir)) if os.path.isdir(races_dir) else []:
+        if not fn.endswith((".yaml", ".yml")):
+            continue
+        r = load_race(os.path.join(races_dir, fn))
+        if r.status != "confirmed":
+            left_out[fn] = "status is %s, not confirmed" % r.status
+            continue
+        races.append(r)
+    return races, left_out
 
 
 def load_race(race: str, races_dir: str = RACES_DIR) -> Race:

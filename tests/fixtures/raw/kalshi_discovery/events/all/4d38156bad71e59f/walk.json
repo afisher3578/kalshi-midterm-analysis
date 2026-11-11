@@ -1,0 +1,6281 @@
+{
+ "events": [
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATERACE-TX-32",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T18:18:24.700803Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATERACE",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas (2032)",
+   "title": "Texas Senate winner? (2032)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGOVRACE-TX-30",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T21:18:14.236165Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXGOVRACE",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas",
+   "title": "Texas Governor winner? (2030)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATERACE-TX-30",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T18:18:24.700803Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATERACE",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas (2030)",
+   "title": "Texas Senate winner? (2030)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS030",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.468884Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 30",
+   "title": "Texas Senate District 30 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS029",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.420871Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 29",
+   "title": "Texas Senate District 29 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS027",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.340263Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 27",
+   "title": "Texas Senate District 27 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS025",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.34144Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 25",
+   "title": "Texas Senate District 25 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS023",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.338931Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 23",
+   "title": "Texas Senate District 23 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS020",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:40.432461Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 20",
+   "title": "Texas Senate District 20 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS017",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.331Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 17",
+   "title": "Texas Senate District 17 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS016",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.285177Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 16",
+   "title": "Texas Senate District 16 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS015",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.259458Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 15",
+   "title": "Texas Senate District 15 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS014",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.219906Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 14",
+   "title": "Texas Senate District 14 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS012",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.149257Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 12",
+   "title": "Texas Senate District 12 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS010",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.115345Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 10",
+   "title": "Texas Senate District 10 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS008",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.080439Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 8",
+   "title": "Texas Senate District 8 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS007",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.068698Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 7",
+   "title": "Texas Senate District 7 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGTX-28NOV07TXS006",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:39.068088Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGTX",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 6",
+   "title": "Texas Senate District 6 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS032",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.435401Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 32",
+   "title": "Ohio Senate District 32 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS030",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.401047Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 30",
+   "title": "Ohio Senate District 30 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS028",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.453417Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 28",
+   "title": "Ohio Senate District 28 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS026",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.340776Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 26",
+   "title": "Ohio Senate District 26 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS024",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.366399Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 24",
+   "title": "Ohio Senate District 24 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS022",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.24336Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 22",
+   "title": "Ohio Senate District 22 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS020",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.246211Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 20",
+   "title": "Ohio Senate District 20 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS018",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.238934Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 18",
+   "title": "Ohio Senate District 18 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS016",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.157022Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 16",
+   "title": "Ohio Senate District 16 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS014",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.155097Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 14",
+   "title": "Ohio Senate District 14 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS012",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.18609Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 12",
+   "title": "Ohio Senate District 12 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS010",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.16165Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 10",
+   "title": "Ohio Senate District 10 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS008",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.150912Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 8",
+   "title": "Ohio Senate District 8 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS006",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.159101Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 6",
+   "title": "Ohio Senate District 6 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS004",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.055538Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 4",
+   "title": "Ohio Senate District 4 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGOH-28NOV07OHS002",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:29:04.041862Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGOH",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov/elections/election-results-and-data/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 2",
+   "title": "Ohio Senate District 2 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS037",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.710524Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 37",
+   "title": "Kentucky Senate District 37 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS035",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.695664Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 35",
+   "title": "Kentucky Senate District 35 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS033",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.592547Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 33",
+   "title": "Kentucky Senate District 33 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS031",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.558564Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 31",
+   "title": "Kentucky Senate District 31 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS029",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.543617Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 29",
+   "title": "Kentucky Senate District 29 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS027",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.520268Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 27",
+   "title": "Kentucky Senate District 27 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS025",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.375509Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 25",
+   "title": "Kentucky Senate District 25 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS023",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.406924Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 23",
+   "title": "Kentucky Senate District 23 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS021",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.375872Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 21",
+   "title": "Kentucky Senate District 21 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS019",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.299059Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 19",
+   "title": "Kentucky Senate District 19 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS017",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.261614Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 17",
+   "title": "Kentucky Senate District 17 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS015",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.197943Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 15",
+   "title": "Kentucky Senate District 15 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS013",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.229835Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 13",
+   "title": "Kentucky Senate District 13 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS011",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:59.249736Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 11",
+   "title": "Kentucky Senate District 11 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS009",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.164422Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 9",
+   "title": "Kentucky Senate District 9 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS007",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.079489Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 7",
+   "title": "Kentucky Senate District 7 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS005",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.112393Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 5",
+   "title": "Kentucky Senate District 5 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS003",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.020073Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 3",
+   "title": "Kentucky Senate District 3 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGKY-28NOV07KYS001",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:58.097005Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 1",
+   "title": "Kentucky Senate District 1 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS039",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.480912Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 39",
+   "title": "Florida Senate District 39 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS037",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.459816Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 37",
+   "title": "Florida Senate District 37 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS035",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.482659Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 35",
+   "title": "Florida Senate District 35 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS033",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.494951Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 33",
+   "title": "Florida Senate District 33 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS031",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.38478Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 31",
+   "title": "Florida Senate District 31 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS029",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.391857Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 29",
+   "title": "Florida Senate District 29 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS027",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.367285Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 27",
+   "title": "Florida Senate District 27 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS025",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.356481Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 25",
+   "title": "Florida Senate District 25 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS023",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.321979Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 23",
+   "title": "Florida Senate District 23 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS021",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.347678Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 21",
+   "title": "Florida Senate District 21 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS019",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.306932Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 19",
+   "title": "Florida Senate District 19 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS017",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.269945Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 17",
+   "title": "Florida Senate District 17 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS015",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.252503Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 15",
+   "title": "Florida Senate District 15 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS013",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.293176Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 13",
+   "title": "Florida Senate District 13 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS011",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.25202Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 11",
+   "title": "Florida Senate District 11 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS009",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.226199Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 9",
+   "title": "Florida Senate District 9 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS007",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.123458Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 7",
+   "title": "Florida Senate District 7 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS005",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.059914Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 5",
+   "title": "Florida Senate District 5 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS003",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.095505Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 3",
+   "title": "Florida Senate District 3 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGFL-28NOV07FLS001",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:20.065597Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGFL",
+   "settlement_sources": [
+    {
+     "name": "the Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 1",
+   "title": "Florida Senate District 1 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS030",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.563557Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 30",
+   "title": "Arizona Senate District 30 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS029",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.583185Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 29",
+   "title": "Arizona Senate District 29 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS028",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.454797Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 28",
+   "title": "Arizona Senate District 28 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS027",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.382425Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 27",
+   "title": "Arizona Senate District 27 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS026",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.385325Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 26",
+   "title": "Arizona Senate District 26 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS025",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.284139Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 25",
+   "title": "Arizona Senate District 25 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS024",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.283345Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 24",
+   "title": "Arizona Senate District 24 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS023",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.182018Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 23",
+   "title": "Arizona Senate District 23 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS022",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.168546Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 22",
+   "title": "Arizona Senate District 22 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS021",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.110748Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 21",
+   "title": "Arizona Senate District 21 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS020",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:02.111127Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 20",
+   "title": "Arizona Senate District 20 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS019",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:01.010732Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 19",
+   "title": "Arizona Senate District 19 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS018",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.976073Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 18",
+   "title": "Arizona Senate District 18 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS017",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:02.036211Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 17",
+   "title": "Arizona Senate District 17 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS016",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.923538Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 16",
+   "title": "Arizona Senate District 16 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS015",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.927538Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 15",
+   "title": "Arizona Senate District 15 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS014",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.861122Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 14",
+   "title": "Arizona Senate District 14 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS013",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.881313Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 13",
+   "title": "Arizona Senate District 13 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS012",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.792916Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 12",
+   "title": "Arizona Senate District 12 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS011",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.854355Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 11",
+   "title": "Arizona Senate District 11 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS010",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.729542Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 10",
+   "title": "Arizona Senate District 10 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS009",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.72118Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 9",
+   "title": "Arizona Senate District 9 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS008",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.764314Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 8",
+   "title": "Arizona Senate District 8 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS007",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.704668Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 7",
+   "title": "Arizona Senate District 7 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS006",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.666449Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 6",
+   "title": "Arizona Senate District 6 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS005",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.540001Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 5",
+   "title": "Arizona Senate District 5 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS004",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.56288Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 4",
+   "title": "Arizona Senate District 4 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS003",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.505299Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 3",
+   "title": "Arizona Senate District 3 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS002",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.439451Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 2",
+   "title": "Arizona Senate District 2 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSTATELEGAZ-28NOV07AZS001",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:27:00.444892Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSTATELEGAZ",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Senate District 1",
+   "title": "Arizona Senate District 1 winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATEOH-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:43.718581Z",
+   "mutually_exclusive": true,
+   "series_ticker": "SENATEOH",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2028",
+   "title": "Ohio Senate winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATEFL-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:43.020347Z",
+   "mutually_exclusive": true,
+   "series_ticker": "SENATEFL",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2028",
+   "title": "Florida Senate winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "SENATEAZ-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:42.931436Z",
+   "mutually_exclusive": true,
+   "series_ticker": "SENATEAZ",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2028",
+   "title": "Arizona Senate winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATERACE-KY-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T18:18:24.700803Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATERACE",
+   "settlement_sources": [
+    {
+     "name": "United States Congress",
+     "url": "https://www.congress.gov/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Kentucky (2028)",
+   "title": "Kentucky Senate winner? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-FLR-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:48:41.899775Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Republican Party of Florida",
+     "url": "https://www.rpof.org/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida (R)",
+   "title": "Florida Republican Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-FLD-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:48:41.84758Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Florida Democratic Party",
+     "url": "https://www.fladems.com/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida (D)",
+   "title": "Florida Democratic Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-AZR-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:18:09.903767Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Arizona Republican Party",
+     "url": "https://azgop.com/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona (R)",
+   "title": "Arizona Republican Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-AZD-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:48:41.702544Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Arizona Democratic Party",
+     "url": "https://azdem.org/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona (D)",
+   "title": "Arizona Democratic Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-KYR-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:48:42.287649Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Republican Party of Kentucky",
+     "url": "https://rpk.org/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Kentucky (R)",
+   "title": "Kentucky Republican Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-KYD-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:18:09.903767Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Kentucky Democratic Party",
+     "url": "https://kydems.com/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Kentucky (D)",
+   "title": "Kentucky Democratic Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-OHR-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T04:18:04.442889Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Ohio Republican Party",
+     "url": "https://ohiogop.org/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio (R)",
+   "title": "Ohio Republican Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXSENATENOM-OHD-28",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T03:48:42.828216Z",
+   "mutually_exclusive": true,
+   "series_ticker": "KXSENATENOM",
+   "settlement_sources": [
+    {
+     "name": "Ohio Democratic Party",
+     "url": "https://ohiodems.org/"
+    },
+    {
+     "name": "Associated Press",
+     "url": "https://apnews.com"
+    },
+    {
+     "name": "Decision Desk HQ",
+     "url": "https://decisiondeskhq.com/results/"
+    },
+    {
+     "name": "New York Times",
+     "url": "https://www.nytimes.com/"
+    },
+    {
+     "name": "CNN",
+     "url": "https://www.cnn.com"
+    },
+    {
+     "name": "Fox News",
+     "url": "https://www.foxnews.com"
+    },
+    {
+     "name": "NBC News",
+     "url": "https://www.nbcnews.com"
+    },
+    {
+     "name": "CBS News",
+     "url": "https://cbsnews.com"
+    },
+    {
+     "name": "ABC News",
+     "url": "https://abcnews.go.com"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio (D)",
+   "title": "Ohio Democratic Senate nominee? (2028)"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-TXSEN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:47.911749Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas Senate General Election",
+   "title": "Texas Senate General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-TXGOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:47.905021Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas Governor General Election",
+   "title": "Texas Governor General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-OHSEN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:44.736717Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio Senate General Election",
+   "title": "Ohio Senate General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-OHGOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:44.691265Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio Governor General Election",
+   "title": "Ohio Governor General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-KYSEN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:38.667368Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Kentucky Senate General Election",
+   "title": "Kentucky Senate General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-FLSEN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:36.527221Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida Senate General Election",
+   "title": "Florida Senate General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-FLGOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:36.569491Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida Governor General Election",
+   "title": "Florida Governor General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMVOTETURN-AZGOV",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:33.0598Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Voter Turnout"
+   },
+   "series_ticker": "KXMIDTERMVOTETURN",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona Governor General Election",
+   "title": "Arizona Governor General Election: voter turnout"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-TXSEND",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T05:07:21.16435Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Texas Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-TXGOVD",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T23:39:25.658342Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Texas Governor",
+   "title": "Texas Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-OHSEND",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T03:34:53.773827Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Ohio Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-OHGOVD",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T03:33:05.040945Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Ohio Governor",
+   "title": "Ohio Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-KYSENR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:26:21.542809Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Kentucky Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-FLSENR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T05:04:58.451949Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On November 3, 2026",
+   "title": "Florida Senate margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-FLGOVR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T05:06:22.731956Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Republican Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Florida Governor",
+   "title": "Florida Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXMIDTERMMOV-AZGOVD",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-06T03:43:59.5782Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Democrat Margin of Victory"
+   },
+   "series_ticker": "KXMIDTERMMOV",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Arizona Governor",
+   "title": "Arizona Governor margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATETX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:58.133306Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Texas Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATEOHS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:58.164421Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Ohio Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-SENATEFLS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.924162Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Senate",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Florida Senate: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYTX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.921317Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State",
+     "url": "https://www.sos.texas.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Texas Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYOH-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.894446Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Ohio Secretary of State",
+     "url": "https://www.ohiosos.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Ohio Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGENERALMOV-GOVPARTYFL-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:57.887789Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Margin of Victory (Bracketed)"
+   },
+   "series_ticker": "KXGENERALMOV",
+   "settlement_sources": [
+    {
+     "name": "Florida Division of Elections",
+     "url": "https://dos.fl.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "On Nov 3, 2026",
+   "title": "Florida Governor: margin of victory"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGOVKYNOMR-27",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T02:50:59.476457Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition_scope": "Election"
+   },
+   "series_ticker": "KXGOVKYNOMR",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2027",
+   "title": "Kentucky Republican Governor nominee?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "KXGOVKYNOMD-27",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-10T16:43:10.527807Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition_scope": "Election"
+   },
+   "series_ticker": "KXGOVKYNOMD",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2027",
+   "title": "Kentucky Democratic Governor nominee?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATETX-26TBRO",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:42.182118Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Ted Brown"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Austin, TX",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Ted Brown",
+   "title": "Texas Senate election: Ted Brown vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATETX-26KPAX",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:42.18461Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Ken Paxton"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Austin, TX",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Ken Paxton",
+   "title": "Texas Senate election: Ken Paxton vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATETX-26JTAL",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:42.182084Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "James Talarico"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Austin, TX",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - James Talarico",
+   "title": "Texas Senate election: James Talarico vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATEOHS-26SBRO",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:41.656732Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Sherrod Brown"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Columbus, OH",
+     "url": "https://www.ohiosos.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Sherrod Brown",
+   "title": "Ohio Senate election: Sherrod Brown vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATEOHS-26JHUS",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:42.705544Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Jon Husted"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Columbus, OH",
+     "url": "https://www.ohiosos.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Jon Husted",
+   "title": "Ohio Senate election: Jon Husted vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATELA-26CBOO",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:40.557447Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Charles Booker"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "State Board of Elections, Frankfort, KY",
+     "url": "https://elect.ky.gov/Pages/default.aspx"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Charles Booker",
+   "title": "Kentucky Senate election: Charles Booker vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATELA-26ABAR",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:40.549645Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Andy Barr"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "State Board of Elections, Frankfort, KY",
+     "url": "https://elect.ky.gov/Pages/default.aspx"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Andy Barr",
+   "title": "Kentucky Senate election: Andy Barr vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATEFLS-26ANIX",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:40.085349Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Angie Nixon"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Angie Nixon",
+   "title": "Florida Senate election: Angie Nixon vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-SENATEFLS-26AMOO",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:39.95576Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Ashley Moody"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Ashley Moody",
+   "title": "Florida Senate election: Ashley Moody vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYTX-26GHIN",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:09.703543Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Gina Hinojosa"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Austin, TX",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Gina Hinojosa",
+   "title": "Texas Governor election: Gina Hinojosa vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYTX-26GABB",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:08.583642Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Greg Abbott"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Austin, TX",
+     "url": "https://www.sos.state.tx.us/elections/index.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Greg Abbott",
+   "title": "Texas Governor election: Greg Abbott vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYOH-26VRAM",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:07.965449Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Vivek Ramaswamy"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Columbus, OH",
+     "url": "https://www.ohiosos.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Vivek Ramaswamy",
+   "title": "Ohio Governor election: Vivek Ramaswamy vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYOH-26AACT",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:07.900422Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Amy Acton"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Columbus, OH",
+     "url": "https://www.ohiosos.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Amy Acton",
+   "title": "Ohio Governor election: Amy Acton vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYFL-26DJOL",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:06.500865Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "David Jolly"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - David Jolly",
+   "title": "Florida Governor election: David Jolly vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYFL-26BDON",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:06.798598Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Byron Donalds"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Byron Donalds",
+   "title": "Florida Governor election: Byron Donalds vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYAZ-26KHOB",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:06.061284Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Katie Hobbs"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Phoenix, AZ",
+     "url": "https://azsos.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Katie Hobbs",
+   "title": "Arizona Governor election: Katie Hobbs vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "DIRECNET",
+   "event_ticker": "KXVOTEGENERAL-GOVPARTYAZ-26ABIG",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:30:06.017168Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Andy Biggs"
+   },
+   "series_ticker": "KXVOTEGENERAL",
+   "settlement_sources": [
+    {
+     "name": "Elections Division, Office of the Secretary of State, Phoenix, AZ",
+     "url": "https://azsos.gov/elections"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "Vote Percent - Andy Biggs",
+   "title": "Arizona Governor election: Andy Biggs vote percent"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "",
+   "event_ticker": "KXGENERALCOUNTY-SENATETX-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-02T22:57:30.002814Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Counties Won by James Talarico"
+   },
+   "series_ticker": "KXGENERALCOUNTY",
+   "settlement_sources": [
+    {
+     "name": "Texas Secretary of State, Elections Division",
+     "url": "https://www.sos.texas.gov/elections/laws/2026-november-general-election.shtml"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Texas Senate: which counties will James Talarico win?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "",
+   "event_ticker": "KXGENERALCOUNTY-SENATEFLS-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-02T22:57:18.462345Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Counties Won by Angie Nixon"
+   },
+   "series_ticker": "KXGENERALCOUNTY",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Florida Senate: which counties will Angie Nixon win?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "",
+   "event_ticker": "KXGENERALCOUNTY-GOVPARTYFL-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-02T22:57:15.004506Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Counties Won by Byron Donalds"
+   },
+   "series_ticker": "KXGENERALCOUNTY",
+   "settlement_sources": [
+    {
+     "name": "Division of Elections, Office of the Secretary of State, Tallahassee, FL",
+     "url": "https://dos.myflorida.com/elections/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Florida Governor: which counties will Byron Donalds win?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "",
+   "event_ticker": "KXGENERALCOUNTY-GOVPARTYAZ-26",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-02T22:57:30.835285Z",
+   "mutually_exclusive": false,
+   "product_metadata": {
+    "competition_scope": "Counties Won by Katie Hobbs"
+   },
+   "series_ticker": "KXGENERALCOUNTY",
+   "settlement_sources": [
+    {
+     "name": "Arizona Secretary of State",
+     "url": "https://azsos.gov"
+    },
+    {
+     "name": "Navajo County Elections",
+     "url": "https://www.navajocountyaz.gov/Departments/Elections"
+    },
+    {
+     "name": "Yuma County Voter and Election Services",
+     "url": "https://www.yumacountyaz.gov/government/voter-election-services"
+    },
+    {
+     "name": "Pinal County Elections",
+     "url": "https://www.pinal.gov/votes"
+    },
+    {
+     "name": "Cochise County Elections",
+     "url": "https://www.cochise.az.gov/elections"
+    },
+    {
+     "name": "Maricopa County Elections",
+     "url": "https://elections.maricopa.gov/"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2026",
+   "title": "Arizona Governor: which counties will Katie Hobbs win?"
+  },
+  {
+   "category": "Elections",
+   "collateral_return_type": "MECNET",
+   "event_ticker": "GOVPARTYKY-27",
+   "exchange_index": 0,
+   "last_updated_ts": "2026-11-05T22:25:55.500059Z",
+   "mutually_exclusive": true,
+   "product_metadata": {
+    "competition": "Governor",
+    "competition_scope": "Election"
+   },
+   "series_ticker": "GOVPARTYKY",
+   "settlement_sources": [
+    {
+     "name": "Kentucky State Board of Elections",
+     "url": "https://elect.ky.gov"
+    }
+   ],
+   "strike_period": "",
+   "sub_title": "In 2027",
+   "title": "Kentucky governor winner? (2027)"
+  }
+ ],
+ "events_seen": 19948,
+ "fetched_at": "2026-11-11T07:07:27Z",
+ "fixture_note": "reduced for tests to events whose title starts with Texas, Ohio, Florida, Kentucky, Arizona (161 of 1741 kept)",
+ "kept": "category == Elections and the title mentions Senate, Governor or gubernatorial",
+ "pages": 100,
+ "query_hash": "4d38156bad71e59f",
+ "request": {
+  "endpoint": "https://external-api.kalshi.com/trade-api/v2/events",
+  "params": {
+   "limit": 200,
+   "status": "open"
+  }
+ },
+ "status": 200
+}

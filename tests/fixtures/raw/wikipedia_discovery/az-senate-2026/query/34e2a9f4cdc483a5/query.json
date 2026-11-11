@@ -1,0 +1,32 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "query": {
+   "pages": [
+    {
+     "missing": true,
+     "ns": 0,
+     "title": "2026 United States Senate special election in Arizona"
+    },
+    {
+     "missing": true,
+     "ns": 0,
+     "title": "2026 United States Senate election in Arizona"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:44:20Z",
+ "query_hash": "34e2a9f4cdc483a5",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "format": "json",
+   "formatversion": 2,
+   "redirects": 1,
+   "titles": "2026 United States Senate election in Arizona|2026 United States Senate special election in Arizona"
+  }
+ },
+ "status": 200
+}

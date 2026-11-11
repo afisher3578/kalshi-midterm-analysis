@@ -1,0 +1,32 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "query": {
+   "pages": [
+    {
+     "missing": true,
+     "ns": 0,
+     "title": "2026 United States Senate special election in Texas"
+    },
+    {
+     "ns": 0,
+     "pageid": 65822774,
+     "title": "2026 United States Senate election in Texas"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:43:33Z",
+ "query_hash": "1470919ff667de53",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "format": "json",
+   "formatversion": 2,
+   "redirects": 1,
+   "titles": "2026 United States Senate election in Texas|2026 United States Senate special election in Texas"
+  }
+ },
+ "status": 200
+}

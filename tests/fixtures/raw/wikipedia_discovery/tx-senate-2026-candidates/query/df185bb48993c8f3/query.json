@@ -1,0 +1,411 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "limits": {
+   "categories": 500
+  },
+  "query": {
+   "pages": [
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:All article disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Place name disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      }
+     ],
+     "ns": 0,
+     "pageid": 956263,
+     "pageprops": {
+      "disambiguation": ""
+     },
+     "title": "Paxton"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1962 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:2020s anti-LGBTQ movement in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century American lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American far-right politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century members of the Texas Legislature"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All articles with dead external links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All pages needing factual verification"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American anti-abortion activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American anti-same-sex-marriage activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American evangelicals"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Anti-immigration activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Anti-transgender activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with dead external links from October 2022"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with dead external links from October 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with hAudio microformats"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with permanently dead external links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Baptists from Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Baylor University alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:CS1 maint: url-status"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 2026 United States Senate elections"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Christian nationalists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Impeached state attorneys general in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Ken Paxton"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Lawton, Oklahoma"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from McKinney, Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Minot, North Dakota"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Protesters in or near the January 6 United States Capitol attack"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party Texas state senators"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party members of the Texas House of Representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Tea Party movement activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Texas attorneys general"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Trumpism"
+      },
+      {
+       "ns": 14,
+       "title": "Category:University of Virginia School of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from November 2020"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from December 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Webarchive template wayback links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia articles needing factual verification from May 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia pending changes protected pages"
+      }
+     ],
+     "ns": 0,
+     "pageid": 29633288,
+     "title": "Ken Paxton"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:All set index articles"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Italian-language surnames"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Surnames"
+      }
+     ],
+     "ns": 0,
+     "pageid": 58633045,
+     "title": "Talarico"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1989 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century American educators"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century Presbyterians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century members of the Texas Legislature"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All pages needing factual verification"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American LGBTQ rights activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American Protestants"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American adoptees"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American anti-poverty advocates"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American politicians with disabilities"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American transgender rights activists"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with empty listen template"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Democratic Party members of the Texas House of Representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Harvard Graduate School of Education alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:LGBTQ rights activists from Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Round Rock, Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People with type 1 diabetes"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Austin, Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Presbyterians from Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Progressivism in the United States"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Schoolteachers from Texas"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description matches Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Texas Democrats"
+      },
+      {
+       "ns": 14,
+       "title": "Category:University of Texas at Austin alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from November 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from November 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia articles needing factual verification from September 2026"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Wikipedia semi-protected pages"
+      }
+     ],
+     "ns": 0,
+     "pageid": 61471978,
+     "title": "James Talarico"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:43:33Z",
+ "query_hash": "df185bb48993c8f3",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "cllimit": "max",
+   "format": "json",
+   "formatversion": 2,
+   "ppprop": "disambiguation",
+   "prop": "pageprops|categories",
+   "redirects": 1,
+   "titles": "James Talarico|Ken Paxton|Paxton|Talarico"
+  }
+ },
+ "status": 200
+}

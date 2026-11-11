@@ -1,0 +1,32 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "query": {
+   "pages": [
+    {
+     "missing": true,
+     "ns": 0,
+     "title": "2026 United States Senate special election in Kentucky"
+    },
+    {
+     "ns": 0,
+     "pageid": 65816354,
+     "title": "2026 United States Senate election in Kentucky"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:43:38Z",
+ "query_hash": "3f297771df0d0715",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "format": "json",
+   "formatversion": 2,
+   "redirects": 1,
+   "titles": "2026 United States Senate election in Kentucky|2026 United States Senate special election in Kentucky"
+  }
+ },
+ "status": 200
+}

@@ -1,0 +1,310 @@
+{
+ "body": {
+  "batchcomplete": true,
+  "limits": {
+   "categories": 500
+  },
+  "query": {
+   "pages": [
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:All article disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles containing Japanese-language text"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Place name disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      }
+     ],
+     "ns": 0,
+     "pageid": 405864,
+     "pageprops": {
+      "disambiguation": ""
+     },
+     "title": "Booker"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:All article disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Place name disambiguation pages"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      }
+     ],
+     "ns": 0,
+     "pageid": 920056,
+     "pageprops": {
+      "disambiguation": ""
+     },
+     "title": "Barr"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1973 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century Kentucky politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century United States representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All articles with failed verification"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All articles with unsourced statements"
+      },
+      {
+       "ns": 14,
+       "title": "Category:American Episcopalians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with failed verification from June 2019"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with hAudio microformats"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with unsourced statements from October 2023"
+      },
+      {
+       "ns": 14,
+       "title": "Category:CS1: unfit URL"
+      },
+      {
+       "ns": 14,
+       "title": "Category:CS1 maint: numeric names: authors list"
+      },
+      {
+       "ns": 14,
+       "title": "Category:CS1 maint: url-status"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Kentucky lawyers"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People appearing on C-SPAN"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Lexington, Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Republican Party United States representatives from Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description is different from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:University of Kentucky Rosenberg College of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:University of Virginia alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from November 2025"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from November 2026"
+      }
+     ],
+     "ns": 0,
+     "pageid": 37570631,
+     "title": "Andy Barr"
+    },
+    {
+     "categories": [
+      {
+       "ns": 14,
+       "title": "Category:1984 births"
+      },
+      {
+       "ns": 14,
+       "title": "Category:20th-century African-American politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century African-American politicians"
+      },
+      {
+       "ns": 14,
+       "title": "Category:21st-century members of the Kentucky General Assembly"
+      },
+      {
+       "ns": 14,
+       "title": "Category:African-American candidates for the United States Senate"
+      },
+      {
+       "ns": 14,
+       "title": "Category:African-American people in Kentucky politics"
+      },
+      {
+       "ns": 14,
+       "title": "Category:African-American state legislators in Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All Wikipedia articles written in American English"
+      },
+      {
+       "ns": 14,
+       "title": "Category:All articles with dead external links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with dead external links from March 2022"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with permanently dead external links"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Articles with short description"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 2020 United States Senate elections"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 2022 United States Senate elections"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Candidates in the 2026 United States Senate elections"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Commons category link from Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Democratic Party members of the Kentucky House of Representatives"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Living people"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Jefferson County, Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People from Louisville, Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:People with type 1 diabetes"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Politicians from Louisville, Kentucky"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Short description matches Wikidata"
+      },
+      {
+       "ns": 14,
+       "title": "Category:University of Louisville School of Law alumni"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use American English from July 2022"
+      },
+      {
+       "ns": 14,
+       "title": "Category:Use mdy dates from August 2024"
+      }
+     ],
+     "ns": 0,
+     "pageid": 62731192,
+     "title": "Charles Booker (American politician)"
+    }
+   ]
+  }
+ },
+ "fetched_at": "2026-11-11T07:44:14Z",
+ "query_hash": "002015c93191a326",
+ "request": {
+  "endpoint": "https://en.wikipedia.org/w/api.php",
+  "params": {
+   "action": "query",
+   "cllimit": "max",
+   "format": "json",
+   "formatversion": 2,
+   "ppprop": "disambiguation",
+   "prop": "pageprops|categories",
+   "redirects": 1,
+   "titles": "Andy Barr|Charles Booker (American politician)|Barr|Booker"
+  }
+ },
+ "status": 200
+}

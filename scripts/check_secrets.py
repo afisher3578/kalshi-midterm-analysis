@@ -34,13 +34,21 @@ PATTERNS = [
     ("Media Cloud style token header", re.compile(r"\bToken\s+[A-Fa-f0-9]{30,}")),
     ("JWT (e.g. Bluesky session token)", re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}")),
 ]
+# Wikipedia wikitext caches hold citation URLs from third-party sites with public token query parameters
+# (seen for Oregon: ...cfDetail.do?...&OWASP_CSRFTOKEN=XXXX-...; Montana: ...?task=file.download&token=<hex>).
+# They are page content, fetched with no key of ours. In those cache directories only, a token-named query
+# parameter inside a URL is blanked before the patterns run; everything else is still scanned.
+WIKITEXT_DIRS = (os.sep + "wikipedia_events" + os.sep, os.sep + "wikipedia_discovery" + os.sep)
+WIKITEXT_EXEMPT = re.compile(r"(https?://[^\s|\]}\"]*?[?&])[A-Za-z_]*token=[A-Za-z0-9\-]+", re.I)
 SKIP_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", "node_modules"}
 MAX_BYTES = 20 * 1024 * 1024
 
 
-def scan_text(text: str) -> list[tuple[str, int]]:
+def scan_text(text: str, wikitext: bool = False) -> list[tuple[str, int]]:
     hits = []
     for lineno, line in enumerate(text.splitlines(), 1):
+        if wikitext:
+            line = WIKITEXT_EXEMPT.sub(r"\1", line)
         for label, rx in PATTERNS:
             if rx.search(line):
                 hits.append((label, lineno))
@@ -57,7 +65,8 @@ def scan_file(path: str) -> list[tuple[str, str, int]]:
         return []
     if b"\0" in raw[:4096]:
         return []
-    return [(path, label, ln) for label, ln in scan_text(raw.decode("utf-8", "replace"))]
+    wikitext = any(d in path for d in WIKITEXT_DIRS)
+    return [(path, label, ln) for label, ln in scan_text(raw.decode("utf-8", "replace"), wikitext)]
 
 
 def iter_files(paths: list[str]):
