@@ -293,3 +293,68 @@ export function calendarChart(width: number, days: CalDay[], unit: string, aria:
     ],
   });
 }
+
+// ---------------------------------------------------------------- MC2: news view panels
+
+export interface LineSeries { label: string; points: { t: Date; v: Num }[] }
+
+/** Two or more daily lines on the shared time axis, each with its own color, dash and an end label (so the lines
+ * are told apart without color). `ref` draws a horizontal reference line (e.g. 50%). */
+export function linesChart(frame: Frame, series: LineSeries[], o: { label: string; aria: [string, string]; height?: number;
+  domain?: [number, number]; ref?: number; percent?: boolean; fraction?: boolean }) {
+  const marks: Plot.Markish[] = [];
+  if (o.ref !== undefined) marks.push(Plot.ruleY([o.ref], { stroke: COLORS.zero, strokeDasharray: "4,3" }));
+  series.forEach((s, k) => {
+    const color = SERIES_COLORS[k % SERIES_COLORS.length];
+    const dash = SERIES_DASH[k % SERIES_DASH.length] ?? undefined;
+    marks.push(Plot.lineY(s.points, { x: "t", y: "v", stroke: color, strokeWidth: 1.6, strokeDasharray: dash }),
+      Plot.dot(s.points, { x: "t", y: "v", r: 1.6, fill: color }));
+    const last = [...s.points].reverse().find((p) => p.v !== null);
+    if (last) marks.push(Plot.text([last], { x: "t", y: "v", text: () => `${k + 1}`, dx: 6, fill: color, fontWeight: 700,
+      textAnchor: "start", stroke: "white", strokeWidth: 3, paintOrder: "stroke" }));
+  });
+  return panel({ frame, height: o.height ?? 220, ariaLabel: o.aria[0], ariaDescription: o.aria[1],
+    y: { label: o.label, ...(o.percent || o.fraction ? { ticks: [0, 0.5, 1] } : { ticks: 4 }),
+      ...(o.domain ? { domain: o.domain } : { nice: true, zero: true }),
+      tickFormat: o.percent ? format(".0%") : o.fraction ? format(".1f") : format("~s") },
+    marks });
+}
+
+/** One bar per UTC day (daily totals such as Kalshi volume per day). */
+export function dailyBarsChart(frame: Frame, points: { date: string; v: Num }[], o: { label: string; aria: [string, string] }) {
+  return panel({ frame, height: 160, ariaLabel: o.aria[0], ariaDescription: o.aria[1],
+    y: { label: o.label, ticks: 4, nice: true, zero: true, tickFormat: format("~s") },
+    marks: [Plot.rectY(points, { x1: (p: { date: string }) => new Date(Date.parse(p.date + "T00:00:00Z") + 3_600_000 * 2),
+      x2: (p: { date: string }) => new Date(Date.parse(p.date + "T00:00:00Z") + DAY_MS - 3_600_000 * 2),
+      y: (p: { v: Num }) => p.v, fill: COLORS.bar })] });
+}
+
+/** A labeled empty panel on the shared axis: the frame, the time axis and a message, no y values (not zeros). */
+export function emptyChart(frame: Frame, message: string, aria: [string, string], height = 150) {
+  return panel({ frame, height, ariaLabel: aria[0], ariaDescription: aria[1],
+    y: { domain: [0, 1], ticks: [], label: null },
+    // bottom left, clear of the election-day label in the top right corner
+    marks: [Plot.text([message], { frameAnchor: "bottom-left", dx: 8, dy: -10, textAnchor: "start", lineAnchor: "bottom",
+      text: (d: string) => d, fill: "#374151", fontSize: 13, fontWeight: 600, stroke: "white", strokeWidth: 4,
+      paintOrder: "stroke", lineWidth: 24 })] });
+}
+
+export interface BarRow { label: string; count: number }
+
+/** Horizontal bars, largest first, each with its value printed at the end of the bar. */
+/** `label` names the x unit; it goes in the caller's text, not on the axis (it collided with the last tick). */
+export function hbarChart(width: number, rows: BarRow[], o: { label: string; aria: [string, string] }) {
+  const narrow = width < 560;
+  return svgPlot({
+    width, height: 40 + rows.length * (narrow ? 42 : 26), marginLeft: narrow ? 8 : 250, marginRight: 56, marginTop: 28, marginBottom: 8,
+    ariaLabel: o.aria[0], ariaDescription: o.aria[1],
+    x: { axis: "top", label: null, grid: true, nice: true, tickFormat: format("~s"), ticks: narrow ? 3 : 6 },
+    y: { domain: rows.map((r) => r.label), label: null, axis: narrow ? null : "left", tickSize: 0, padding: narrow ? 0.55 : 0.25 },
+    marks: [
+      Plot.barX(rows, { x: "count", y: "label", fill: COLORS.bar }),
+      Plot.text(rows, { x: "count", y: "label", text: (r: BarRow) => format(",")(r.count), dx: 4, textAnchor: "start", fontSize: 11 }),
+      ...(narrow ? [Plot.text(rows, { x: 0, y: "label", text: "label", dy: -14, textAnchor: "start", fontSize: 11,
+        fill: "#1f2937", stroke: "white", strokeWidth: 3, paintOrder: "stroke" })] : []),
+    ],
+  });
+}

@@ -3,6 +3,7 @@ import { format } from "d3";
 import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, SHOW_FUNDING_DISCLOSURE, SOURCE_LABEL,
   SOURCE_NOTES, STATES } from "./config";
 import { fmtMap, renderMap, type StateCell } from "./map";
+import { loadNewsModel, NewsView } from "./newsview";
 import { el, esc, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
 import type { IndexData, IndexRace, RaceData } from "./types";
 import { byOffice, clampRange, densityBand, type DensityBand, mapValue, type MapMetric, PLATFORM_GROUP, raceIdFromSearch,
@@ -26,12 +27,15 @@ interface Ui extends RaceUi {
   band: DensityBand;
   state: string | null;
   race: string | null;
+  page: "race" | "news";  // ?view=news opens the News (Media Cloud) view; the other view values pick the panel transform
+  demo: boolean;          // ?demo=1: ask the local dashboard server for the synthetic Media Cloud fixture
 }
 
 const app = document.getElementById("app")!;
 const raceCache = new Map<string, RaceData>();
 let index: IndexData;
 let view: RaceView | null = null;
+let newsView: NewsView | null = null;
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -61,10 +65,16 @@ function readUi(): Ui {
     focus: q.get("focus") ?? "wikipedia/pageviews_total",
     state: /^[A-Z]{2}$/.test(st) ? st : null,
     race: raceParam || null,
+    page: q.get("view") === "news" ? "news" : "race",
+    demo: q.get("demo") === "1",
   };
 }
 
 function writeUrl(ui: Ui) {
+  history.replaceState(null, "", queryFor(ui));
+}
+
+function queryFor(ui: Ui, page = ui.page): string {
   const q = new URLSearchParams();
   if (ui.race) q.set("race", ui.race);
   if (ui.state) q.set("state", ui.state);
@@ -73,13 +83,15 @@ function writeUrl(ui: Ui) {
   if (ui.band !== "all") q.set("band", ui.band);
   if (ui.group !== "all") q.set("group", ui.group);
   if (ui.source !== "all") q.set("source", ui.source);
-  if (ui.view !== "raw") q.set("view", ui.view);
+  if (page === "news") q.set("view", "news");
+  else if (ui.view !== "raw") q.set("view", ui.view);
+  if (ui.demo) q.set("demo", "1");
   if (ui.overlay) q.set("events", "on");
   const r = ui.race ? index.races[ui.race] : undefined;
   if (r && ui.from && ui.from !== r.window.start) q.set("from", ui.from);
   if (r && ui.to && ui.to !== r.window.end) q.set("to", ui.to);
   if (ui.focus !== "wikipedia/pageviews_total") q.set("focus", ui.focus);
-  history.replaceState(null, "", `${location.pathname}?${q.toString()}`);
+  return `${location.pathname}?${q.toString()}`;
 }
 
 function racesIn(state: string, office: string): IndexRace[] {
@@ -118,7 +130,7 @@ async function main() {
   renderShell(ui);
   drawMap(ui);
   await openRace(ui, false);
-  new ResizeObserver(() => view?.draw()).observe(document.getElementById("race")!);
+  new ResizeObserver(() => { view?.draw(); newsView?.draw(); }).observe(document.getElementById("race")!);
   document.body.dataset.ready = "true";
 }
 
@@ -172,7 +184,7 @@ function renderShell(ui: Ui) {
       <th scope="col">Polling band</th><th scope="col">Quality (series)</th><th scope="col">Open</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="map-none"></p>`);
   const raceSec = el("section", { "aria-labelledby": "race-h", id: "racesec" }, `
-    <div id="race-switch"></div><div id="race" aria-live="polite"></div>`);
+    <div id="race-switch"></div><nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`);
   main.append(filters, mapSec, raceSec);
   app.append(header, main, footer());
   filters.addEventListener("submit", (e) => e.preventDefault());
@@ -274,8 +286,10 @@ async function openRace(ui: Ui, scroll: boolean) {
   const root = document.getElementById("race")!;
   const sw = document.getElementById("race-switch")!;
   (document.getElementById("f-state") as HTMLSelectElement).value = ui.state ?? "";
+  const tabs = document.getElementById("race-tabs")!;
   if (!ui.race) {
     sw.innerHTML = "";
+    tabs.innerHTML = "";
     root.innerHTML = `<p class="note" id="race-h">No race selected. Pick a state above.</p>`;
     writeUrl(ui);
     return;
@@ -300,6 +314,25 @@ async function openRace(ui: Ui, scroll: boolean) {
   [ui.from, ui.to] = clampRange(ui.from || null, ui.to || null, data.window.start, data.window.end);
   syncDateInputs(ui, data);
   if (!shownSeries(data, ui).includes(ui.focus)) ui.focus = shownSeries(data, ui)[0] ?? ui.focus;
+  renderTabs(ui, tabs);
+  if (ui.page === "news") {
+    document.title = `${raceTitle(data)}: News (Media Cloud) | ${PROJECT_NAME}`;
+    view = null;
+    try {
+      const model = await loadNewsModel(data, ui.demo, getJson);
+      newsView = new NewsView(root, data, model);
+      newsView.render();
+      newsView.draw(true);
+    } catch (e) {
+      root.innerHTML = `<p class="error" role="alert">Could not load the Media Cloud data for ${esc(ui.race)}
+        (${esc((e as Error).message)}).</p>`;
+    }
+    writeUrl(ui);
+    updateHint(ui, data);
+    if (scroll) document.getElementById("race-h")?.scrollIntoView({ block: "start" });
+    return;
+  }
+  newsView = null;
   document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
   view = new RaceView(root, data, ui);
   root.addEventListener("uichange", () => writeUrl(ui));
@@ -308,6 +341,19 @@ async function openRace(ui: Ui, scroll: boolean) {
   writeUrl(ui);
   updateHint(ui, data);
   if (scroll) document.getElementById("race-h")?.scrollIntoView({ block: "start" });
+}
+
+/** Links between the race overview and the News (Media Cloud) view; real links (the URL works on its own), switched
+ * in place on click. */
+function renderTabs(ui: Ui, nav: HTMLElement) {
+  const link = (page: "race" | "news", label: string) => `<li><a href="${esc(queryFor(ui, page))}" data-page="${page}"${
+    ui.page === page ? ' aria-current="page"' : ""}>${label}</a></li>`;
+  nav.innerHTML = `<ul class="tabs">${link("race", "Overview: Kalshi and attention")}${link("news", "News (Media Cloud)")}</ul>`;
+  nav.querySelectorAll<HTMLAnchorElement>("a[data-page]").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    ui.page = a.dataset.page as "race" | "news";
+    openRace(ui, false).then(() => document.querySelector<HTMLAnchorElement>(`#race-tabs a[data-page="${ui.page}"]`)?.focus());
+  }));
 }
 
 function syncDateInputs(ui: Ui, data: RaceData) {
