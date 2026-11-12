@@ -94,9 +94,14 @@ Pipeline for one race (default sources from `default_sources` in `config/project
 ```
 python -m raceattn validate --race tx-senate-2026        # check the race config and the Media Cloud query file
 python -m raceattn run --race tx-senate-2026             # all default sources; keyed ones without a key are skipped
-python -m raceattn run --race tx-senate-2026 --sources kalshi,wikipedia
+python -m raceattn run --race tx-senate-2026 --sources kalshi,wikipedia   # quick test; replaces the race JSON
 python -m raceattn run --all                             # every confirmed config in config/races/
 ```
+
+Any run with `--sources` rewrites `data/processed/<race>.json` with only the sources of that run. There is no
+merge (this is still true in `raceattn/pipeline.py`). So the `--sources kalshi,wikipedia` line above drops
+Bluesky, Kalshi trades and any other source from the dashboard until you run the full list again. To restore the
+race, run it without `--sources`, or with every source you want to keep.
 
 `--race` takes a race id (`config/races/<id>.yaml`) or a path to a yaml file. Other `run` options: `--refresh`,
 `--yes`, `--max-spend USD`, `--raw-dir`, `--out-dir`, `--mediacloud-pace SECONDS`. The raw cache (`data/raw/`) is
@@ -109,11 +114,10 @@ Media Cloud pull for Texas, once the key is in `.env`:
 python -m raceattn run --race tx-senate-2026 --sources kalshi,kalshi_trades,wikipedia,bluesky,news_mediacloud
 ```
 
-Plain `run --race tx-senate-2026` also includes Media Cloud, since it is in the default list. Do not run
-`--sources news_mediacloud` alone: each run rewrites `data/processed/<race>.json` with only the sources of that
-run (this is still true in `raceattn/pipeline.py`; there is no merge), so the Kalshi and Wikipedia data would drop
-out of the dashboard. The other sources come from the cache. The Texas query file makes 8 Media Cloud requests per
-run at 30 s apart, so about 4 minutes.
+Plain `run --race tx-senate-2026` also includes Media Cloud, since it is in the default list. Use the full source
+list as above. Do not run `--sources news_mediacloud` alone: for the reason above, the Kalshi, Wikipedia and
+Bluesky data would drop out of the dashboard. The other sources come from the cache. The Texas query file makes 8
+Media Cloud requests per run at 30 s apart, so about 4 minutes.
 
 Other commands:
 
@@ -150,8 +154,10 @@ What you see:
 
 The News tab's empty state ("No Media Cloud data has been pulled for this race") means no Media Cloud pull has
 run for this race yet, usually because there is no key. It is not zero coverage. The card lists what is missing
-and the command to run. `--demo` serves synthetic Media Cloud data from memory, with a "DEMO DATA, not real" banner
-on every section. Nothing is written to disk.
+and the command to run. That command's `--sources` list is the sources of the last run for this race (from the
+race JSON) plus `news_mediacloud`. So after a quick test run with fewer sources, the suggested command is short
+too. Check it against the full list above before you run it. `--demo` serves synthetic Media Cloud data from
+memory, with a "DEMO DATA, not real" banner on every section. Nothing is written to disk.
 
 ## Data sources
 
@@ -270,8 +276,16 @@ python scripts/check_secrets.py
 ```
 
 `npm run verify` needs a built `web/dist` and a Chromium for Playwright. It starts the dashboard server itself
-(real and `--demo`), runs the render, news view and axe checks, and writes screenshots. Set `CHROME_PATH` to a
-Chromium binary if Playwright's bundled one is not installed.
+(real and `--demo`) and runs the render, news view and axe checks.
+
+`npm ci` does not download Playwright's browser. On a fresh clone, verify fails with
+`Executable doesn't exist ... chromium_headless_shell`. Fix it one of two ways:
+- Run `cd web && npx playwright install chromium && cd ..` once.
+- Or set `CHROME_PATH` to an installed Chromium or Chrome binary, for example
+  `CHROME_PATH=<path to chrome> npm run verify`. This was tested with a Chrome for Testing binary.
+
+Verify rewrites the PNGs in `docs/screenshots/`. Run `git status` afterwards and decide whether to keep or
+restore them (`git checkout -- docs/screenshots`).
 
 Status: the pipeline and dashboard work for six races (Texas Senate and Governor, Ohio, North Carolina, Florida,
 Kentucky Senate) with Kalshi, Wikipedia and, for five of them, Bluesky. No keyed source has run live. The Media
