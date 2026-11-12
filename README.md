@@ -224,6 +224,17 @@ and `data/processed/<race_id>.json` and makes no other network calls. The US map
 `?race=<race_id>` picks the race (default `tx-senate-2026`). The page loads its data with `fetch`, and
 browsers block `fetch` from `file://` pages, so open it over http (`npm run preview` or any static file server
 on `web/dist`), not by double-clicking `index.html`. The build is plain static files and can go on any host
-under any path. `npm run check` type-checks, `npm test` runs the transform tests, and `npm run verify` (with the
-preview running) does the offline render check, the state-switch check, the badge checks, screenshots and axe at
-390 and 1280 px. Details and results: `docs/m1-notes.md` and `docs/m3-notes.md`.
+under any path. `npm run check` type-checks, `npm test` runs the transform tests, and `npm run verify` (after a
+build; it starts the local dashboard server itself) does the offline render check, the state-switch check, the badge
+checks, the news view checks, screenshots and axe at 390 and 1280 px. Details and results: `docs/m1-notes.md` and `docs/m3-notes.md`.
+
+### Local dashboard
+
+    python -m raceattn dashboard --race tx-senate-2026          # builds web/ if needed, serves on 127.0.0.1:4173
+    python -m raceattn dashboard --race tx-senate-2026 --demo   # synthetic Media Cloud data, labeled DEMO DATA, not real
+
+It needs Node 20+ and npm to build, serves `data/processed` live (no rebuild after a pipeline run), and opens the
+News (Media Cloud) view of the race (`?race=<id>&view=news`; also a tab in the race section): status, datapoint
+tiles, five charts, the ten largest days with local-only sample headlines, the query drawer and CSV/JSON downloads.
+With no Media Cloud data it shows the steps to get a key and pull. `--no-open`, `--port N`. Details:
+`docs/mc2-notes.md`.
