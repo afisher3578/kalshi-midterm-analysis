@@ -16,8 +16,12 @@ All offline tests read these files; none of them needs a key or the network.
 | `news/guardian_day.json` | Guardian `/search` | **synthetic from docs** (no key): `response.status/total/...` per open-platform.theguardian.com |
 | `news/nyt_day.json` | NYT Article Search | **synthetic from docs** (no key): `response.meta.hits` per the published OpenAPI spec |
 | `news/mediacloud_count_over_time.json` | Media Cloud `search/count-over-time` | **synthetic from docs** (no key): `count_over_time.counts[].date/count/total_count/ratio` per the `mediacloud` python client |
+| `mediacloud/count_over_time_5day.synthetic.json` | Media Cloud `search/count-over-time`, one body per query of the Texas query config | **synthetic** (no key; `_synthetic: true`): made-up counts for 2026-10-01..05 with an explicit zero day, a missing date, a zero denominator and a date outside the window. Used with `tests/configs/tx-mc-5day.yaml` |
+| `mediacloud/story_list.synthetic.json` | Media Cloud `search/story-list`, three pages with pagination tokens | **synthetic** (`_synthetic: true`): 250 made-up stories on `.test` domains, some sharing a title across domains; each carries a `text` field so tests can check it is never stored |
+| `mediacloud/collections_texas.synthetic.json` | Media Cloud `sources/collections/` search | **synthetic** (`_synthetic: true`): made-up ids and names |
 | `news/gdelt_timelinevolraw.json` | GDELT DOC 2.0 `timelinevolraw` | **synthetic from docs**: `timeline[0].data[].date/value` as used by the pilot script; the live probe was rate limited (HTTP 429) |
 | `news_manual/*.csv` | manual CSV import | hand-written test inputs |
 
-Synthetic fixtures carry `"_fixture": "synthetic from docs"` at the top level. Replace them with recorded
+Synthetic fixtures carry `"_fixture": "synthetic from docs"` (or `"_fixture": "synthetic"` and `"_synthetic": true`
+for the Media Cloud ones under `mediacloud/`) at the top level. None of them is ever written to data/processed/. Replace them with recorded
 responses once a key is available (see docs/m2-notes.md).

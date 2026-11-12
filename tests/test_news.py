@@ -87,10 +87,12 @@ def test_nyt_sleeps_between_calls_and_accepts_metadata_spelling():
 
 
 def test_mediacloud_header_key_and_series(tmp_path):
+    """The old news_query path, used when the race has no config/queries/<race>.mediacloud.yaml."""
     race = load_race("tx-senate-2026")
     k = key()
     http, sess = fake_http(lambda *a: Resp(200, fx("mediacloud_count_over_time")))
-    c = MediaCloudConnector(http=http, cache=Cache(str(tmp_path)), env={"MEDIACLOUD_API_KEY": k})
+    c = MediaCloudConnector(http=http, cache=Cache(str(tmp_path / "raw")), env={"MEDIACLOUD_API_KEY": k},
+                            queries_dir=str(tmp_path / "no_query_files"))
     rows = c.fetch(race, race.window)
     assert len(rows) == 65 and rows[0].series == "news_mediacloud/story_count" and rows[0].value == 30
     r = sess.requests[0]

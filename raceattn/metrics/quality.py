@@ -64,8 +64,10 @@ def _runs(flags: list[bool]) -> list[tuple[int, int]]:
 
 
 def compute_quality(daily: dict[dt.date, Optional[float]], days: list[dt.date], check_near_zero: bool = True,
-                    extra: dict[str, Any] | None = None) -> Quality:
-    """daily maps date -> value (None or absent = missing). days is the full window, in order."""
+                    extra: dict[str, Any] | None = None, min_near_zero_days: int = 1) -> Quality:
+    """daily maps date -> value (None or absent = missing). days is the full window, in order.
+    min_near_zero_days: shortest near-zero stretch that counts (1 for the M0 rule; Media Cloud uses 2, per
+    docs/mediacloud-search-criteria.md section 7)."""
     vals = [daily.get(d) for d in days]
     present = [v is not None for v in vals]
     missing = [d.isoformat() for d, p in zip(days, present) if not p]
@@ -85,6 +87,8 @@ def compute_quality(daily: dict[dt.date, Optional[float]], days: list[dt.date], 
             # neighbors: nearest present days outside the stretch
             left = next((k for k in range(i - 1, -1, -1) if vals[k] is not None), None)
             right = next((k for k in range(j + 1, len(vals)) if vals[k] is not None), None)
+            if j - i + 1 < min_near_zero_days:
+                continue
             if (left is not None and normal[left]) or (right is not None and normal[right]):
                 near_zero.append({"start": days[i].isoformat(), "end": days[j].isoformat(), "days": j - i + 1,
                                   "values": [vals[k] for k in range(i, j + 1)], "median": med})

@@ -1,0 +1,26 @@
+{
+ "_fixture": "synthetic",
+ "_synthetic": true,
+ "_note": "SYNTHETIC collections search result, not Media Cloud output; ids and names are made up. Shape per the mediacloud python client (DRF paging: count, next, previous, results[]).",
+ "count": 2,
+ "next": null,
+ "previous": null,
+ "results": [
+  {
+   "id": 900001,
+   "name": "Synthetic Texas - State & Local",
+   "platform": "online_news",
+   "source_count": 123,
+   "public": true,
+   "featured": false
+  },
+  {
+   "id": 900002,
+   "name": "Synthetic Texas - Spanish",
+   "platform": "online_news",
+   "source_count": 7,
+   "public": true,
+   "featured": false
+  }
+ ]
+}

@@ -5,6 +5,8 @@
 
 # cached raw API responses (may be large, re-fetchable)
 data/raw/
+# local-only files (Media Cloud audit samples with story titles and URLs; never published)
+data/local/
 
 # python
 __pycache__/

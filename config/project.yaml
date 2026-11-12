@@ -28,6 +28,8 @@ connectors:
     sleep_seconds: 12              # NYT allows 5 requests a minute
   gdelt:
     sleep_seconds: 6               # GDELT asks for one request per 5 seconds
+  news_mediacloud:
+    pace_seconds: 30               # between Media Cloud requests (some endpoints allow 2 a minute); `run --mediacloud-pace`
 
 # Event and spike metrics (spec section 8).
 events:

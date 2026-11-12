@@ -19,7 +19,12 @@ REDACTED = "[REDACTED]"
 
 
 class FetchError(RuntimeError):
-    """A request failed for good (blocked, repeated errors). The pipeline stops and reports it."""
+    """A request failed for good (blocked, repeated errors). The pipeline stops and reports it.
+    `status` is the HTTP status when the failure was an HTTP response, else None."""
+
+    def __init__(self, message: str, status: int | None = None):
+        super().__init__(message)
+        self.status = status
 
 
 def redact(text: str, secrets: list[str] | tuple[str, ...]) -> str:
@@ -46,8 +51,9 @@ def _secret_values(headers: dict[str, str] | None, secret_params: dict[str, str]
 
 class HttpClient:
     def __init__(self, sleep: float = 0.3, max_retries: int = 4, backoff: float = 2.0, timeout: float = 60.0,
-                 session: requests.Session | None = None):
+                 session: requests.Session | None = None, stop_status: tuple[int, ...] = ()):
         self.sleep = sleep
+        self.stop_status = tuple(stop_status)  # statuses that raise at once, with no retry (e.g. 429 for Media Cloud)
         self.max_retries = max_retries
         self.backoff = backoff
         self.timeout = timeout
@@ -99,12 +105,15 @@ class HttpClient:
                         if r.status_code != 200:
                             return r.status_code, {"text": redact((r.text or "")[:2000], secrets)}
                         raise FetchError("%s returned HTTP %d with a non-JSON body" % (url, r.status_code))
+                if r.status_code in self.stop_status:
+                    raise FetchError(redact("%s returned HTTP %d. Stopping; not retrying. Body: %s"
+                                            % (url, r.status_code, (r.text or "")[:300]), secrets), r.status_code)
                 if r.status_code == 403:
                     raise FetchError(redact("%s returned HTTP 403 (blocked or forbidden). Stopping; not retrying. "
-                                            "Body: %s" % (url, (r.text or "")[:300]), secrets))
+                                            "Body: %s" % (url, (r.text or "")[:300]), secrets), 403)
                 if r.status_code not in RETRY_STATUS:
                     raise FetchError(redact("%s returned HTTP %d: %s" % (url, r.status_code, (r.text or "")[:300]),
-                                            secrets))
+                                            secrets), r.status_code)
                 last = "HTTP %d" % r.status_code
             if attempt < self.max_retries:
                 time.sleep(self.backoff ** attempt)

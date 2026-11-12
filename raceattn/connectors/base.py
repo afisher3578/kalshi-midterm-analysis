@@ -156,17 +156,27 @@ class Connector:
         A paid connector (cost_model != free) never re-pulls a cached read, even with --refresh."""
         path = self.cache.path(self.id, race.race_id, window.label, dir_hash, name) if self.cache else None
         reuse = (not self.refresh or self.cost_model != "free") if use_cache is None else use_cache
-        if path and reuse:
-            rec = self.cache.get(path)
-            if rec is not None:
-                self.cache_hits += 1
-                return rec
-        auth = {k: v for k, v in (("headers", headers), ("secret_params", secret_params)) if v}
-        status, body = self.http.get_json(q.endpoint, q.params, ok_status=ok_status, **auth)
-        self.fetches += 1
-        body = scrub(body, list((secret_params or {}).values()) + [v.split(None, 1)[-1] for v in (headers or {}).values()])
-        rec = {"request": {"endpoint": q.endpoint, "params": dict(q.params)}, "query_hash": q.query_hash,
-               "status": status, "fetched_at": now_utc(), "body": body}
-        if path:
-            self.cache.put(path, rec)
+        rec, hit = cached_request(self.cache, path, self.http, q, reuse, ok_status, headers, secret_params)
+        if hit:
+            self.cache_hits += 1
+        else:
+            self.fetches += 1
         return rec
+
+
+def cached_request(cache: Cache | None, path: str | None, http: Any, q: RenderedQuery, reuse: bool,
+                   ok_status: tuple[int, ...] = (200,), headers: dict[str, str] | None = None,
+                   secret_params: dict[str, str] | None = None) -> tuple[dict[str, Any], bool]:
+    """(cache record, was a cache hit). Shared by Connector.cached_get and the Media Cloud CLI commands."""
+    if cache and path and reuse:
+        rec = cache.get(path)
+        if rec is not None:
+            return rec, True
+    auth = {k: v for k, v in (("headers", headers), ("secret_params", secret_params)) if v}
+    status, body = http.get_json(q.endpoint, q.params, ok_status=ok_status, **auth)
+    body = scrub(body, list((secret_params or {}).values()) + [v.split(None, 1)[-1] for v in (headers or {}).values()])
+    rec = {"request": {"endpoint": q.endpoint, "params": dict(q.params)}, "query_hash": q.query_hash,
+           "status": status, "fetched_at": now_utc(), "body": body}
+    if cache and path:
+        cache.put(path, rec)
+    return rec, False

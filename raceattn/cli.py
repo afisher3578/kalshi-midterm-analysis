@@ -29,6 +29,9 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--max-spend", type=float, default=None, metavar="USD", help="allow paid connectors up to this estimate")
     r.add_argument("--raw-dir", default=DEFAULT_RAW, help="raw response cache (default: data/raw)")
     r.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir (default: data/processed)")
+    r.add_argument("--mediacloud-pace", type=float, default=None, metavar="SECONDS",
+                   help="seconds between Media Cloud requests (default: connectors.news_mediacloud.pace_seconds in "
+                        "config/project.yaml, 30)")
     v = sub.add_parser("validate", help="validate a race config and print a summary")
     v.add_argument("--race", required=True)
     e = sub.add_parser("events", help="draft config/events/<race>.csv from the race's Wikipedia page")
@@ -42,6 +45,37 @@ def build_parser() -> argparse.ArgumentParser:
     dv.add_argument("--refresh", action="store_true", help="re-fetch instead of using the cached responses")
     dv.add_argument("--raw-dir", default=DEFAULT_RAW)
     dv.add_argument("--drafts-dir", default=None, help="default: config/races/drafts")
+    mc = sub.add_parser("mediacloud", help="Media Cloud collections lookup and the audit workflow")
+    mcs = mc.add_subparsers(dest="mc_cmd", required=True)
+
+    def mc_common(sp):
+        sp.add_argument("--refresh", action="store_true", help="re-fetch instead of using cached responses")
+        sp.add_argument("--pace", type=float, default=None, metavar="SECONDS",
+                        help="seconds between Media Cloud requests (default 30, or the project setting)")
+        sp.add_argument("--raw-dir", default=DEFAULT_RAW)
+
+    col = mcs.add_parser("collections", help="search Media Cloud collections by name (needs MEDIACLOUD_API_KEY)")
+    cg = col.add_mutually_exclusive_group(required=True)
+    cg.add_argument("--state", help="two-letter state code; searches the state's name (e.g. TX -> Texas)")
+    cg.add_argument("--name", help="any name to search")
+    col.add_argument("--max-pages", type=int, default=5, help="pages of 100 collections (default 5)")
+    mc_common(col)
+    au = mcs.add_parser("audit", help="draw random stories per core query and collection into a git-ignored CSV")
+    au.add_argument("--race", required=True)
+    au.add_argument("--phase", required=True, choices=["tuning", "analysis"])
+    au.add_argument("--n", type=int, default=None, help="stories per query and collection (default: the config, 100)")
+    au.add_argument("--seed", type=int, default=1)
+    au.add_argument("--max-pages", type=int, default=20, help="story-list pages per query and collection (default 20)")
+    au.add_argument("--page-size", type=int, default=1000, help="stories per page requested (default 1000)")
+    au.add_argument("--out", default=None, help="default: data/local/mediacloud/audit/<race>/<phase>.csv")
+    au.add_argument("--force", action="store_true", help="overwrite a CSV that already has coded rows")
+    mc_common(au)
+    pr = mcs.add_parser("precision", help="precision with a Wilson 95%% interval from a coded audit CSV")
+    pr.add_argument("csv")
+    pr.add_argument("--target", type=float, default=0.90, help="precision target (default 0.90)")
+    ag = mcs.add_parser("agreement", help="agreement and Krippendorff's alpha between two coders' CSVs")
+    ag.add_argument("csv_a")
+    ag.add_argument("csv_b")
     pub = sub.add_parser("publish", help="check processed output before publishing (licensing, funding flag)")
     pub.add_argument("--out-dir", default=DEFAULT_OUT)
     return p
@@ -74,6 +108,15 @@ def cmd_events(args) -> int:
     return 0
 
 
+def run_settings(args):
+    """Project settings with --mediacloud-pace applied, or None to let run() load them."""
+    if getattr(args, "mediacloud_pace", None) is None:
+        return None
+    settings = load_settings()
+    settings.setdefault("connectors", {}).setdefault("news_mediacloud", {})["pace_seconds"] = args.mediacloud_pace
+    return settings
+
+
 def cmd_run_all(args) -> int:
     import time
 
@@ -90,7 +133,7 @@ def cmd_run_all(args) -> int:
         t0 = time.time()
         try:
             run(race, sources, raw_dir=args.raw_dir, out_dir=args.out_dir, refresh=args.refresh, yes=args.yes,
-                max_spend=args.max_spend)
+                max_spend=args.max_spend, settings=run_settings(args))
             print("wrote %s/%s.json (%.0f s)" % (args.out_dir, race.race_id, time.time() - t0))
         except (PipelineError, FetchError) as e:
             failed[race.race_id] = str(e)
@@ -110,6 +153,91 @@ def cmd_discover(args) -> int:
     print(discover.report_markdown(rep))
     print("wrote %d draft(s) and discover-report-%s.md/.json in %s" % (
         len(rep["resolved"]), args.office, os.path.relpath(args.drafts_dir or discover.DRAFTS_DIR)))
+    return 0
+
+
+def mediacloud_pace(args) -> float:
+    if getattr(args, "pace", None) is not None:
+        return args.pace
+    conf = (load_settings().get("connectors") or {}).get("news_mediacloud") or {}
+    return float(conf.get("pace_seconds", 30.0))
+
+
+def cmd_mediacloud(args) -> int:
+    from raceattn import mcqueries, mediacloud as mc
+    from raceattn.discover import STATES
+
+    if args.mc_cmd == "precision":
+        rows = mc.read_audit(args.csv)
+        print("precision = relevant yes / (yes + no); unclear and blank rows are left out (counted below). "
+              "Wilson 95%% interval. Target %.2f." % args.target)
+        print("%-18s %-12s %5s %5s %4s %7s %7s %7s  %-9s  %s" % ("query", "collection", "rows", "yes", "no",
+                                                                "unclear", "uncoded", "invalid", "precision",
+                                                                "wilson 95%"))
+        for r in mc.precision(rows, args.target):
+            lo, hi = r["wilson95"]
+            print("%-18s %-12s %5d %5d %4d %7d %7d %7d  %-9s  %s%s" % (
+                r["query"], r["collection"], r["rows"], r["yes"], r["no"], r["unclear"], r["uncoded"], r["invalid"],
+                "n/a" if r["precision"] is None else "%.3f" % r["precision"],
+                "n/a" if lo is None else "%.3f to %.3f" % (lo, hi),
+                "" if r["meets_target"] is None else ("" if r["meets_target"] else "  BELOW TARGET")))
+        return 0
+    if args.mc_cmd == "agreement":
+        res = mc.agreement(mc.read_audit(args.csv_a), mc.read_audit(args.csv_b))
+        print("joined on (query, collection, story_id): %d stories in both files, %d only in A, %d only in B"
+              % (res["joined"], res["only_a"], res["only_b"]))
+        print("a variable counts for a story only when both coders filled it; values compared after trimming and "
+              "lower-casing. Targets: alpha 0.80, drop the variable below 0.70 (Lacy et al. 2015).")
+        for var, v in res["variables"].items():
+            a = v["krippendorff_alpha"]
+            print("  %-9s n=%-4d simple agreement %s, Krippendorff's alpha (nominal) %s%s" % (
+                var, v["n_units"], "n/a" if v["simple_agreement"] is None else "%.3f" % v["simple_agreement"],
+                "n/a" if a is None else "%.3f" % a,
+                (" (%s)" % v["alpha_detail"]["reason"]) if a is None and v["alpha_detail"].get("reason") else
+                ("  BELOW 0.70: drop this variable" if a is not None and a < 0.70 else "")))
+        return 0
+
+    key = (os.environ.get(mc.ENV_KEY) or "").strip()
+    if not key:
+        print("error: " + mc.NO_KEY, file=sys.stderr)
+        return 2
+    client = mc.Client(key, raw_dir=args.raw_dir, refresh=args.refresh, pace_seconds=mediacloud_pace(args))
+    try:
+        if args.mc_cmd == "collections":
+            name = STATES[args.state.upper()] if args.state else args.name
+            if args.state and args.state.upper() not in STATES:
+                print("error: unknown state code %s" % args.state, file=sys.stderr)
+                return 2
+            res = mc.search_collections(client, name, max_pages=args.max_pages)
+            print("Media Cloud collections matching %r (endpoint sources/collections/ is unverified):" % name)
+            print("%-12s %-8s %-12s %s" % ("id", "sources", "platform", "name"))
+            for c in res["results"]:
+                print("%-12s %-8s %-12s %s" % (c.get("id"), c.get("source_count", "?"), c.get("platform", "?"),
+                                              c.get("name")))
+            print("%d shown of %s%s" % (len(res["results"]), res["count"], "" if res["complete"] else
+                                       " (more pages: raise --max-pages)"))
+            print("Record the chosen collection's name, id, source count and today's date (looked_up_on) in "
+                  "config/queries/<race>.mediacloud.yaml.")
+        else:
+            race = load_race(args.race)
+            cfg = mcqueries.find(race.race_id)
+            if cfg is None:
+                print("error: no %s" % os.path.relpath(mcqueries.path_for(race.race_id)), file=sys.stderr)
+                return 2
+            n = args.n or int(cfg.audit.get("per_query_per_collection", 100))
+            print("audit %s, phase %s (%s..%s), n=%d per core query and collection, seed %d; core queries: %s"
+                  % (race.race_id, args.phase, *[d.isoformat() for d in cfg.phase(args.phase)], n, args.seed,
+                     ", ".join(cfg.core_queries)))
+            res = mc.run_audit(cfg, client, args.phase, n, args.seed, max_pages=args.max_pages,
+                               page_size=args.page_size, out_path=args.out, force=args.force)
+            o = res["syndication_overall"]
+            print("syndication duplicate rate in the sample (same normalized title on 2+ domains): %s"
+                  % mc._pct(o))
+            print("wrote %s (%d rows) and %s. Sampling is uniform over the retrieved stories; see the summary "
+                  "for any page cap." % (os.path.relpath(res["csv"]), sum(c["sampled"] for c in res["cells"]),
+                                         os.path.relpath(os.path.splitext(res["csv"])[0] + ".summary.json")))
+    finally:
+        print(client.request_line())
     return 0
 
 
@@ -142,8 +270,15 @@ def cmd_publish(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from raceattn import envfile
+
+    loaded = envfile.load_env()
+    if loaded:
+        print("loaded from .env: %s (values not shown)" % ", ".join(sorted(loaded)), file=sys.stderr)
     args = build_parser().parse_args(argv)
     try:
+        if args.cmd == "mediacloud":
+            return cmd_mediacloud(args)
         if args.cmd == "publish":
             return cmd_publish(args)
         if args.cmd == "events":
@@ -154,14 +289,23 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_run_all(args)
         race = load_race(args.race)
         if args.cmd == "validate":
+            from raceattn import mcqueries
+
             print("ok: %s (%s %s), window %s..%s, %d excluded day(s)" % (
                 race.race_id, race.state, race.office, race.window.start, race.window.end, len(race.exclude_days)))
+            cfg = mcqueries.find(race.race_id)
+            if cfg is not None:
+                print("ok: %s version %d, status %s, %d queries, collections configured: %s; not configured: %s; "
+                      "config sha256 %s" % (os.path.relpath(cfg.path), cfg.version, cfg.status, len(cfg.queries),
+                                            ", ".join(c.key for c in cfg.configured_collections) or "none",
+                                            ", ".join(c.key for c in cfg.unconfigured_collections) or "none",
+                                            cfg.config_sha256))
             return 0
         sources = [s.strip() for s in args.sources.split(",") if s.strip()] if args.sources else None
         run(race, sources, raw_dir=args.raw_dir, out_dir=args.out_dir, refresh=args.refresh, yes=args.yes,
-            max_spend=args.max_spend)
+            max_spend=args.max_spend, settings=run_settings(args))
         print("wrote %s/%s.json and index.json" % (args.out_dir, race.race_id))
         return 0
-    except (ConfigError, PipelineError, FetchError) as e:
+    except (ConfigError, PipelineError, FetchError, ValueError, FileExistsError) as e:
         print("error: %s" % e, file=sys.stderr)
         return 2

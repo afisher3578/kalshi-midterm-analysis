@@ -1,0 +1,337 @@
+{
+ "_fixture": "synthetic",
+ "_synthetic": true,
+ "_note": "SYNTHETIC test data, not Media Cloud output. Made up by hand to exercise explicit zeros (2026-10-02), a missing date (talarico_race on 2026-10-04), a zero denominator (any_either on 2026-10-05) and a date outside the window (2026-09-30). Shape per the mediacloud python client: count_over_time.counts[].date/count/total_count/ratio.",
+ "by_query": {
+  "talarico_race": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 10,
+      "total_count": 20000,
+      "ratio": 0.0005
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 6,
+      "total_count": 21000,
+      "ratio": 0.00028571
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 4,
+      "total_count": 22000,
+      "ratio": 0.00018182
+     }
+    ]
+   }
+  },
+  "paxton_race": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 30,
+      "total_count": 20000,
+      "ratio": 0.0015
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 2,
+      "total_count": 21000,
+      "ratio": 9.524e-05
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 8,
+      "total_count": 19000,
+      "ratio": 0.00042105
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 12,
+      "total_count": 22000,
+      "ratio": 0.00054545
+     }
+    ]
+   }
+  },
+  "race_either": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 35,
+      "total_count": 20000,
+      "ratio": 0.00175
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 7,
+      "total_count": 21000,
+      "ratio": 0.00033333
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 9,
+      "total_count": 19000,
+      "ratio": 0.00047368
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 14,
+      "total_count": 22000,
+      "ratio": 0.00063636
+     }
+    ]
+   }
+  },
+  "race_both": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 5,
+      "total_count": 20000,
+      "ratio": 0.00025
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 1,
+      "total_count": 21000,
+      "ratio": 4.762e-05
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 3,
+      "total_count": 19000,
+      "ratio": 0.00015789
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 2,
+      "total_count": 22000,
+      "ratio": 9.091e-05
+     }
+    ]
+   }
+  },
+  "talarico_any": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 20,
+      "total_count": 20000,
+      "ratio": 0.001
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 9,
+      "total_count": 21000,
+      "ratio": 0.00042857
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 5,
+      "total_count": 19000,
+      "ratio": 0.00026316
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 6,
+      "total_count": 22000,
+      "ratio": 0.00027273
+     }
+    ]
+   }
+  },
+  "paxton_any": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 60,
+      "total_count": 20000,
+      "ratio": 0.003
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 5,
+      "total_count": 21000,
+      "ratio": 0.0002381
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 20,
+      "total_count": 19000,
+      "ratio": 0.00105263
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 30,
+      "total_count": 22000,
+      "ratio": 0.00136364
+     }
+    ]
+   }
+  },
+  "headline_either": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 3,
+      "total_count": 20000,
+      "ratio": 0.00015
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 1,
+      "total_count": 21000,
+      "ratio": 4.762e-05
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 1,
+      "total_count": 19000,
+      "ratio": 5.263e-05
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 1,
+      "total_count": 22000,
+      "ratio": 4.545e-05
+     }
+    ]
+   }
+  },
+  "any_either": {
+   "count_over_time": {
+    "counts": [
+     {
+      "date": "2026-09-30 00:00:00",
+      "count": 999,
+      "total_count": 1,
+      "ratio": 999.0
+     },
+     {
+      "date": "2026-10-01 00:00:00",
+      "count": 70,
+      "total_count": 20000,
+      "ratio": 0.0035
+     },
+     {
+      "date": "2026-10-02 00:00:00",
+      "count": 0,
+      "total_count": 18000,
+      "ratio": 0.0
+     },
+     {
+      "date": "2026-10-03 00:00:00",
+      "count": 12,
+      "total_count": 21000,
+      "ratio": 0.00057143
+     },
+     {
+      "date": "2026-10-04 00:00:00",
+      "count": 22,
+      "total_count": 19000,
+      "ratio": 0.00115789
+     },
+     {
+      "date": "2026-10-05 00:00:00",
+      "count": 0,
+      "total_count": 22000,
+      "ratio": 0.0
+     }
+    ]
+   }
+  }
+ }
+}

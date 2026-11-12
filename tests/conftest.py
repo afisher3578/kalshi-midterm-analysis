@@ -50,3 +50,23 @@ def fast_http():
     from raceattn.http import HttpClient
 
     return HttpClient(sleep=0, max_retries=0, backoff=0)
+
+
+@pytest.fixture(autouse=True)
+def no_pacing_sleep(request, monkeypatch):
+    """Media Cloud pacing (30 s by default) never really sleeps in offline tests; the waits are recorded."""
+    if "live" in request.keywords:
+        return []
+    import raceattn.mediacloud as mc
+
+    waits = []
+    monkeypatch.setattr(mc, "_sleep", waits.append)
+    return waits
+
+
+@pytest.fixture(autouse=True)
+def no_repo_dotenv(monkeypatch, tmp_path_factory):
+    """Tests never read the real <repo>/.env (it may hold Alex's keys); a test that needs one writes its own."""
+    import raceattn.envfile as envfile
+
+    monkeypatch.setattr(envfile, "ENV_PATH", str(tmp_path_factory.mktemp("noenv") / ".env"))

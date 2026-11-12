@@ -1,0 +1,17 @@
+# Five-day Texas window used only with the synthetic Media Cloud fixtures (tests/fixtures/mediacloud/).
+race_id: tx-mc-5day
+state: TX
+office: senate
+election_date: 2026-11-03
+window: {start: 2026-10-01, end: 2026-10-05}
+exclude_days: []
+kalshi:
+  series: SENATETX
+  event: SENATETX-26
+  followed_market: SENATETX-26-D
+entities:
+  - {name: "James Talarico", aliases: ["Talarico"]}
+  - {name: "Ken Paxton",     aliases: ["Paxton"]}
+wikipedia_pages:
+  - 2026_United_States_Senate_election_in_Texas
+news_query: '("Talarico" OR "Ken Paxton") AND Senate'

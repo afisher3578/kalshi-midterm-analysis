@@ -238,6 +238,10 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
         if reason:
             skipped[c.id] = reason
             log("== %s: skipped (%s)" % (c.id, reason))
+            for k in c.env_keys:
+                if not c.secret(k):
+                    log("   %s is not set: export it in your shell or put it in .env at the repo root "
+                        "(git-ignored, loaded at startup, never printed)" % k)
         else:
             connectors.append(c)
     cost_guard(connectors, race, yes, max_spend, log)
@@ -247,6 +251,7 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     quality: dict[str, Quality] = {}
     series_hash: dict[str, str] = {}
     series_meta: dict[str, Any] = {}
+    context: set[str] = set()  # shown and quality checked, but not attention in the metrics (e.g. Media Cloud ratios)
     for c in connectors:
         log("== %s: fetching" % c.id)
         crows = c.fetch(race, window)
@@ -260,9 +265,13 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
             quality[name] = q
             log("   quality %-55s %-9s %d/%d days%s" % (name, q.status, q.coverage_days, q.window_days,
                                                          (" (" + "; ".join(q.reasons) + ")") if q.reasons else ""))
+        context |= set(getattr(c, "context_series", ()) or ())
         for r in crows:
             series_meta.setdefault(r.series, {"source": r.source, "connector": c.id, "granularity": r.granularity,
                                               "unit": r.unit, "query_hash": r.query_hash, "fetched_at": r.fetched_at})
+    for s_ in context:
+        if s_ in series_meta:
+            series_meta[s_]["role"] = "context"
     if skipped:
         log("skipped connectors: " + "; ".join("%s (%s)" % kv for kv in skipped.items()))
 
@@ -292,11 +301,13 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     hcols_k = {SERIES_PRICE: [price_by_end.get(h) for h in hours], SERIES_VOLUME: [vol.get(h) for h in hours]}
 
     # daily aligned table on the window's dates
-    attention_daily = [s for s, m in series_meta.items() if m["granularity"] == "day" and is_attention(s)]
+    attention_daily = [s for s, m in series_meta.items() if m["granularity"] == "day" and is_attention(s)
+                       and s not in context]
     attention_daily.sort(key=lambda s: (s != HEADLINE_ATTENTION, s))
+    context_daily = sorted(s for s, m in series_meta.items() if m["granularity"] == "day" and s in context)
     cols: dict[str, list] = {SERIES_PRICE: [kd.get(d, {}).get("close") for d in days],
                              SERIES_VOLUME: [kd.get(d, {}).get("volume") for d in days]}
-    for s in attention_daily:
+    for s in attention_daily + context_daily:
         m = {r.ts_utc.date(): r.value for r in by_series[s]}
         cols[s] = [m.get(d) for d in days]
     # hourly series summed to UTC days (by bucket start); a day with any missing hour stays null
@@ -323,7 +334,8 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     for s, q in quality.items():  # a series with no rows at all still gets a column of nulls
         if s not in cols and is_attention(s):
             cols[s] = [None] * len(days)
-            attention_daily.append(s)
+            if s not in context:
+                attention_daily.append(s)
     daily_columns = ["date", "excluded"] + list(cols)
     daily_rows = [[d.isoformat(), d in race.exclude_days] + [cols[c][i] for c in cols] for i, d in enumerate(days)]
 
@@ -474,7 +486,7 @@ def index_metrics(result: dict[str, Any]) -> dict[str, Any]:
     as in the main metrics), each with its n."""
     t = result["series"]["daily"]
     meta = result["series"]["meta"]
-    att = [c for c in t["columns"][2:] if is_attention(c)]
+    att = [c for c in t["columns"][2:] if is_attention(c) and (meta.get(c) or {}).get("role") != "context"]
     per: dict[str, Any] = {}
     for c in att:
         vals = [v for _, v in _kept_values(result, c) if v is not None]

@@ -152,8 +152,20 @@ class NytConnector(DailyCountConnector):
 
 
 class MediaCloudConnector(DailyCountConnector):
-    """Media Cloud search API: daily story counts for news_query over a collection (default: US national).
-    One request for the whole window (count-over-time returns one entry per day)."""
+    """Media Cloud search API, two paths:
+
+    - With config/queries/<race_id>.mediacloud.yaml (raceattn/mcqueries.py): one count-over-time request per query
+      and per collection that has an id. Series per query and collection key:
+        news_mediacloud/<query>/<collection>              daily story count (attention)
+        news_mediacloud/<query>/<collection>/ratio        Media Cloud's ratio (matches / all stories that day)
+        news_mediacloud/<query>/<collection>/total_count  all stories in the collection that day
+      and per derived entry in the config (shares and ratios, section 4):
+        news_mediacloud/<derived>/<collection>
+      Ratio, total_count, derived series and derived-support queries are context series: shown and quality
+      checked, not used as attention in the lag and event metrics. A collection with a null id is skipped and
+      reported as not configured. A date the API returns with count 0 is 0; a date it leaves out is missing.
+    - Without the file: the old single request for news_query over the US national collection, unchanged.
+    """
 
     id = "news_mediacloud"
     auth = "api_key"
@@ -165,17 +177,36 @@ class MediaCloudConnector(DailyCountConnector):
     US_NATIONAL = 34412234
     PLATFORM = "onlinenews-mediacloud"
 
-    def __init__(self, *a, collections: list[int] | None = None, **kw):
+    def __init__(self, *a, collections: list[int] | None = None, pace_seconds: float = 30.0,
+                 queries_dir: str | None = None, sleep=None, **kw):
         super().__init__(*a, **kw)
-        self.collections = list(collections or [self.US_NATIONAL])
+        from raceattn import mcqueries
+        from raceattn.mediacloud import PacedHttp
 
-    def render_queries(self, race, window):
+        self.collections = list(collections or [self.US_NATIONAL])
+        self.queries_dir = queries_dir or mcqueries.QUERIES_DIR
+        self.http = PacedHttp(self.http, pace_seconds, **({"sleep": sleep} if sleep else {}))
+        self.context_series: set[str] = set()
+        self.derived_nulls: dict[str, dict[str, str]] = {}
+        self._cfg: dict[str, Any] = {}
+        self._active = None  # the query config of the last config-path fetch (quality() has no race argument)
+
+    def query_config(self, race):
+        """The race's Media Cloud query config, or None for the old news_query path."""
+        from raceattn import mcqueries
+
+        if race.race_id not in self._cfg:
+            self._cfg[race.race_id] = mcqueries.find(race.race_id, self.queries_dir)
+        return self._cfg[race.race_id]
+
+    # -- old path (no query file)
+    def _render_news_query(self, race, window):
         return [RenderedQuery(self.base_url, {"q": news_query(race), "start": window.start.isoformat(),
                                               "end": window.end.isoformat(), "platform": self.PLATFORM,
                                               "cs": ",".join(str(c) for c in self.collections)},
                               label="count-over-time")]
 
-    def fetch(self, race, window):
+    def _fetch_news_query(self, race, window):
         q = self.render_queries(race, window)[0]
         h = q.query_hash
         rec = self.cached_get(race, window, q, h, "count_over_time",
@@ -191,6 +222,194 @@ class MediaCloudConnector(DailyCountConnector):
                 rows.append(Row(race.race_id, self.id, self.series, _day(d), "day", float(c["count"]), self.unit, h,
                                 rec["fetched_at"]))
         return rows
+
+    # -- query-config path
+    def _requests(self, cfg, window):
+        """(query name, collection, RenderedQuery) for every query and configured collection, in file order."""
+        out = []
+        for name, q in cfg.queries.items():
+            for c in cfg.configured_collections:
+                out.append((name, c, RenderedQuery(self.base_url, {
+                    "q": q, "start": window.start.isoformat(), "end": window.end.isoformat(),
+                    "platform": cfg.platform, "cs": str(c.id)}, label="%s/%s" % (name, c.key))))
+        return out
+
+    @staticmethod
+    def count_series(name, ckey, kind=None):
+        return "news_mediacloud/%s/%s%s" % (name, ckey, "/" + kind if kind else "")
+
+    def render_queries(self, race, window):
+        cfg = self.query_config(race)
+        if cfg is None:
+            return self._render_news_query(race, window)
+        return [q for _, _, q in self._requests(cfg, window)]
+
+    def series_query_hashes(self, race, window):
+        cfg = self.query_config(race)
+        if cfg is None:
+            return super().series_query_hashes(race, window)
+        out, by_query = {}, {}
+        for name, c, q in self._requests(cfg, window):
+            by_query[(name, c.key)] = q.query_hash
+            for kind in (None, "ratio", "total_count"):
+                out[self.count_series(name, c.key, kind)] = q.query_hash
+        for d in cfg.derived:
+            for c in cfg.configured_collections:
+                out[self.count_series(d.name, c.key)] = combine_hashes([by_query[(r, c.key)] for r in d.refs.values()])
+        return out
+
+    def query_summary(self, race, window):
+        cfg = self.query_config(race)
+        if cfg is None:
+            return super().query_summary(race, window)
+        s = Connector.query_summary(self, race, window)
+        s["key_handling"] = "key sent in the Authorization header at request time only; not in these params, the hash or the cache"
+        per: dict[str, Any] = {}
+        hashes = s["series_query_hash"]
+        for name, q in cfg.queries.items():
+            role = ("derived_support" if name in cfg.derived_support else
+                    "core" if name in cfg.core_queries else "series")
+            entry = {"query": q, "query_sha256": cfg.query_hash(name), "role": role, "collections": {}}
+            for c in cfg.collections:
+                ce = {"collection_id": c.id, "collection_name": c.name, "config_version": cfg.version,
+                      "config_status": cfg.status, "config_sha256": cfg.config_sha256}
+                if c.configured:
+                    ce.update(status="fetched", request_hash=hashes[self.count_series(name, c.key)],
+                              series={"count": self.count_series(name, c.key),
+                                      "ratio": self.count_series(name, c.key, "ratio"),
+                                      "total_count": self.count_series(name, c.key, "total_count")})
+                else:
+                    ce.update(status="not configured", note="no collection id in the query config; no request "
+                              "made and no series (not a zero)")
+                entry["collections"][c.key] = ce
+            per[name] = entry
+        s["mediacloud"] = dict(cfg.summary(), queries=per, derived_nulls=self.derived_nulls,
+                               series_design="news_mediacloud/<query>/<collection> is the daily story count; "
+                               "/ratio and /total_count are Media Cloud's normalized ratio and the collection's "
+                               "total stories that day; news_mediacloud/<derived>/<collection> are the derived "
+                               "shares and ratios. Only counts of non-support queries enter the lag and event "
+                               "metrics.")
+        return s
+
+    def fetch(self, race, window):
+        cfg = self.query_config(race)
+        rows = self._fetch_news_query(race, window) if cfg is None else self._fetch_config(cfg, race, window)
+        self.log("   news_mediacloud: %d HTTP request(s) made, %d cache hit(s)" % (self.http.requests, self.cache_hits))
+        return rows
+
+    def _fetch_config(self, cfg, race, window):
+        days = window.days()
+        dayset = set(days)
+        for c in cfg.unconfigured_collections:
+            self.log("   news_mediacloud: collection %s not configured (no id in %s); skipped, not counted as zero"
+                     % (c.key, os.path.basename(cfg.path or "")))
+        self._active = cfg
+        headers = {"Authorization": "Token " + self.secret("MEDIACLOUD_API_KEY")}
+        rows: list[Row] = []
+        counts: dict[tuple[str, str], dict[dt.date, float]] = {}
+        self.expected_series: list[str] = []
+        self.context_series = set()
+        for name, c, q in self._requests(cfg, window):
+            rec = self.cached_get(race, window, q, q.query_hash, "count_over_time", headers=headers)
+            entries = (((rec["body"] or {}).get("count_over_time") or {}).get("counts"))
+            if entries is None:
+                raise FetchError("Media Cloud response for %s/%s has no count_over_time.counts" % (name, c.key))
+            cs, rs, ts = (self.count_series(name, c.key, k) for k in (None, "ratio", "total_count"))
+            self.expected_series += [cs, rs, ts]
+            self.context_series |= {rs, ts}
+            if name in cfg.derived_support:
+                self.context_series.add(cs)
+            per: dict[dt.date, float] = {}
+            for e in entries:
+                d = dt.date.fromisoformat(str(e["date"])[:10])
+                if d not in dayset:
+                    continue
+                if d in per:
+                    raise FetchError("Media Cloud returned %s twice for %s/%s" % (d, name, c.key))
+                for series, field, unit in ((cs, "count", "stories"), (rs, "ratio", "ratio"),
+                                            (ts, "total_count", "stories")):
+                    if e.get(field) is not None:
+                        rows.append(Row(race.race_id, self.id, series, _day(d), "day", float(e[field]), unit,
+                                        q.query_hash, rec["fetched_at"]))
+                if e.get("count") is not None:
+                    per[d] = float(e["count"])
+            counts[(name, c.key)] = per
+        hashes = self.series_query_hashes(race, window)
+        fetched_at = max(r.fetched_at for r in rows) if rows else now_utc()
+        self.derived_nulls = {}
+        for dv in cfg.derived:
+            for c in cfg.configured_collections:
+                s = self.count_series(dv.name, c.key)
+                self.expected_series.append(s)
+                self.context_series.add(s)
+                nulls: dict[str, str] = {}
+                for d in days:
+                    v, why = derive(dv.kind, dv.refs, {k: counts[(ref, c.key)].get(d) for k, ref in dv.refs.items()})
+                    if v is None:
+                        nulls[d.isoformat()] = why
+                    else:
+                        rows.append(Row(race.race_id, self.id, s, _day(d), "day", round(v, 6), "share", hashes[s],
+                                        fetched_at))
+                self.derived_nulls[s] = nulls
+        return rows
+
+    def quality(self, rows, window):
+        cfg = self._active
+        if cfg is None:
+            return super().quality(rows, window)
+        by: dict[str, list[Row]] = {}
+        for r in rows:
+            by.setdefault(r.series, []).append(r)
+        days = window.days()
+        a0, a1 = cfg.phase("analysis")
+        adays = [d for d in days if a0 <= d <= a1]
+        out = {}
+        for s in self.expected_series:
+            daily = self.daily_values(by.get(s, []))
+            derived = s in self.derived_nulls
+            q = compute_quality(daily, days, check_near_zero=not derived, min_near_zero_days=2)
+            present = sum(1 for d in adays if daily.get(d) is not None)
+            q.extra["analysis_phase"] = {"start": a0.isoformat(), "end": a1.isoformat(), "days": len(adays),
+                                         "present": present}
+            q.extra["gate"] = ("docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase "
+                               "days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, "
+                               "missing dates are missing")
+            if adays and present / len(adays) < 0.95:
+                q.status = worst(q.status, "degraded")
+                q.reasons.append("analysis phase coverage %d/%d days is under 95%%" % (present, len(adays)))
+            if derived:
+                q.extra["null_days"] = self.derived_nulls[s]
+            else:
+                q.extra["explicit_zero_days"] = sorted(d.isoformat() for d, v in daily.items() if v == 0)
+            out[s] = q
+        return out
+
+
+def derive(kind: str, refs: dict[str, str], vals: dict[str, Optional[float]]) -> tuple[Optional[float], str]:
+    """One derived value from one day's counts (docs/mediacloud-search-criteria.md section 4).
+    share: a / (a + b); exclusive_share: (a - both) / ((a - both) + (b - both)); ratio: numerator / denominator.
+    Returns (value, "") or (None, reason). A zero denominator gives None, never 0 or inf."""
+    missing = [refs[k] for k, v in vals.items() if v is None]
+    if missing:
+        return None, "input missing for this date: %s" % ", ".join(missing)
+    if kind == "share":
+        a, b = vals["numerator"], vals["other"]
+        if a + b == 0:
+            return None, "denominator is 0 (%s + %s = 0)" % (refs["numerator"], refs["other"])
+        return a / (a + b), ""
+    if kind == "exclusive_share":
+        a, b, both = vals["numerator"] - vals["both"], vals["other"] - vals["both"], vals["both"]
+        if a < 0 or b < 0:
+            return None, "inconsistent counts: %s (%g) is larger than %s or %s" % (refs["both"], both, refs["numerator"],
+                                                                                 refs["other"])
+        if a + b == 0:
+            return None, "denominator is 0 (only-%s + only-%s = 0)" % (refs["numerator"], refs["other"])
+        return a / (a + b), ""
+    if kind == "ratio":
+        if vals["denominator"] == 0:
+            return None, "denominator is 0 (%s = 0)" % refs["denominator"]
+        return vals["numerator"] / vals["denominator"], ""
+    raise ValueError("unknown derived kind %r" % kind)
 
 
 class ManualNewsConnector(Connector):
