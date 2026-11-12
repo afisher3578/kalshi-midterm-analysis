@@ -1,0 +1,58 @@
+# Media Cloud search criteria for the Texas Senate race (docs/mediacloud-search-criteria.md, section 9 shape).
+# Loaded and validated by raceattn/mcqueries.py. The config hash is computed from the parsed values, so comments
+# do not change it; any change to a value does. After the freeze, log every change under changes_log and bump
+# `version`.
+version: 1
+status: draft            # draft | tuned | frozen
+frozen_on: null
+race_id: tx-senate-2026
+language: en
+platform: onlinenews-mediacloud
+api_version: null        # fill from GET https://search.mediacloud.org/api/version on the first keyed run
+timezone_note: unverified  # which timezone Media Cloud uses for publish_date; record it from the live API
+collections:
+  # id 34412234 is the id the Media Cloud python client uses in its tests and README; name and source count
+  # are not confirmed (the collection record needs a key). Confirm with `python -m raceattn mediacloud collections`.
+  national: {name: "United States - National", id: 34412234, source_count: null, looked_up_on: null}
+  texas_local: {name: null, id: null, source_count: null, looked_up_on: null}   # fill from the collections lookup
+phases:
+  tuning:   {start: 2026-08-01, end: 2026-08-24}
+  baseline: {start: 2026-08-25, end: 2026-08-31}
+  analysis: {start: 2026-09-01, end: 2026-11-02}
+  election: {start: 2026-11-03, end: 2026-11-04}
+# The seven queries from section 4, logic as drafted. Syntax adaptation, logic unchanged: every query is the
+# drafted base query wrapped in parentheses, then ` AND language:en`, so the language clause applies to the whole
+# query (paxton_race ends in a NOT clause, and the compositions mix AND and OR).
+queries:
+  talarico_race: '(("James Talarico" OR Talarico) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND language:en'
+  paxton_race: '(("Ken Paxton" OR "Kenneth Paxton" OR Paxton) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT "Bill Paxton") AND language:en'
+  # race_either = (talarico_race) OR (paxton_race), language:en once at the end
+  race_either: '((("James Talarico" OR Talarico) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) OR (("Ken Paxton" OR "Kenneth Paxton" OR Paxton) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT "Bill Paxton")) AND language:en'
+  # race_both = (talarico_race) AND (paxton_race), language:en once at the end (head-to-head coverage)
+  race_both: '((("James Talarico" OR Talarico) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND (("Ken Paxton" OR "Kenneth Paxton" OR Paxton) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT "Bill Paxton")) AND language:en'
+  talarico_any: '(("James Talarico" OR Talarico)) AND language:en'
+  paxton_any: '(("Ken Paxton" OR "Kenneth Paxton" OR Paxton) NOT "Bill Paxton") AND language:en'
+  # headline prominence; the grammar of the title field is unverified on the live API
+  headline_either: '(article_title:(Talarico OR "Ken Paxton" OR Paxton) AND (Senate OR Talarico OR Paxton OR campaign OR poll)) AND language:en'
+  # derived support (not one of the seven): the union of the two any-mention queries, the denominator of
+  # core_vs_broad. It has to be its own count because a union cannot be computed from two counts.
+  # any_either = (talarico_any) OR (paxton_any), language:en once at the end
+  any_either: '((("James Talarico" OR Talarico)) OR (("Ken Paxton" OR "Kenneth Paxton" OR Paxton) NOT "Bill Paxton")) AND language:en'
+# The validator re-renders these from the base queries and fails if the strings above drift from them.
+compositions:
+  race_either: {op: OR, of: [talarico_race, paxton_race]}
+  race_both: {op: AND, of: [talarico_race, paxton_race]}
+  any_either: {op: OR, of: [talarico_any, paxton_any]}
+derived_support: [any_either]
+# Derived series, computed per collection and per day (section 4). A zero denominator gives null with a reason.
+derived:
+  talarico_share: {kind: share, numerator: talarico_race, other: paxton_race}
+  talarico_exclusive_share: {kind: exclusive_share, numerator: talarico_race, other: paxton_race, both: race_both}
+  core_vs_broad: {kind: ratio, numerator: race_either, denominator: any_either}
+exclusions_log: []        # each added exclusion: term, date, the false matches seen
+changes_log: []           # after the freeze: date, what changed, why, new version
+audit:
+  core_queries: [talarico_race, paxton_race]   # the main series (section 4); see docs/mc1-notes.md
+  per_query_per_collection: 100
+  precision_target: 0.90
+  reliability_targets: {agreement: report, krippendorff_alpha: 0.80, drop_below: 0.70}
