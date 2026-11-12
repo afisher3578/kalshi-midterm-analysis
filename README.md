@@ -8,7 +8,8 @@ Milestone M0 covers: race config schema, Kalshi and Wikipedia connectors, the me
 a golden test that reproduces the stdlib pilot in `docs/reference/pilot/`. M2 adds Kalshi trades, X (your own
 token), news (Media Cloud, Guardian, NYT, a manual CSV, optional GDELT), Bluesky, the event list generator and the
 event, spike and reversion metrics. M3 adds race discovery (`discover`), multi-state runs (`run --all`) and the US
-map dashboard. See `docs/spec.md` and `docs/m0-notes.md` to `docs/m3-notes.md`.
+map dashboard. MC1 adds the Media Cloud search criteria (a per-race query file), the audit workflow and `.env`
+support. See `docs/spec.md`, `docs/m0-notes.md` to `docs/m3-notes.md` and `docs/mc1-notes.md`.
 
 ## Setup
 
@@ -18,9 +19,10 @@ Do not use the macOS system Python (no CA certs, broken numpy). Use a venv:
     uv pip install --python .venv/bin/python -r requirements-dev.txt   # or requirements.txt without test tools
     ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit        # secrets check on every commit
 
-No key is required. X, Media Cloud, Guardian and NYT read keys from the environment (export them in your shell, or
-keep a git-ignored `.env` and load it yourself); see `.env.example`. A connector whose key is missing is skipped
-with the reason, and the run still exits 0.
+No key is required. X, Media Cloud, Guardian and NYT read keys from the environment: export them in your shell, or
+put them in a git-ignored `.env` at the repo root, which the CLI loads at startup (it never overrides a variable
+already set, and never prints values); see `.env.example`. A connector whose key is missing is skipped with the
+reason, and the run still exits 0.
 
 ## Run
 
@@ -76,6 +78,23 @@ out and listed. Per-race run settings (a lower Bluesky page cap, a source left o
 
 `--race` takes a race id (loads `config/races/<id>.yaml`) or a path to a yaml file. One file fully describes a
 race; connectors render every query from it and hard-code nothing.
+
+## Media Cloud search criteria and audit
+
+`config/queries/<race_id>.mediacloud.yaml` (Texas Senate only so far) holds the frozen-to-be Media Cloud queries,
+collections, phases and audit settings (docs/mediacloud-search-criteria.md). With that file the connector makes one
+count-over-time request per query and collection and writes `news_mediacloud/<query>/<collection>` (counts),
+`.../ratio`, `.../total_count` and the derived shares; races without it keep `news_mediacloud/story_count`.
+Requests are cached, paced 30 s apart (`--mediacloud-pace`, or `connectors.news_mediacloud.pace_seconds`) and stop
+on HTTP 401, 403 or 429. Details in docs/mc1-notes.md.
+
+    .venv/bin/python -m raceattn mediacloud collections --state TX        # find the Texas collection id (needs a key)
+    .venv/bin/python -m raceattn mediacloud audit --race tx-senate-2026 --phase tuning --n 100 --seed 1
+    .venv/bin/python -m raceattn mediacloud precision data/local/mediacloud/audit/tx-senate-2026/tuning.csv
+    .venv/bin/python -m raceattn mediacloud agreement coder_a.csv coder_b.csv
+
+The audit writes story metadata (no text) to git-ignored `data/local/mediacloud/audit/<race>/<phase>.csv` for hand
+coding. `collections` and `audit` exit 2 without `MEDIACLOUD_API_KEY`.
 
 ## Test
 
