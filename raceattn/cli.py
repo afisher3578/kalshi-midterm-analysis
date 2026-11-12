@@ -76,6 +76,13 @@ def build_parser() -> argparse.ArgumentParser:
     ag = mcs.add_parser("agreement", help="agreement and Krippendorff's alpha between two coders' CSVs")
     ag.add_argument("csv_a")
     ag.add_argument("csv_b")
+    db = sub.add_parser("dashboard", help="build web/ if needed and serve the dashboard on 127.0.0.1 (local only)")
+    db.add_argument("--race", required=True, help="race id from data/processed/index.json")
+    db.add_argument("--port", type=int, default=4173, help="port on 127.0.0.1 (default 4173; 0 picks a free port)")
+    db.add_argument("--no-open", action="store_true", help="do not open a browser")
+    db.add_argument("--demo", action="store_true",
+                    help="serve a synthetic Media Cloud fixture (DEMO DATA, not real) from memory; opens ?demo=1")
+    db.add_argument("--no-build", action="store_true", help="serve web/dist as it is (skip the Node check and build)")
     pub = sub.add_parser("publish", help="check processed output before publishing (licensing, funding flag)")
     pub.add_argument("--out-dir", default=DEFAULT_OUT)
     return p
@@ -281,6 +288,11 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_mediacloud(args)
         if args.cmd == "publish":
             return cmd_publish(args)
+        if args.cmd == "dashboard":
+            from raceattn import dashboard
+
+            return dashboard.run(args.race, port=args.port, open_browser=not args.no_open, demo=args.demo,
+                                 build=not args.no_build)
         if args.cmd == "events":
             return cmd_events(args)
         if args.cmd == "discover":
