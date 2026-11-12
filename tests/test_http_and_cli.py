@@ -35,7 +35,7 @@ def client(codes, retries=3):
 
 def test_user_agent_set():
     c, s = client([200])
-    assert s.headers["User-Agent"].startswith("race-attention/")
+    assert s.headers["User-Agent"].startswith("kalshi-midterm-analysis/")
     assert "contact" in s.headers["User-Agent"]
 
 
@@ -166,7 +166,7 @@ def test_index_merges_other_races(tmp_path):
 
     from raceattn.pipeline import write_outputs
 
-    (tmp_path / "index.json").write_text(json.dumps({"project": "race-attention", "races": {"zz-other": {"x": 1}}}))
+    (tmp_path / "index.json").write_text(json.dumps({"project": "kalshi-midterm-analysis", "races": {"zz-other": {"x": 1}}}))
     from tests.conftest import FIXTURE_RAW
 
     run(load_race("tx-senate-2026"), ["kalshi", "wikipedia"], raw_dir=FIXTURE_RAW, out_dir=str(tmp_path),

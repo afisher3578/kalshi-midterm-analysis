@@ -1,5 +1,5 @@
 // Site-wide constants. PROJECT_NAME is the working title (spec section 15); change it here only.
-export const PROJECT_NAME = "race-attention";
+export const PROJECT_NAME = "kalshi-midterm-analysis";
 export const DEFAULT_RACE = "tx-senate-2026";
 
 // Kalshi grant funding disclosure (spec section 12). Off until the grant is awarded.

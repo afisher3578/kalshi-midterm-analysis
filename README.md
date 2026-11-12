@@ -1,240 +1,279 @@
-# race-attention
+# kalshi-midterm-analysis
 
-Working name (kept in one constant, `PROJECT_NAME` in `raceattn/__init__.py`). Takes one US race, pulls Kalshi
-market data and attention data for it, puts them on one UTC clock and computes the same metrics for every race.
-The tool reports timing and association, not causation.
+## What this is
 
-Milestone M0 covers: race config schema, Kalshi and Wikipedia connectors, the metrics module, Texas end to end and
-a golden test that reproduces the stdlib pilot in `docs/reference/pilot/`. M2 adds Kalshi trades, X (your own
-token), news (Media Cloud, Guardian, NYT, a manual CSV, optional GDELT), Bluesky, the event list generator and the
-event, spike and reversion metrics. M3 adds race discovery (`discover`), multi-state runs (`run --all`) and the US
-map dashboard. MC1 adds the Media Cloud search criteria (a per-race query file), the audit workflow and `.env`
-support. See `docs/spec.md`, `docs/m0-notes.md` to `docs/m3-notes.md` and `docs/mc1-notes.md`.
+This tool compares Kalshi prices for 2026 US midterm races with news and platform attention to the same race.
 
-## Setup
+The question: does attention change how much a race is traded, and does it change where the price goes? Or do
+listed events (debates, filings, primaries, polls) do that? The tool reports timing and association, not causation.
+It only reads public or keyed APIs. Nothing is posted or traded from here.
 
-Do not use the macOS system Python (no CA certs, broken numpy). Use a venv:
+The Python package is `raceattn` (`python -m raceattn`). The web front end is in `web/`. Milestone history is in
+[docs/history.md](docs/history.md); the full design is in [docs/spec.md](docs/spec.md).
 
-    uv venv --python 3.11 .venv
-    uv pip install --python .venv/bin/python -r requirements-dev.txt   # or requirements.txt without test tools
-    ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit        # secrets check on every commit
+## How it works
 
-No key is required. X, Media Cloud, Guardian and NYT read keys from the environment: export them in your shell, or
-put them in a git-ignored `.env` at the repo root, which the CLI loads at startup (it never overrides a variable
-already set, and never prints values); see `.env.example`. A connector whose key is missing is skipped with the
-reason, and the run still exits 0.
+```
+config/races/<race>.yaml        one file per race: Kalshi market, window, Wikipedia pages, names, news query
+config/queries/<race>.mediacloud.yaml   Media Cloud queries and collections (Texas Senate only so far)
+        |
+        v
+connectors (one per source)     kalshi, kalshi_trades, wikipedia, bluesky, x, news_mediacloud, news_guardian,
+        |                       news_nyt, news_manual, gdelt; raw responses cached in data/raw/
+        v
+one UTC clock                   hourly and daily buckets on the race window; missing stays missing
+        |
+        v
+metrics                         quality checks, surprise, lag tables, event and spike metrics
+        |
+        v
+data/processed/<race>.json      plus index.json (one entry per race)
+        |
+        v
+dashboard (web/)                served locally by `python -m raceattn dashboard`
+```
 
-## Run
+Connectors render every request from the race config and hard-code nothing. A connector whose key or file is
+missing is skipped, and the reason is written to the output.
 
-    .venv/bin/python -m raceattn run --race tx-senate-2026                      # default sources
-    .venv/bin/python -m raceattn run --race tx-senate-2026 --sources kalshi,wikipedia
-    .venv/bin/python -m raceattn run --race tx-senate-2026 --sources x --max-spend 1.00
-    .venv/bin/python -m raceattn run --race path/to/other-race.yaml
-    .venv/bin/python -m raceattn validate --race tx-senate-2026
-    .venv/bin/python -m raceattn events --race tx-senate-2026     # draft config/events/<race>.csv (needs_review)
-    .venv/bin/python -m raceattn publish                          # licensing and funding-flag check; sends nothing
+## Quick start
 
-Default sources (`default_sources` in `config/project.yaml`): `kalshi, kalshi_trades, wikipedia, x,
-news_mediacloud, news_guardian, news_nyt, news_manual, bluesky`. `gdelt` is optional and not in the list.
+Requirements:
+- Python 3.11. There is no pyproject.toml and `requirements.txt` does not pin a Python version; 3.11 is what this was
+  built and tested with. Do not use the macOS system Python: it is too old (and has no CA certificates).
+- Node.js 20.19+ or 22.12+ and npm, for the dashboard build (Vite 8 requires one of those). Tested with Node 22.23.2
+  and npm 10.9.8, and with Node 26.7.0 and npm 11.19.0.
 
-Options: `--refresh` (ignore the cache and re-fetch; a cached paid read is never re-pulled), `--yes` /
-`--max-spend USD` (required before any paid connector runs; X is the only paid one and prints its estimate first),
-`--raw-dir`, `--out-dir`. Connector settings (Bluesky page caps, small-trade threshold, block trades, NYT spacing)
-and the event metric settings are in `config/project.yaml`.
+```
+git clone https://github.com/afisher3578/kalshi-midterm-analysis.git
+cd kalshi-midterm-analysis
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt          # requirements-dev.txt adds pytest
+cp .env.example .env                     # then fill in any keys you have (see below)
+cd web && npm ci && cd ..
+python -m raceattn dashboard --race tx-senate-2026
+```
 
-A Bluesky pull pages through every matching post (one request per 100 posts; Texas was about 2,000 requests and
-22 minutes). It is cached per day, so later runs make no requests.
+The processed outputs for six races are committed, so the dashboard works right after a clone with no keys.
+Optional: `ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit` runs the secrets check on every commit.
 
-Events: `events` reads the polling tables on the race's Wikipedia page at a fixed revision and writes one row per
-poll (`date_utc,type,source_url,note,status`), plus debates and filing deadlines only where the page lists them.
-Every row is `needs_review` and cites the revision. Change a row's status to `confirmed` after checking it; the
-event metrics ignore everything else. `events` refuses to overwrite a file that has confirmed rows (use `--force`).
+## API keys
 
-## Discover races and run them all
+No key is required. Kalshi, Wikipedia pageviews, Bluesky (unauthenticated), the manual news CSV and GDELT run
+without one. Put keys in `.env` at the repo root (git-ignored). The CLI loads it at startup, never overrides a
+variable already set in your shell, and never prints values. Exporting them in your shell works too.
 
-    .venv/bin/python -m raceattn discover --office senate                 # all 50 states
-    .venv/bin/python -m raceattn discover --office governor --state TX,OH
-    .venv/bin/python -m raceattn run --all                                # every confirmed config
+| Key | Source | Where to get it | Cost | Notes |
+|---|---|---|---|---|
+| `MEDIACLOUD_API_KEY` | Media Cloud (`news_mediacloud`) | Free account at https://search.mediacloud.org, key on your profile page | Free | Quota 4000 requests a week; some endpoints 2 a minute. Requests are paced 30 s apart |
+| `X_BEARER_TOKEN` | X post counts (`x`) | X developer portal, https://developer.x.com/en/portal/dashboard | Pay per use, about $0.010 per counts/all request (unverified against a bill) | Runs only with `--yes` or `--max-spend USD`; prints its estimate first |
+| `GUARDIAN_API_KEY` | Guardian (`news_guardian`) | https://open-platform.theguardian.com/access/ | Free developer key, non-commercial | 1 call a second, 500 a day; one call per day of the window |
+| `NYT_API_KEY` | New York Times (`news_nyt`) | https://developer.nytimes.com/get-started | Not recorded in the docs | 500 requests a day, 5 a minute; 12 s between calls |
+| `BSKY_HANDLE`, `BSKY_APP_PASSWORD` | Bluesky (`bluesky`) | Bluesky app: Settings, Privacy and security, App passwords | Free | Optional. Tries cursor paging; this mode is unverified |
+| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit | https://www.reddit.com/prefs/apps | | Connector not built; the keys are not read |
+| `YOUTUBE_API_KEY` | YouTube | https://console.cloud.google.com/apis/credentials | | Connector not built; the key is not read |
 
-`discover` lists every Kalshi event (`GET /events`, statuses open, closed and settled; the settled listing is cut to
-events with a market closing on or after election day) and matches a state by the event title ("Ohio Senate winner?",
-"Texas Governor winner?" with 2026 in the sub title), never by ticker pattern. The followed market is the Democratic
-party contract, as for Texas. It then finds the race article on Wikipedia through the MediaWiki API (redirects
-resolved, so the Ohio and Florida special elections are found from the regular title), reads the nominees from the
-election infobox (at least 5% of the vote when shares are listed) and writes
-`config/races/drafts/<race_id>.yaml` with `status: needs_review` and a `discovery:` block: one confidence note per
-field (high, medium or low, why, and the source URL or ticker). Aliases default to the surname. The news query uses
-the bare surname only when Wikipedia has no other topic under it (no article, a redirect to the candidate, or a
-surname list page), else the full name. Subreddits stay empty. It also writes
-`config/races/drafts/discover-report-<office>.md` (and `.json`): every race resolved, every state not resolved and
-why, and for a race that already has a hand-written config, a field-by-field comparison. The first run takes about
-15 minutes (about 370 Kalshi pages and 2 s between MediaWiki calls); later runs read the cache (`--refresh` re-fetches).
+Media Cloud, step by step:
+1. Create a free account at https://search.mediacloud.org and sign in.
+2. Copy the API key from your profile page.
+3. Put it in `.env`: `MEDIACLOUD_API_KEY=<your key>`.
+4. Check it: `python -m raceattn mediacloud collections --state TX`. This lists collections whose name matches Texas.
+   Record the chosen Texas collection's name, id, source count and the date under `collections.texas_local` in
+   `config/queries/tx-senate-2026.mediacloud.yaml` (it is null until then, so only the national collection is
+   pulled).
 
-A draft is trusted only after a human reviews it, moves it to `config/races/` and sets `status: confirmed`. A file
-in `config/races/` without a `status` (the hand-written Texas config) counts as confirmed. `run --all` runs every
-confirmed config and writes `data/processed/<race>.json` and `index.json`; drafts and `needs_review` files are left
-out and listed. Per-race run settings (a lower Bluesky page cap, a source left out with a reason) go under
-`race_overrides` in `config/project.yaml`; the race JSON records them in `run_overrides` and `skipped`.
+More detail: [docs/sources/mediacloud.md](docs/sources/mediacloud.md). Other sources: `docs/sources/*.md`.
 
-`--race` takes a race id (loads `config/races/<id>.yaml`) or a path to a yaml file. One file fully describes a
-race; connectors render every query from it and hard-code nothing.
+## Run it
 
-## Media Cloud search criteria and audit
+Activate the venv first (`source .venv/bin/activate`). Every command below runs from the repo root.
 
-`config/queries/<race_id>.mediacloud.yaml` (Texas Senate only so far) holds the frozen-to-be Media Cloud queries,
-collections, phases and audit settings (docs/mediacloud-search-criteria.md). With that file the connector makes one
-count-over-time request per query and collection and writes `news_mediacloud/<query>/<collection>` (counts),
-`.../ratio`, `.../total_count` and the derived shares; races without it keep `news_mediacloud/story_count`.
-Requests are cached, paced 30 s apart (`--mediacloud-pace`, or `connectors.news_mediacloud.pace_seconds`) and stop
-on HTTP 401, 403 or 429. Details in docs/mc1-notes.md.
+Pipeline for one race (default sources from `default_sources` in `config/project.yaml`):
 
-    .venv/bin/python -m raceattn mediacloud collections --state TX        # find the Texas collection id (needs a key)
-    .venv/bin/python -m raceattn mediacloud audit --race tx-senate-2026 --phase tuning --n 100 --seed 1
-    .venv/bin/python -m raceattn mediacloud precision data/local/mediacloud/audit/tx-senate-2026/tuning.csv
-    .venv/bin/python -m raceattn mediacloud agreement coder_a.csv coder_b.csv
+```
+python -m raceattn validate --race tx-senate-2026        # check the race config and the Media Cloud query file
+python -m raceattn run --race tx-senate-2026             # all default sources; keyed ones without a key are skipped
+python -m raceattn run --race tx-senate-2026 --sources kalshi,wikipedia
+python -m raceattn run --all                             # every confirmed config in config/races/
+```
 
-The audit writes story metadata (no text) to git-ignored `data/local/mediacloud/audit/<race>/<phase>.csv` for hand
-coding. `collections` and `audit` exit 2 without `MEDIACLOUD_API_KEY`.
+`--race` takes a race id (`config/races/<id>.yaml`) or a path to a yaml file. Other `run` options: `--refresh`,
+`--yes`, `--max-spend USD`, `--raw-dir`, `--out-dir`, `--mediacloud-pace SECONDS`. The raw cache (`data/raw/`) is
+not in git, so a fresh clone fetches everything once. The Texas Bluesky walk is about 2,000 requests and 22
+minutes the first time; later runs read the cache.
 
-## Test
+Media Cloud pull for Texas, once the key is in `.env`:
 
-    .venv/bin/pytest -q            # offline: recorded fixtures, network blocked
-    .venv/bin/pytest -q --live     # also runs live smoke tests (Kalshi, Wikimedia, Bluesky; keyed ones skip without a key)
-    .venv/bin/python scripts/check_secrets.py
+```
+python -m raceattn run --race tx-senate-2026 --sources kalshi,kalshi_trades,wikipedia,bluesky,news_mediacloud
+```
 
-## Outputs
+Plain `run --race tx-senate-2026` also includes Media Cloud, since it is in the default list. Do not run
+`--sources news_mediacloud` alone: each run rewrites `data/processed/<race>.json` with only the sources of that
+run (this is still true in `raceattn/pipeline.py`; there is no merge), so the Kalshi and Wikipedia data would drop
+out of the dashboard. The other sources come from the cache. The Texas query file makes 8 Media Cloud requests per
+run at 30 s apart, so about 4 minutes.
 
-`data/raw/<source>/<race_id>/<start>_<end>/<query_hash>/*.json` (git-ignored): raw JSON responses with the request
-endpoint and params, fetch time and HTTP status. No headers or keys (query-param keys are added at send time only).
-Reused unless `--refresh`. Bluesky stores one record per day with hourly counts only.
+Other commands:
 
-`data/processed/<race_id>.json` (committed):
-- `race`: config summary. `window` (inclusive UTC dates) and `excluded_days`.
-- `sources` (connectors that ran), `sources_requested` and `skipped` (connector id -> reason, e.g. missing key or
-  missing manual CSV).
-- `polling`: `polling_density` from `config/events/<race>.meta.json` (polls in the window, needs review).
-- `licensing`: whether `licensing_confirmed` is set and the warning, when the output has counts from X, Bluesky,
-  Reddit or the news APIs (docs/licensing.md).
-- `queries`: per connector, every rendered request (endpoint, params, query hash), the connector query hash and the
-  query hash behind each series. A reader can audit exactly what was fetched.
-- `series.hourly`: Kalshi hourly rows `[ts_utc, kalshi/price_close, kalshi/volume]`. `ts_utc` is the candle's
-  `end_period_ts`; price is forward-filled for hours with no trades; volume is 0 when missing.
-- `series.daily`: the aligned daily table on the window's dates: `date, excluded, kalshi/price_close` (last close of
-  the UTC day), `kalshi/volume` (sum of the day's hourly volume), `wikipedia/pageviews_total` and one
-  `wikipedia/pageviews/<Title>` column per page. Attention values are never interpolated; missing stays null.
-- `quality`: per series coverage, missing days, longest gap, near-zero stretches, status `ok | degraded | unusable`
-  and reasons.
-- `metrics.daily.<attention series>`: lag tables of attention surprise vs `volume_surprise`, `abs_price_change` and
-  `price_change` at lags -2..+2 days (lag > 0: outcome after attention). Each cell has `rho` (null when n < 20),
-  `n`, `noise_band` (2/sqrt(n)), `quality_status` and the attention and outcome query hashes. A series marked
-  `unusable` is skipped with the reason.
-- `series.hourly_grid`: every hour of the window for the other hourly series (`kalshi/trade_count`,
-  `kalshi/small_trade_share`, `x/post_count`, `bluesky/post_count`). `ts_utc` is the hour's end, the same convention
-  as the candles. These are also summed to UTC days (by bucket start; null if any hour is missing) in
-  `series.daily`; the daily small-trade share is small trades / all trades.
-- `metrics.hourly.<series>`: hourly lag tables (same-hour surprise, lags -3..+3 h) for X and Bluesky. Hourly
-  attention series also get daily lag tables in `metrics.daily`.
-- `metrics.events`: event windows, spikes, excess attention and reversion per daily attention series (see Method).
-  With no confirmed events, `status` is `"no confirmed events"` and the event-window and excess-attention entries say
-  so instead of giving a number; `n_needs_review_ignored` counts the draft rows that were ignored.
+```
+python -m raceattn events --race tx-senate-2026          # draft config/events/<race>.csv, every row needs_review
+python -m raceattn discover --office senate --state TX   # draft configs in config/races/drafts/
+python -m raceattn mediacloud audit --race tx-senate-2026 --phase tuning --n 100 --seed 1
+python -m raceattn mediacloud precision data/local/mediacloud/audit/tx-senate-2026/tuning.csv
+python -m raceattn mediacloud agreement coder_a.csv coder_b.csv
+python -m raceattn publish                               # licensing and funding-flag check; sends nothing
+```
 
-`data/processed/index.json` (committed): one entry per race with state, office, window, quality statuses and the
-headline metric (Wikipedia total surprise vs Kalshi volume surprise, every lag). Under `metrics`, the map's numbers,
-each with its n and all over the non-excluded days of the window: `attention_total` (Wikipedia pageviews summed),
-`attention_vs_volume` (rho at lag 0), `price_change` (cents, first close to the last close before election night),
-`polling_density`, `data_coverage` (mean coverage of the attention series that ran), `quality_summary` (status counts,
-unusable series with reasons, skipped sources with reasons) and `attention` (the same numbers per attention series,
-with its platform group). Re-running one race merges into the file and keeps the others.
+Event rows and discover drafts are trusted only after a human reviews them (`status: confirmed`).
 
-The race JSON also has `events_overlay` (every row of the events CSV in the window with its status; the dashboard
-draws them, metrics use only confirmed rows) and `run_overrides`.
+### Dashboard
+
+```
+python -m raceattn dashboard --race tx-senate-2026
+python -m raceattn dashboard --race tx-senate-2026 --demo
+```
+
+Flags: `--port N` (default 4173; `0` picks a free port), `--no-open` (do not open a browser), `--no-build` (serve
+`web/dist` as it is, skip the Node check and the build), `--demo`. It builds `web/` when `web/dist` is missing or
+older than its inputs, then serves on 127.0.0.1 only and prints the URL:
+`http://127.0.0.1:4173/?race=tx-senate-2026&view=news`. `data/processed` is read on every request, so a new
+pipeline run shows without a rebuild. Ctrl+C stops it.
+
+What you see:
+- The US map, with states colored by a selectable metric, and the race section below it.
+- The Overview tab: Kalshi price and volume panels, Wikipedia pageview attention, the other attention sources that
+  ran, lag tables, the event study and quality badges.
+- The News (Media Cloud) tab, which opens first: status, tiles, five charts, the ten largest days, the query drawer
+  and CSV/JSON downloads.
+
+The News tab's empty state ("No Media Cloud data has been pulled for this race") means no Media Cloud pull has
+run for this race yet, usually because there is no key. It is not zero coverage. The card lists what is missing
+and the command to run. `--demo` serves synthetic Media Cloud data from memory, with a "DEMO DATA, not real" banner
+on every section. Nothing is written to disk.
+
+## Data sources
+
+Status as of the committed outputs and `docs/sources/*.md`.
+
+| Source | Id | Key | Status |
+|---|---|---|---|
+| Kalshi candlesticks | `kalshi` | none | Works. Ran live for six races |
+| Kalshi trades | `kalshi_trades` | none | Works. Ran live; trade count and small-trade share |
+| Wikipedia pageviews | `wikipedia` | none | Works. Ran live for six races |
+| Bluesky search | `bluesky` | optional | Works, degraded: unauthenticated paging only; days that hit the page cap are lower bounds and marked degraded. Authenticated mode unverified |
+| Media Cloud | `news_mediacloud` | needs key | Not yet run. Connector built and tested offline; the live pull has not been done |
+| Guardian | `news_guardian` | needs key | Not yet run. Built against documented shapes; licensing question open (24-hour rule) |
+| New York Times | `news_nyt` | needs key | Not yet run. Built against documented shapes |
+| X post counts | `x` | needs key, paid | Not yet run. Built against documented shapes; terms read against publishing counts |
+| Manual news CSV | `news_manual` | none | Needs a file at `data/raw/news_manual/<race_id>.csv` (`date,count`) |
+| GDELT DOC | `gdelt` | none | Unusable in the pilot (gaps, near-zero days). Optional, not in the default list |
+| Reddit, YouTube, Google Trends import, Polymarket | | | Not built (M4 in the spec) |
+| TikTok, Discord, Telegram, Threads, Substack | | | Out of scope |
+
+One known unusable series: `kalshi/volume` for `nc-senate-2026` (near-zero days over 10% of the window; see
+[docs/m3-notes.md](docs/m3-notes.md)).
 
 ## Method
 
-- Surprise: `ln((x_t + 1) / (mean of the previous 7 same-slot values + 1))`; previous 7 days for daily series, the
-  same hour on the previous 7 days for hourly series. Null if x_t or any of the 7 is missing.
-- `exclude_days` from the config (election night for Texas) are masked after the surprise is computed, on both the
-  attention and the outcome side, as in the pilot.
-- Spearman rho with average ranks for ties. Cells with fewer than 20 pairs are blank; `n` is always reported.
-- Noise band: each cell stores 2/sqrt(n), and each table stores 2/sqrt(max n in the table). The pilot printed
-  2/sqrt(max(n - 7, 1)) with n = non-excluded days; that value is stored as `noise_band_pilot`. Daily series are
-  autocorrelated, so either band is generous.
+- Attention measure: counts per UTC time bucket. Wikipedia pageviews per day (user agents only), Bluesky and X posts
+  per hour, news stories or articles per day. Outcomes: Kalshi contracts traded (`kalshi/volume`), trade count, and
+  the daily close of the followed market (the Democratic party contract).
+- Surprise: `ln((x_t + 1) / (mean of the previous 7 same-slot values + 1))`. Same slot is the previous 7 days for
+  daily series and the same hour on the previous 7 days for hourly series. Null if x_t or any of the 7 is missing.
+- Excluded days (election night for Texas, `exclude_days` in the race config) are masked after the surprise is
+  computed, on both sides.
+- Lag tables: Spearman rho (average ranks for ties) of attention surprise against volume surprise, absolute price
+  change and signed price change, at lags -2 to +2 days (and -3 to +3 hours for X and Bluesky). Lag > 0 means the
+  outcome comes after the attention. Cells with fewer than 20 pairs are blank; n is always shown. Noise band
+  2/sqrt(n); daily series are autocorrelated, so the band is generous.
+- Events: only rows with status `confirmed` in `config/events/<race>.csv` count. Event window: days -2 to +2. Spike:
+  attention surprise >= 1.0 (about 2.7 times the trailing mean). Excess attention: a spike with no confirmed event
+  within 2 days. Reversion: after a spike-day price move of at least 1 cent, did at least half of it reverse within
+  3 days. Settings under `events` in `config/project.yaml`.
+- Media Cloud search criteria: [docs/mediacloud-search-criteria.md](docs/mediacloud-search-criteria.md). English
+  online news stories per UTC day in fixed collections (US national, and Texas state and local once its id is
+  found), run separately. Race-context queries per candidate are the main series; any-mention queries are a
+  sensitivity check. Raw count, normalized ratio and the collection's total count are all stored.
+- Audit and reliability: 100 random stories per core query and collection, in a tuning phase (Aug 1 to Aug 24)
+  and an analysis phase (Sept 1 to Nov 2), coded by hand. Precision = yes / (yes + no), Wilson 95% interval,
+  target 0.90. A second coder's file gives simple agreement and Krippendorff's alpha: target 0.80, drop a variable
+  below 0.70.
+- Quality gate (`raceattn/metrics/quality.py`, on daily buckets): near zero is a day under 5% of the series median
+  next to a normal day. `unusable`: coverage under 70%, no data, or near-zero days over 10% of the window.
+  `degraded`: coverage under 95%, any near-zero stretch, or a gap of 3 days or more. Otherwise `ok`. Kalshi price
+  skips the near-zero check (a low price is a real price). Media Cloud counts need a near-zero stretch of 2 or more
+  days; the derived Media Cloud shares skip the near-zero check. Metrics skip `unusable` series and say why.
+  Nothing is interpolated.
 
-Event metrics (spec section 8; settings in `config/project.yaml` under `events`):
-- Only events with status `confirmed` in `config/events/<race>.csv` are used.
-- Event window: days -k..+k around each confirmed event, k = 2. Per offset: mean attention surprise, mean volume
-  surprise, mean absolute and signed daily price change, each with n.
-- Spike: a day with attention surprise >= 1.0 (about 2.7 times the trailing 7-day mean, with the +1 in the formula).
-- Excess attention: a spike with no confirmed event within +-k days.
-- Reversion after a spike on day t: move = close[t] - close[t-1]; if |move| >= 0.01, reversal fraction =
-  -(close[t+3] - close[t]) / move; "reverted" if it is >= 0.5. Reported: spikes, n with a move, n reverted, share,
-  mean fraction, and each spike. Excluded days are masked first.
-- Every entry carries n, the quality status behind it and the query hashes.
+## Outputs and layout
 
-## Quality thresholds
+- `data/raw/<source>/<race>/...` (git-ignored): raw responses with endpoint, params, fetch time and status. No keys.
+- `data/processed/<race>.json` (committed): config summary, sources run and skipped with reasons, every rendered
+  query and its hash, hourly and daily series, quality per series, lag tables and event metrics.
+- `data/processed/index.json` (committed): one entry per race with the map's metrics.
+- `data/local/` (git-ignored): Media Cloud audit samples with titles and URLs. Never published.
 
-Computed on daily buckets. Near zero = under 5% of the series median with a normal neighbor. `unusable` if coverage
-is under 70%, there is no data, or near-zero days exceed 10% of the window. `degraded` if coverage is under 95%, any
-near-zero stretch exists, or a gap is 3 days or longer. Otherwise `ok`. The near-zero check is off for Kalshi price
-(a low price is a real price).
+```
+config/races/          one yaml per confirmed race; drafts/ holds discover output
+config/queries/        Media Cloud query files
+config/events/         event drafts per race and generator metadata
+config/project.yaml    default sources, connector settings, race overrides, licensing and funding flags
+raceattn/              cli.py pipeline.py dashboard.py discover.py events.py mediacloud.py mcqueries.py ...
+raceattn/connectors/   base.py kalshi.py wikipedia.py bluesky.py x.py news.py
+raceattn/metrics/      surprise.py lags.py quality.py events.py reliability.py
+web/                   dashboard (Vite, TypeScript, D3, Observable Plot); scripts/ holds the verify scripts
+data/processed/        committed outputs
+docs/                  spec, milestone notes, history, sources/, licensing, search criteria, screenshots
+tests/                 pytest suite; fixtures/raw/ holds recorded responses
+scripts/               check_secrets.py, hooks/pre-commit, fixture recorders
+```
 
-## Layout
+## Limitations and ethics
 
-    config/races/          one yaml per race (confirmed); drafts/ holds discover output (needs_review)
-    config/events/         event drafts per race (<race>.csv) and generator meta (<race>.meta.json)
-    config/project.yaml    default sources, connector settings, race_overrides, licensing and funding flags
-    raceattn/connectors/   base.py kalshi.py wikipedia.py x.py news.py bluesky.py
-    raceattn/metrics/      surprise.py lags.py quality.py events.py
-    raceattn/pipeline.py   raceattn/cli.py   raceattn/events.py (generator)   raceattn/discover.py
-    data/processed/        committed outputs
-    docs/sources/          terms and robots findings per source
-    tests/fixtures/raw/    recorded public API responses (same layout as data/raw)
-    scripts/               check_secrets.py, hooks/pre-commit
+- Counts are a proxy for attention, not a measure of who saw what. A story is not a reader.
+- Each source covers only what it indexes: Media Cloud's outlet list is the frame, paywalled content is thin,
+  Bluesky counts are lower bounds on capped days, and GDELT has gaps.
+- Association and timing only. Nothing here shows that attention causes trading or price moves.
+- No story text, post text, usernames or handles are published. Audit samples stay in `data/local/`, which is
+  git-ignored. Outputs hold counts and metrics.
+- Platform terms and licensing for publishing counts are still open: [docs/licensing.md](docs/licensing.md).
+  `licensing_confirmed` is false in `config/project.yaml`, and `publish` exits 1 while that applies.
+- The Kalshi grant funding disclosure is off: `funding_disclosure_enabled: false` in `config/project.yaml`, and
+  `SHOW_FUNDING_DISCLOSURE` in `web/src/config.ts` (on only with `VITE_FUNDING_DISCLOSURE=on npm run build`).
+- The repo is private. No license has been chosen yet.
 
-## License
+## Troubleshooting
 
-Proposed defaults, not final: MIT for code, CC BY 4.0 for aggregated data. To be decided before anything is published.
+- Missing key: `run` prints `== news_mediacloud: skipped (missing key: set MEDIACLOUD_API_KEY (see .env.example))`
+  and a hint about `.env`, records the reason under `skipped`, and exits 0. `mediacloud collections` and
+  `mediacloud audit` print an error and exit 2.
+- Port in use: the dashboard prints that port 4173 on 127.0.0.1 is already in use and exits 2. Stop the other
+  server, or use `--port 4180` or `--port 0` (a free port).
+- Node missing: the dashboard prints "Node.js and npm are needed to build the dashboard" and exits 2. If `web/dist`
+  is already built, `--no-build` skips the Node check. A fresh clone has no `web/dist`, so it needs Node once.
+- Unknown race: the dashboard lists the valid ids from `data/processed/index.json` and exits 2.
+- Stale data: responses are cached in `data/raw/`. `--refresh` re-fetches; it exists on `run`, `events`,
+  `discover`, `mediacloud collections` and `mediacloud audit`. A cached paid read (X) is never re-pulled.
+- Media Cloud HTTP 401, 403 or 429: the run stops at once with the status. Check the key, or wait for the quota.
 
-## Dashboard
+## Tests and status
 
-A static dashboard lives in `web/` (Vite + TypeScript, D3, Observable Plot). It reads `data/processed/index.json`
-and `data/processed/<race_id>.json` and makes no other network calls. The US map uses d3-geo with the us-atlas
-`states-albers-10m.json` geometry, committed in `web/src/geo/` and bundled, so it renders offline.
+```
+pip install -r requirements-dev.txt
+pytest -q                                   # offline: recorded fixtures, network blocked
+pytest -q --live                            # also live smoke tests; keyed ones skip without a key
+cd web && npm run check && npm test && cd ..
+cd web && npm run build && npm run verify && cd ..
+python scripts/check_secrets.py
+```
 
-- Map: states colored by a selectable metric (total attention, attention surprise vs volume rho, price change,
-  polling density, data coverage). A state with no race, or with n under 20 for the metric, is hatched and reads
-  "insufficient data". Each state with a race prints its value on the map; a legend and a table below the map give
-  the same values with n.
-- Click a state, press Enter or Space on a focused state, or pick it from the State select: the race opens below
-  with the M1 panels and the M3 charts (small multiples, normalized overlay, lead-lag heatmap, event study, scatter of
-  attention surprise vs volume surprise, calendar heatmap). A race-type switcher appears when a state has more than
-  one race.
-- Filters: race type, platform group (talking, reporting, looking) and source, window (sub-range, applied in the
-  page), map metric, information-event overlay, polling density band (low under 10 polls, medium 10 to 29, high 30+).
-- The URL carries `race`, `state` and the filters, so every view is linkable (`?race=oh-senate-2026&state=OH`).
-- A source with no data shows a card with the reason and the command to run it locally with your own key; an
-  unusable series shows its badge and reason.
+`npm run verify` needs a built `web/dist` and a Chromium for Playwright. It starts the dashboard server itself
+(real and `--demo`), runs the render, news view and axe checks, and writes screenshots. Set `CHROME_PATH` to a
+Chromium binary if Playwright's bundled one is not installed.
 
-    cd web
-    npm ci
-    npm run build      # writes web/dist and copies data/processed/*.json into web/dist/data/
-    npm run preview    # serves web/dist at http://127.0.0.1:4173/
-    npm run dev        # live reload; serves data/processed under /data/
-
-`?race=<race_id>` picks the race (default `tx-senate-2026`). The page loads its data with `fetch`, and
-browsers block `fetch` from `file://` pages, so open it over http (`npm run preview` or any static file server
-on `web/dist`), not by double-clicking `index.html`. The build is plain static files and can go on any host
-under any path. `npm run check` type-checks, `npm test` runs the transform tests, and `npm run verify` (after a
-build; it starts the local dashboard server itself) does the offline render check, the state-switch check, the badge
-checks, the news view checks, screenshots and axe at 390 and 1280 px. Details and results: `docs/m1-notes.md` and `docs/m3-notes.md`.
-
-### Local dashboard
-
-    python -m raceattn dashboard --race tx-senate-2026          # builds web/ if needed, serves on 127.0.0.1:4173
-    python -m raceattn dashboard --race tx-senate-2026 --demo   # synthetic Media Cloud data, labeled DEMO DATA, not real
-
-It needs Node 20+ and npm to build, serves `data/processed` live (no rebuild after a pipeline run), and opens the
-News (Media Cloud) view of the race (`?race=<id>&view=news`; also a tab in the race section): status, datapoint
-tiles, five charts, the ten largest days with local-only sample headlines, the query drawer and CSV/JSON downloads.
-With no Media Cloud data it shows the steps to get a key and pull. `--no-open`, `--port N`. Details:
-`docs/mc2-notes.md`.
+Status: the pipeline and dashboard work for six races (Texas Senate and Governor, Ohio, North Carolina, Florida,
+Kentucky Senate) with Kalshi, Wikipedia and, for five of them, Bluesky. No keyed source has run live. The Media
+Cloud connector, audit workflow and News view are built and tested offline; the live Media Cloud pull (MC3) is
+next. History: [docs/history.md](docs/history.md).
