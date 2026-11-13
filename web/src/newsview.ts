@@ -11,6 +11,9 @@ import { el, esc, raceTitle } from "./race";
 import type { Num, Quality, RaceData, Table } from "./types";
 import { DAY_MS, excludedSpans, PRICE, utcMs, VOLUME } from "./transforms";
 
+// Shown when the query config gives no timezone_note (Media Cloud Story Guide, checked on the live API 2026-11-12).
+export const DATE_NOTE = "publish_date is a date with no time or timezone, so a day is the publish date as Media Cloud extracted it, not a UTC day";
+
 export const DEMO_TEXT = "DEMO DATA, not real";
 const BANNER = `<p class="demo-banner" data-demo-banner>${DEMO_TEXT}</p>`;
 const fmtInt = format(",.0f");
@@ -19,18 +22,40 @@ const fmtPct = format(".1%");
 const fmt3 = format(".3f");
 const fmtDay = utcFormat("%b %-d");
 
-// Limitations, from the "Unverified (needs the key)" list in docs/sources/mediacloud.md (checked 2026-11-11).
-export const LIMITATIONS = [
-  "The unit is a story in Media Cloud's source list, not a reader: outlets Media Cloud does not crawl are out and paywalled content is thin.",
-  "Not confirmed until a keyed run: that collection 34412234 is \"United States - National\", and its source count.",
-  "Not confirmed: whether a Texas state-and-local collection exists, its name, id and source count (texas_local has no id until `python -m raceattn mediacloud collections --state TX` runs with a key).",
-  "Not confirmed: the grammar of article_title: searches (headline_either) and whether language:en is accepted inside q.",
-  "Not confirmed: whether count-over-time returns ratio and total_count for every day, and whether it returns days with zero matches explicitly or leaves them out.",
-  "Not confirmed: whether per-source daily counts exist (distinct sources per day) and whether top sources are available. Neither is built in the pipeline.",
-  "Not confirmed: the timezone of publish_date (timezone_note: unverified in the config) and the API version.",
-  "Not confirmed: the live response shapes of count-over-time, story-list and sources/collections, and which endpoints are limited to 2 requests a minute.",
-  "Not confirmed: whether Media Cloud collapses syndicated wire copy (the audit reports a duplicate rate instead of assuming).",
-];
+// Duplicate rate of the tuning audit (same normalized title on 2 or more domains), per race: docs/mc3-notes.md.
+const AUDIT_DUPLICATES: Record<string, string> = {
+  "tx-senate-2026": "the tuning audit found the same title on 2 or more domains for 90 of 400 sampled stories (22.5%); in texas_local it is 28% (talarico_race) and 24% (paxton_race) of the sample, 43% and 41% against every retrieved story, so a texas_local count is partly a count of reprints",
+};
+
+/** Method and Limitations lines: checked facts first, then what is still open (docs/sources/mediacloud.md, docs/mc3-notes.md).
+ * Values come from the query config block and the race JSON where they are recorded there. */
+export function limitationLines(d: RaceData, m: NewsModel): string[] {
+  const b = m.block;
+  const api = b?.api_version ? `Media Cloud API ${b.api_version}` : "the live Media Cloud API";
+  const colls = Object.entries(b?.collections ?? {});
+  const lic = (d as unknown as { licensing?: { confirmed?: boolean; sources_with_unconfirmed_terms?: string[] } }).licensing;
+  const coded = codedPhase(m.audit);
+  const dup = AUDIT_DUPLICATES[d.race.race_id];
+  return [
+    "The unit is a story in Media Cloud's source list, not a reader: outlets Media Cloud does not crawl are out and paywalled content is thin.",
+    ...(colls.length && !m.demo ? [`Collections, as looked up on ${api}: ${colls.map(([k, c]) => c.id === null ? `${k} has no id (not configured, nothing is requested)`
+      : `${k} is ${c.id} "${c.name ?? "no name recorded"}", ${c.source_count ?? "unknown number of"} sources (looked up ${c.looked_up_on ?? "on an unrecorded date"})`).join("; ")}.`] : []),
+    `Checked on ${api} (2026-11-12): article_title: searches (headline_either) and language:en inside q work as drafted; count-over-time returns ratio and total_count for every day and returns days with zero matches explicitly, so a missing day means something went wrong.`,
+    "Search endpoints allow 2 requests a minute (search/api-params) and every Media Cloud request is paced (30 s by default). Whether the other endpoints share that limit is not confirmed.",
+    "publish_date is a date with no time or timezone (Media Cloud Story Guide), so Media Cloud days are the extracted publish date, not UTC days. Whether that extraction is accurate is not confirmed.",
+    "Not built yet: per-source counts (distinct sources per day and top sources). The API offers them (search/count-by-source-over-interval and search/sources); a follow-up card builds them.",
+    `Syndicated copy is not collapsed: Media Cloud counts every reprint as a story and so does this page${dup ? `; ${dup}` : ""}.`,
+    ...(b ? [b.frozen_on ? `The queries are frozen: version ${b.version}, status ${b.status}, frozen on ${b.frozen_on}.`
+      : `The queries are not frozen: version ${b.version}, status ${b.status}. They can still change before they are frozen.`] : []),
+    coded ? `Precision comes from the coded ${coded.phase} audit sample (local only); see the precision tiles.`
+      : m.auditState === "static" ? "Precision: the audit file is read only when run locally. At the last pull (docs/mc3-notes.md) the tuning audit was not coded, so the precision of the core queries is not known."
+        : "The tuning audit is not coded, so the precision of the core queries is not known yet.",
+    lic?.confirmed === false && (lic.sources_with_unconfirmed_terms ?? []).includes("news_mediacloud")
+      ? "Licensing: whether Media Cloud's terms allow publishing these daily counts is not confirmed (race JSON licensing.confirmed is false; docs/licensing.md)."
+      : lic?.confirmed ? "Licensing: confirmed in the race JSON (licensing.confirmed is true)."
+        : "Licensing: whether Media Cloud's terms allow publishing these daily counts is not confirmed (docs/licensing.md).",
+  ];
+}
 
 export interface NewsModel {
   daily: Table;              // date plus the Media Cloud columns (race JSON, or the demo fixture)
@@ -135,8 +160,8 @@ export class NewsView {
     this.root.dataset.demo = m.demo ? "true" : "false";
     const head = el("header", { class: "racehead" }, `<h2 id="race-h" class="racetitle">${esc(raceTitle(d))}: News (Media Cloud)</h2>
       <p class="lede">Daily counts of online news stories in Media Cloud collections that match the race queries
-        (docs/mediacloud-search-criteria.md). The unit is a story, not a reader. All dates are UTC. The tool reports
-        timing and association, not causation.</p>`);
+        (docs/mediacloud-search-criteria.md). The unit is a story, not a reader. <span id="mc-dates">Media Cloud dates:
+        ${esc(m.block?.timezone_note ?? DATE_NOTE)}.</span> The tool reports timing and association, not causation.</p>`);
     this.root.append(head);
     if (m.demo) {
       this.root.append(el("div", { class: "demo-top", id: "mc-demo-top", role: "note" }, `${BANNER}<p>Every Media Cloud
@@ -395,8 +420,8 @@ export class NewsView {
       }
     } else {
       c5.append(el("div", { class: "empty-box", role: "img", "aria-label": "Chart 5: empty, no per-source counts in the data" },
-        `<p>No per-source counts in the data yet. The pipeline does not request them (it is not known whether the API offers
-        them). Expected shape: <code>queries.news_mediacloud.mediacloud.top_sources.&lt;collection&gt;</code> =
+        `<p>No per-source counts in the data yet. The API offers them (search/count-by-source-over-interval and
+        search/sources) but the pipeline does not request them yet; a follow-up card builds them. Expected shape: <code>queries.news_mediacloud.mediacloud.top_sources.&lt;collection&gt;</code> =
         <code>{query, start, end, sources: [{source, count}]}</code>.</p>`));
     }
     root.append(c5);
@@ -511,7 +536,7 @@ export class NewsView {
       sec.innerHTML = `<h3 id="mc-method-h" class="sec">Method</h3><details id="mc-drawer"><summary>How these numbers were made</summary>
         <div class="drawer"><p>The query config is not in the race JSON (the pipeline writes it when Media Cloud runs). ${m.server
         ? "This race has no Media Cloud query file." : "It is served by the local dashboard server: available when run locally."}</p>
-        ${limitations()}</div></details>`;
+        ${limitations(this.data, m)}</div></details>`;
       return sec;
     }
     const qs = Object.entries(b.queries ?? {});
@@ -531,17 +556,17 @@ export class NewsView {
         <th scope="col">Sources</th><th scope="col">Looked up on</th><th scope="col">Status</th></tr></thead><tbody>${Object.entries(b.collections)
         .map(([k, c]) => `<tr><th scope="row"><code>${esc(k)}</code></th><td>${esc(c.name ?? "none")}</td><td>${c.id ?? "none"}</td>
         <td>${c.source_count ?? "unknown"}</td><td>${esc(c.looked_up_on ?? "not yet")}</td><td>${esc(c.status)}</td></tr>`).join("")}</tbody></table></div>
-      <h4>Phases (UTC dates, inclusive)</h4><ul>${Object.entries(b.phases).map(([k, [s, e]]) => `<li>${esc(k)}: ${esc(s)} to ${esc(e)}</li>`).join("")}</ul>
+      <h4>Phases (publish dates, inclusive)</h4><ul>${Object.entries(b.phases).map(([k, [s, e]]) => `<li>${esc(k)}: ${esc(s)} to ${esc(e)}</li>`).join("")}</ul>
       <h4>Queries (${qs.length}), verbatim</h4><ul class="mc-queries">${qs.map(([name, q]) => `<li data-query="${esc(name)}"><strong>${esc(name)}</strong>
         (${esc(q.role)})<br><code data-k="mc-query">${esc(q.query)}</code><br><span class="note">sha256 <code>${esc(q.query_sha256)}</code>;
         ${Object.entries(q.collections).map(([ck, c]) => `${esc(ck)} (id ${c.collection_id ?? "none"}): ${esc(c.status)}`).join("; ")}</span></li>`).join("")}</ul>
       <h4>Derived series (per collection and day)</h4><ul>${Object.entries(b.derived ?? {}).map(([n, x]) => `<li><code>${esc(derivedText(n, x))}</code></li>`).join("")}
         <li>A zero denominator or a missing input gives no value (never 0); the reason is in <code>derived_nulls</code>.</li></ul>
-      <h4>Zero and missing</h4><p>A date the API returns with count 0 is a real zero. A date it leaves out is missing and is not
-        counted as 0. The tiles count them separately.</p>
+      <h4>Zero and missing</h4><p>A date the API returns with count 0 is a real zero. The live API returns zero days
+        explicitly, so a date it leaves out means something went wrong: it is missing and is not counted as 0. The tiles count them separately.</p>
       <h4>Exclusions log</h4>${log(b.exclusions_log)}
       <h4>Changes log</h4>${log(b.changes_log)}
-      ${limitations()}
+      ${limitations(this.data, m)}
       </div></details>`;
     return sec;
   }
@@ -553,13 +578,13 @@ export class NewsView {
       ${this.banner()}<p>Built in your browser from the data already loaded; no request is made.${ok ? "" : " Nothing to download until Media Cloud data is pulled."}</p>
       <div class="buttons">
         <button type="button" id="mc-export-csv" ${ok ? "" : "disabled"}>Download CSV: daily Media Cloud series (${mcColumns(m.daily).length} columns)</button>
-        <button type="button" id="mc-export-json" ${ok ? "" : "disabled"}>Download JSON: tile values with definitions and n</button>
+        <button type="button" id="mc-export-json" ${ok ? "" : "disabled"}>Download JSON: tile values with their definitions and sample sizes (n)</button>
       </div>`);
   }
 }
 
-function limitations(): string {
-  return `<h4>Limitations</h4><ul>${LIMITATIONS.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>`;
+function limitations(d: RaceData, m: NewsModel): string {
+  return `<h4>Limitations</h4><ul id="mc-limitations">${limitationLines(d, m).map((l) => `<li>${esc(l)}</li>`).join("")}</ul>`;
 }
 
 function legend(labels: string[]): string {

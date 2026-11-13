@@ -152,9 +152,12 @@ describe("downloads", () => {
 });
 
 describe("the committed Texas JSON", () => {
-  it("has no Media Cloud series yet, so the news view shows the empty state", () => {
-    expect(mcColumns(tx.series.daily)).toEqual([]);
-    expect(hasMcData(tx.series.daily)).toBe(false);
-    expect(tx.skipped?.news_mediacloud).toContain("missing key");
+  it("has the live Media Cloud series for both collections (MC3), so the news view shows data", () => {
+    const cols = mcColumns(tx.series.daily);
+    for (const q of ["talarico_race", "paxton_race", "race_either", "race_both", "talarico_any", "paxton_any", "headline_either", "any_either"]) {
+      for (const c of ["national", "texas_local"]) expect(cols).toEqual(expect.arrayContaining([`news_mediacloud/${q}/${c}`]));
+    }
+    expect(hasMcData(tx.series.daily)).toBe(true);
+    expect(tx.skipped?.news_mediacloud).toBeUndefined();
   });
 });

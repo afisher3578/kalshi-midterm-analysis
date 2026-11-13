@@ -41,7 +41,7 @@ a { color: var(--accent); }
 
 .panel { margin: 0 0 18px; padding: 10px 0 0; border-top: 1px solid var(--line); }
 .panel figcaption { margin-bottom: 4px; }
-.ptitle { font-weight: 650; margin-right: 6px; }
+.ptitle { font-weight: 650; margin-right: 6px; overflow-wrap: anywhere; }
 .summary { display: block; font-size: 0.92rem; }
 .unusable-note { display: block; font-weight: 600; }
 .panel svg { display: block; max-width: 100%; height: auto; }
@@ -85,6 +85,7 @@ details > summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .card code { color: var(--ink); }
 
 .buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.buttons button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-align: left; }
 button { font: inherit; padding: 8px 14px; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px; cursor: pointer; }
 button:hover { background: #163a5c; }
 

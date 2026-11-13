@@ -235,14 +235,17 @@ export interface StudyPoint { offset: number; mean: Num; n: number; what: string
 export function eventStudyChart(width: number, pts: StudyPoint[], aria: [string, string]) {
   const whats = [...new Set(pts.map((p) => p.what))];
   return svgPlot({
-    width, height: 120 + 120 * whats.length, marginLeft: 60, marginRight: 14, marginTop: 20, marginBottom: 34,
+    width, height: 120 + 140 * whats.length, marginLeft: 60, marginRight: 14, marginTop: 34, marginBottom: 34,
     ariaLabel: aria[0], ariaDescription: aria[1],
-    fy: { domain: whats, label: null },
+    // facet labels above each facet, inside the plot width (a right-hand axis spills past a phone screen)
+    fy: { domain: whats, label: null, axis: null, padding: 0.25 },
     x: { label: "days from the anchor day", domain: [-2, -1, 0, 1, 2], type: "point", tickFormat: (d: number) => (d > 0 ? `+${d}` : `${d}`) },
     y: { label: "mean", grid: true, nice: true },
     marks: [
       Plot.ruleY([0], { stroke: COLORS.zero }),
       Plot.ruleX([0], { stroke: COLORS.rule, strokeDasharray: "3,3" }),
+      Plot.text(whats, { fy: (d: string) => d, text: (d: string) => d, frameAnchor: "top-left", textAnchor: "start",
+        lineAnchor: "bottom", dy: -8, fontWeight: 600, fill: "#1f2937" }),
       Plot.lineY(pts.filter((p) => p.mean !== null), { x: "offset", y: "mean", fy: "what", stroke: COLORS.line }),
       Plot.dot(pts.filter((p) => p.mean !== null), { x: "offset", y: "mean", fy: "what", fill: COLORS.line, r: 3 }),
       Plot.text(pts, { x: "offset", y: (p: StudyPoint) => p.mean ?? 0, fy: "what", text: (p: StudyPoint) => `n=${p.n}`, dy: -10,

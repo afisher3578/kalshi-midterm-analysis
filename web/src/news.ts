@@ -212,7 +212,7 @@ export function codedPhase(a: AuditData | null | undefined): { phase: string; ro
   return null;
 }
 
-/** Up to `max` sample headlines per date (UTC date of publish_date), deduplicated by URL; collection `prefer` first. */
+/** Up to `max` sample headlines per date (publish_date, a date with no timezone), deduplicated by URL; collection `prefer` first. */
 export function headlinesByDay(a: AuditData | null | undefined, dates: string[], max = 3, prefer = "national"): Map<string, AuditRow[]> {
   const want = new Set(dates);
   const out = new Map<string, AuditRow[]>();

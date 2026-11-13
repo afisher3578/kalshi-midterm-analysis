@@ -188,6 +188,8 @@ captured at CSS-pixel scale, because Chromium repeats content past about 16k dev
 
 ## Unverified until the live pull (MC3)
 
+MC3 resolved most of these; see docs/mc3-notes.md ("What MC2 left open").
+
 - The real series: whether count-over-time returns `ratio`, `total_count` and explicit zero days, so whether the
   ratio toggle, the zero-day tile and the missing-day count show anything meaningful.
 - Whether per-source counts exist: the distinct-sources tile and Chart 5 stay "not available yet" / empty until a

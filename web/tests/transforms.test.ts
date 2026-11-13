@@ -92,7 +92,9 @@ describe("helpers", () => {
     expect(raceIdFromSearch("", "tx")).toBe("tx");
   });
   it("lists the Texas attention series and Kalshi columns", () => {
-    expect(attentionColumns(data)).toHaveLength(5); // Wikipedia total, three pages, Bluesky (M2)
+    const cols = attentionColumns(data);
+    expect(cols.filter((c) => !c.startsWith("news_mediacloud/"))).toHaveLength(5); // Wikipedia total, three pages, Bluesky (M2)
+    expect(cols).toEqual(expect.arrayContaining(["news_mediacloud/race_either/national", "news_mediacloud/race_either/texas_local"])); // MC3
     expect(column(data.series.daily, PRICE)).toHaveLength(65);
   });
 });

@@ -79,9 +79,9 @@ Media Cloud, step by step:
 2. Copy the API key from your profile page.
 3. Put it in `.env`: `MEDIACLOUD_API_KEY=<your key>`.
 4. Check it: `python -m raceattn mediacloud collections --state TX`. This lists collections whose name matches Texas.
-   Record the chosen Texas collection's name, id, source count and the date under `collections.texas_local` in
-   `config/queries/tx-senate-2026.mediacloud.yaml` (it is null until then, so only the national collection is
-   pulled).
+   The Texas query file already has both collections: `national` (United States - National, id 34412234) and
+   `texas_local` (Texas, United States - State & Local, id 38381323). A collection with a null id is skipped and
+   reported as not configured, never counted as zero.
 
 More detail: [docs/sources/mediacloud.md](docs/sources/mediacloud.md). Other sources: `docs/sources/*.md`.
 
@@ -116,8 +116,9 @@ python -m raceattn run --race tx-senate-2026 --sources kalshi,kalshi_trades,wiki
 
 Plain `run --race tx-senate-2026` also includes Media Cloud, since it is in the default list. Use the full source
 list as above. Do not run `--sources news_mediacloud` alone: for the reason above, the Kalshi, Wikipedia and
-Bluesky data would drop out of the dashboard. The other sources come from the cache. The Texas query file makes 8
-Media Cloud requests per run at 30 s apart, so about 4 minutes.
+Bluesky data would drop out of the dashboard. The other sources come from the cache. The Texas query file makes 16
+Media Cloud requests per run (8 queries x 2 collections) at 30 s apart, so about 8 minutes. Later runs read the
+cache.
 
 Other commands:
 
@@ -153,7 +154,8 @@ What you see:
   and CSV/JSON downloads.
 
 The News tab's empty state ("No Media Cloud data has been pulled for this race") means no Media Cloud pull has
-run for this race yet, usually because there is no key. It is not zero coverage. The card lists what is missing
+run for this race yet, usually because there is no key or no query file. Texas Senate has live data; the other
+races have no Media Cloud query file yet. It is not zero coverage. The card lists what is missing
 and the command to run. That command's `--sources` list is the sources of the last run for this race (from the
 race JSON) plus `news_mediacloud`. So after a quick test run with fewer sources, the suggested command is short
 too. Check it against the full list above before you run it. `--demo` serves synthetic Media Cloud data from
@@ -169,7 +171,7 @@ Status as of the committed outputs and `docs/sources/*.md`.
 | Kalshi trades | `kalshi_trades` | none | Works. Ran live; trade count and small-trade share |
 | Wikipedia pageviews | `wikipedia` | none | Works. Ran live for six races |
 | Bluesky search | `bluesky` | optional | Works, degraded: unauthenticated paging only; days that hit the page cap are lower bounds and marked degraded. Authenticated mode unverified |
-| Media Cloud | `news_mediacloud` | needs key | Not yet run. Connector built and tested offline; the live pull has not been done |
+| Media Cloud | `news_mediacloud` | needs key | Works. Ran live for Texas Senate on 2026-11-12, two collections (national, texas_local); queries are still draft, precision not coded yet ([docs/mc3-notes.md](docs/mc3-notes.md)) |
 | Guardian | `news_guardian` | needs key | Not yet run. Built against documented shapes; licensing question open (24-hour rule) |
 | New York Times | `news_nyt` | needs key | Not yet run. Built against documented shapes |
 | X post counts | `x` | needs key, paid | Not yet run. Built against documented shapes; terms read against publishing counts |
@@ -288,6 +290,6 @@ Verify rewrites the PNGs in `docs/screenshots/`. Run `git status` afterwards and
 restore them (`git checkout -- docs/screenshots`).
 
 Status: the pipeline and dashboard work for six races (Texas Senate and Governor, Ohio, North Carolina, Florida,
-Kentucky Senate) with Kalshi, Wikipedia and, for five of them, Bluesky. No keyed source has run live. The Media
-Cloud connector, audit workflow and News view are built and tested offline; the live Media Cloud pull (MC3) is
-next. History: [docs/history.md](docs/history.md).
+Kentucky Senate) with Kalshi, Wikipedia and, for five of them, Bluesky. Media Cloud ran live for Texas Senate on 2026-11-12 (MC3,
+[docs/mc3-notes.md](docs/mc3-notes.md)); its queries stay draft until the tuning audit is coded. No other keyed
+source has run live. History: [docs/history.md](docs/history.md).
