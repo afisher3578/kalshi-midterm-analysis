@@ -17,7 +17,9 @@ against the live API (version 3.2.3) on 2026-11-12, see docs/sources/mediacloud.
                               [media_name, interval, bucket (date), matching_stories, total_stories, ratio]; one row
                               per source per day, zero rows included; the per-day sum of matching_stories equals the
                               count-over-time count
-- GET search/sources          q, start, end, platform, cs -> sources[source, count]
+- GET search/sources          q, start, end, platform, cs -> sources[source, count]; at most 100 sources (the
+                              live API returned exactly 100, largest count first, for every Texas query and collection
+                              over the analysis phase on 2026-11-12)
 - GET sources/collections/    name, platform, limit, offset -> count, next, results[id, name, source_count, ...]
 publish_date is a date with no time or timezone, so days are the publish date as Media Cloud extracted it.
 
@@ -52,6 +54,7 @@ COUNT_URL = BASE + "search/count-over-time"
 STORY_LIST_URL = BASE + "search/story-list"
 SOURCE_INTERVAL_URL = BASE + "search/count-by-source-over-interval"
 SOURCES_URL = BASE + "search/sources"
+TOP_SOURCES_CAP = 100  # search/sources returns at most this many sources
 COLLECTIONS_URL = BASE + "sources/collections/"
 ENV_KEY = "MEDIACLOUD_API_KEY"
 DEFAULT_PACE = 30.0

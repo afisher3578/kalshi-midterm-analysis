@@ -107,9 +107,9 @@ Analysis Sept 1 to Nov 2 / election Nov 3 to 4, total stories:
 - Whether Media Cloud's `publish_date` extraction is accurate.
 - The story-list default sort order and pagination beyond one page (never needed).
 - Whether endpoints other than search are limited to 2 requests a minute.
-- Breadth and top sources: the endpoints exist, not built (follow-up card). Update: built after MC3 (offline
-  tests only, live pull still to run); see docs/sources/mediacloud.md, "Breadth and top sources". A full Texas run
-  without the cache is now 28 requests (16 count, 12 per-source).
+- Breadth and top sources: the endpoints exist, not built (follow-up card). Update: built after MC3 and pulled
+  live on 2026-11-12; see docs/sources/mediacloud.md, "Breadth and top sources, live" (search/sources caps at 100
+  sources). A full Texas run without the cache is now 28 requests (16 count, 12 per-source).
 - Licensing of publishing counts: still `licensing_confirmed: false`, as with Bluesky (docs/licensing.md).
 
 ## Status

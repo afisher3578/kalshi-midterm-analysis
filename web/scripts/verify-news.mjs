@@ -172,6 +172,11 @@ for (const width of [1280, 390]) {
     check(`${width}: Chart 5 top sources bars per collection (race_either)`, c5.slice(0, 160), first.map((x) => `${x.source} ${fmtInt(x.count)}`).join("; "),
       "queries.news_mediacloud.mediacloud.top_sources.race_either.<collection>", c5svg === liveTopColls.length
         && first.every((x) => c5.includes(`${x.source} ${fmtInt(x.count)}`)) && (await page.locator("#mc-chart5 .empty-box").count()) === 0);
+    const subs = await page.$$eval("#mc-chart5 > p.subtitle", (ps) => ps.map((p) => p.textContent.replace(/\s+/g, " ").trim()));
+    const capped = liveTopColls.filter((c) => liveTop.race_either[c].capped);
+    check(`${width}: Chart 5 subtitle shows the cap note where search/sources hit its cap`, subs.join(" | ").slice(0, 300),
+      capped.map((c) => liveTop.race_either[c].note).join(" | "), "top_sources.race_either.<collection>.note",
+      capped.every((c) => subs.some((t) => t.startsWith(`${c}:`) && t.includes(norm(liveTop.race_either[c].note)))));
   } else {
     check(`${width}: Chart 5 top sources empty panel (no bars) before a pull with top sources`, c5.slice(0, 120), "Empty: no top sources in the data", "n/a",
       c5.includes("Empty: no top sources in the data") && c5svg === 0 && (await page.locator("#mc-chart5 .empty-box").count()) === 1);

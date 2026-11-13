@@ -15,7 +15,9 @@ export interface McQuery { query: string; query_sha256: string; role: string;
   collections: Record<string, { collection_id: number | null; collection_name: string | null; status: string;
     request_hash?: string; note?: string }> }
 export interface TopSources { query: string; collection?: string; start: string; end: string;
-  sources: { source: string; count: number }[]; note?: string }
+  sources: { source: string; count: number }[]; note?: string;
+  // set when search/sources returned its cap (100): the listed sources may not be every source
+  capped?: boolean; cap?: number; covered_stories?: number; total_stories?: number | null; missing_count_days?: number }
 export interface McBlock {
   path?: string; version: number; status: string; frozen_on?: string | null; config_sha256: string; language?: string;
   platform?: string; api_version?: string | null; timezone_note?: string | null;

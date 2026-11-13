@@ -376,6 +376,43 @@ def test_per_source_queries_config_value(tmp_path):
     assert set(c.top_sources) == {"race_either"}
 
 
+def test_top_sources_cap(tmp_path):
+    """SYNTHETIC: search/sources stops at 100 sources (seen live on 2026-11-12). A list of exactly 100 is marked capped
+    with the stories it covers against the daily counts over the same dates; 99 is not."""
+    assert mc.TOP_SOURCES_CAP == 100
+    qdir = queries_dir(tmp_path, edit=lambda t: t.replace("analysis: {start: 2026-09-01, end: 2026-11-02}",
+                                                          "analysis: {start: 2026-10-01, end: 2026-10-05}"))
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None, qdir=qdir)
+    cfg = c.query_config(race)
+    data = fx("count_over_time_5day.synthetic.json")["by_query"]
+    ps = fx("per_source_5day.synthetic.json")
+    either = {"count_over_time": {"counts": [{"date": "2026-10-%02d 00:00:00" % d, "count": 30, "total_count": 1000,
+                                              "ratio": 0.03} for d in range(1, 6)]}}
+
+    def per_source(kind, name, params):
+        if kind == "sources" and name in ("race_either", "talarico_race"):
+            return {"sources": [{"source": "s%03d.example" % k, "count": 1} for k in range(100)]}
+        if kind == "sources" and name == "paxton_race":
+            return {"sources": [{"source": "s%03d.example" % k, "count": 1} for k in range(99)]}
+        return ps[kind][name]
+    sess.route = count_route(cfg, body_for=lambda n: either if n == "race_either" else data[n], per_source_for=per_source)
+    c.fetch(race, race.window)
+    e = c.top_sources["race_either"]["national"]
+    assert (e["start"], e["end"]) == ("2026-10-01", "2026-10-05") and len(e["sources"]) == 100
+    assert e["capped"] is True and e["cap"] == 100 and e["covered_stories"] == 100 and e["total_stories"] == 150
+    assert e["missing_count_days"] == 0
+    assert e["note"] == ("search/sources returns at most 100 sources; the 100 listed cover 100 of 150 race_either "
+                         "stories in national (66.7%)")
+    t = c.top_sources["talarico_race"]["texas_local"]  # talarico_race has no count on 2026-10-04
+    assert t["capped"] and t["total_stories"] == 20 and t["missing_count_days"] == 1
+    assert t["note"].endswith("; 1 day(s) of the window have no count, so the total leaves them out")
+    p = c.top_sources["paxton_race"]["national"]
+    assert len(p["sources"]) == 99 and not {"capped", "covered_stories", "total_stories", "note"} & set(p)
+    m = c.query_summary(race, race.window)["mediacloud"]
+    assert m["top_sources"]["race_either"]["national"]["capped"] is True
+
+
 @pytest.mark.parametrize("status", [401, 403, 429])
 def test_per_source_requests_stop_on_401_403_429(tmp_path, status):
     race = load_race(RACE5)

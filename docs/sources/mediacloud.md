@@ -33,8 +33,10 @@ criteria are in docs/mediacloud-search-criteria.md; the implementation notes are
   national, Aug 1 to 24: 249 sources x 24 days = 5976 rows; the per-day sum of `matching_stories` equals the
   count-over-time count. One request per per-source query and collection over the race window (breadth).
 - `GET https://search.mediacloud.org/api/search/sources`: `q`, `start`, `end`, `platform`, `cs` (no interval).
-  Returns `{"sources": [{"source": "townhall.com", "count": 42}, ...]}` (67 sources for talarico_race national,
-  Aug 1 to 24). One request per per-source query and collection over the analysis phase (top sources).
+  Returns `{"sources": [{"source": "townhall.com", "count": 42}, ...]}`, largest count first, at most 100 sources
+  (`TOP_SOURCES_CAP` in raceattn/mediacloud.py). 67 sources for talarico_race national, Aug 1 to 24; exactly 100
+  for every Texas query and collection over the analysis phase. One request per per-source query and collection
+  over the analysis phase (top sources).
 
 ## Two connector paths
 - With `config/queries/<race_id>.mediacloud.yaml` (Texas Senate only, for now): the query config path. Series
@@ -59,6 +61,11 @@ criteria are in docs/mediacloud-search-criteria.md; the implementation notes are
   `queries.news_mediacloud.mediacloud.top_sources.<query>.<collection>` =
   `{query, collection, start, end, sources: [{source, count}]}`, the full list returned, largest count first (ties
   by name). Only the source domain and its story count are kept: no story text, titles or URLs.
+- The cap: when the list has 100 sources (`TOP_SOURCES_CAP`), the entry also gets `capped: true`, `cap`,
+  `covered_stories` (the sum of the listed counts), `total_stories` (the sum of the daily count series
+  `news_mediacloud/<query>/<collection>` over the same dates), `missing_count_days` (days of the window with no
+  count, left out of the total) and a short `note`. Chart 5 shows the note in its subtitle. A capped list is the
+  largest 100 sources, not every source.
 - The endpoints used are recorded in `queries.news_mediacloud.mediacloud.endpoints` (`count`, `breadth`,
   `top_sources`), every rendered request with its endpoint and hash is in `queries.news_mediacloud.queries`, and
   each query and collection entry carries `breadth_request_hash` and `top_sources_request_hash`.
@@ -132,14 +139,33 @@ Live, 2026-11-12 (raw responses in git-ignored data/raw/mc3_probe/):
   (https://www.mediacloud.org/documentation/story-guide) says publish date "does not include time because few
   published articles do, and it is impossible to accurately determine the timezone indicated at scale". Days are
   the extracted publish date, not UTC days. `indexed_date` is UTC but is ingest time, not publish time.
-- Per-source daily counts (`count-by-source-over-interval`) and top sources (`search/sources`) exist. Both are now
-  built (offline tests only; the first live pull with them is still to run).
+- Per-source daily counts (`count-by-source-over-interval`) and top sources (`search/sources`) exist and are built.
+  The live pull with them is below ("Breadth and top sources, live").
 
 ## Unverified
 - The `story-list` default sort order and pagination beyond one page (never needed so far; it matters when the
   audit page cap is hit).
 - Whether every endpoint is limited to 2 requests a minute (only the `search/api-params` value is known).
 - How accurate Media Cloud's `publish_date` extraction is.
+
+## Breadth and top sources, live 2026-11-12
+`python -m raceattn run --race tx-senate-2026`: 12 per-source requests (the 16 counts came from the cache), no 401,
+403 or 429. The rebuild from the cache after that made 0 Media Cloud requests (28 cache hits).
+
+- `search/sources` caps at 100 sources: it returned exactly 100, largest count first, for every query and
+  collection over the analysis phase (Sept 1 to Nov 2). MC3 saw 67 over the tuning window, under the cap. The
+  listed 100 cover most stories:
+
+| Query | national: covered / total | texas_local: covered / total |
+|---|---|---|
+| talarico_race | 4032 / 4045 (99.7%) | 3142 / 3222 (97.5%) |
+| paxton_race | 3768 / 3782 (99.6%) | 3199 / 3290 (97.2%) |
+| race_either | 4904 / 4928 (99.5%) | 3764 / 3875 (97.1%) |
+
+- Breadth: all six series (3 queries x 2 collections) have 63/63 analysis days, quality ok, and the per-day sum of
+  `matching_stories` equals the count-over-time count on every day of the window (65 days). Mean distinct sources
+  per day over the analysis phase: race_either national 37.0 (12 to 71, largest on Sept 10), texas_local 31.0 (6
+  to 63, largest on Oct 28); talarico_race 33.6 and 27.7; paxton_race 31.3 and 28.3.
 
 ## Live run 2026-11-12
 Texas Senate, both collections. Details and what is still open: docs/mc3-notes.md.

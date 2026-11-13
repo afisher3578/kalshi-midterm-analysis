@@ -74,7 +74,8 @@ Derived series (computed by the tool):
   race_either). See docs/sources/mediacloud.md.
 - Top sources over the analysis window (a bar chart for the dashboard), if the API supports it. Built: search/sources
   over the analysis phase, stored at `queries.news_mediacloud.mediacloud.top_sources.<query>.<collection>` (source
-  and story count only); Chart 5 of the news view.
+  and story count only); Chart 5 of the news view. search/sources returns at most 100 sources; a capped list
+  records how many of the window's stories it covers (97% to 99.7% for Texas, docs/sources/mediacloud.md).
 - Syndication: Media Cloud may or may not collapse wire copy. Estimate the duplicate rate in the audit sample (same normalized title on several domains) and report it. Do not dedupe silently.
 
 ## 6. Validation (what the audit sample is for)

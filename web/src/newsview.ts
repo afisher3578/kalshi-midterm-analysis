@@ -430,7 +430,7 @@ export class NewsView {
       for (const { q, c, t } of others) {
         const all = sourceRows(t!);
         c5.append(el("details", { class: "mc-values", "data-top": `${q}-${c}` }, `<summary>${esc(c)}: ${esc(q)}, ${all.length} sources,
-          ${esc(t!.start)} to ${esc(t!.end)}</summary>${table(`mc-top-${q}-${c}`, `Top sources table, ${q}, ${c}`, all)}`));
+          ${esc(t!.start)} to ${esc(t!.end)}</summary>${t!.note ? `<p class="note">${esc(t!.note)}</p>` : ""}${table(`mc-top-${q}-${c}`, `Top sources table, ${q}, ${c}`, all)}`));
       }
     }
     if (!anyTop) {

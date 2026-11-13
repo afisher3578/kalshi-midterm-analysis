@@ -401,7 +401,7 @@ class MediaCloudConnector(DailyCountConnector):
 
     def _fetch_per_source(self, cfg, race, window, headers, counts, dayset):
         """Breadth rows and top sources for the per-source queries. Only source names and counts are kept."""
-        from raceattn.mediacloud import parse_source_interval, parse_top_sources
+        from raceattn.mediacloud import TOP_SOURCES_CAP, parse_source_interval, parse_top_sources
 
         rows: list[Row] = []
         self.top_sources = {}
@@ -427,10 +427,36 @@ class MediaCloudConnector(DailyCountConnector):
                 self.breadth_checks[s] = off
             else:
                 rec = self.cached_get(race, window, q, q.query_hash, "sources", headers=headers)
-                self.top_sources.setdefault(name, {})[c.key] = {
-                    "query": name, "collection": c.key, "start": q.params["start"], "end": q.params["end"],
-                    "sources": parse_top_sources(rec["body"])}
+                sources = parse_top_sources(rec["body"])
+                entry = {"query": name, "collection": c.key, "start": q.params["start"], "end": q.params["end"],
+                         "sources": sources}
+                if len(sources) >= TOP_SOURCES_CAP:
+                    entry.update(self._cap_note(name, c.key, sources, counts.get((name, c.key), {}),
+                                                dt.date.fromisoformat(q.params["start"]),
+                                                dt.date.fromisoformat(q.params["end"])))
+                self.top_sources.setdefault(name, {})[c.key] = entry
         return rows
+
+    @staticmethod
+    def _cap_note(name, ckey, sources, daily, start, end):
+        """search/sources stops at TOP_SOURCES_CAP sources. How many of the window's stories the listed ones cover:
+        covered_stories is the sum of the listed counts, total_stories the sum of the daily count series over the
+        same dates (days with no count are left out and counted in missing_count_days)."""
+        from raceattn.mediacloud import TOP_SOURCES_CAP
+
+        covered = sum(s["count"] for s in sources)
+        days = [start + dt.timedelta(n) for n in range((end - start).days + 1)]
+        present = [daily[d] for d in days if daily.get(d) is not None]
+        total = int(sum(present)) if present else None
+        missing = len(days) - len(present)
+        share = " (%.1f%%)" % (100 * covered / total) if total else ""
+        note = ("search/sources returns at most %d sources; the %d listed cover %d of %s %s stories in %s%s"
+                % (TOP_SOURCES_CAP, len(sources), covered, total if total is not None else "an unknown number of",
+                   name, ckey, share))
+        if missing:
+            note += "; %d day(s) of the window have no count, so the total leaves them out" % missing
+        return {"capped": True, "cap": TOP_SOURCES_CAP, "covered_stories": covered, "total_stories": total,
+                "missing_count_days": missing, "note": note}
 
     def quality(self, rows, window):
         cfg = self._active
