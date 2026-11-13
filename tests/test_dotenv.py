@@ -88,7 +88,7 @@ def test_dotenv_key_never_leaks(tmp_path, monkeypatch, capsys):
                        str(work / "raw_err"), "--out-dir", str(work / "out_err"), "--mediacloud-pace", "0"]))
     assert codes == [0, 0, 0, 0, 2, 2]
     sent = [r for s in sessions for r in s.requests]
-    assert len(sent) == 8 + 1 + 2 + 1 + 1 and all(r["headers"]["Authorization"] == "Token " + secret for r in sent)
+    assert len(sent) == 16 + 1 + 4 + 1 + 1 and all(r["headers"]["Authorization"] == "Token " + secret for r in sent)
     cap = capsys.readouterr()
     assert "HTTP 401" in cap.err and "loaded from .env: MEDIACLOUD_API_KEY (values not shown)" in cap.err
     assert secret not in cap.out and secret not in cap.err

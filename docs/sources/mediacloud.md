@@ -1,23 +1,40 @@
 # Source: Media Cloud (news_mediacloud)
 
-First checked 2026-11-11 (docs, client source and an unauthenticated probe). Updated for MC1 on 2026-11-11. There
-is still no key on this machine, so nothing below has been checked against live counts. The search criteria are in
-docs/mediacloud-search-criteria.md; the implementation notes are in docs/mc1-notes.md.
+First checked 2026-11-11 (docs, client source and an unauthenticated probe). Updated for MC1 on 2026-11-11. Checked
+against the live API with a key on 2026-11-12 (API version 3.2.3); the findings are below under Verified. The search
+criteria are in docs/mediacloud-search-criteria.md; the implementation notes are in docs/mc1-notes.md.
 
 ## Endpoints and auth
 - Key from `MEDIACLOUD_API_KEY` (shell or `.env` at the repo root), sent as `Authorization: Token <key>` (as in the
   official `mediacloud` python client, https://github.com/mediacloud/api-client, `mediacloud/api.py`). The client
   is not a dependency; requests go through `raceattn/http.py`.
-- `GET https://search.mediacloud.org/api/search/count-over-time`: `q`, `start`, `end` (ISO dates, end inclusive),
-  `platform=onlinenews-mediacloud`, `cs` (collection ids). One request per query and collection over the race
+- `GET https://search.mediacloud.org/api/search/count-over-time`: `q`, `start`, `end` (ISO dates, start and end
+  both inclusive), `platform=onlinenews-mediacloud`, `cs` (collection ids). Returns
+  `{"count_over_time": {"counts": [...], "total": N, "normalized_total": M}}`; each count has `date` (`YYYY-MM-DD`),
+  `count`, `total_count` and `ratio` (= count / total_count). One request per query and collection over the race
   window.
 - `GET https://search.mediacloud.org/api/search/story-list`: the same params plus `page_size` and
-  `pagination_token`; returns `stories[]` and `pagination_token`. Used only by `mediacloud audit`. `expanded` (story
-  text) is never requested.
+  `pagination_token`; returns `stories[]` and `pagination_token` (null on the last page). `page_size=1000` is
+  accepted. Story fields: `id`, `indexed_date` (UTC, `+00:00`), `language`, `media_name`, `media_url`,
+  `publish_date` (a date only), `title`, `url`. Used only by `mediacloud audit`. `expanded` (story text) is never
+  requested.
 - `GET https://search.mediacloud.org/api/sources/collections/`: `name`, `limit`, `offset` (no platform filter; the
   directory's platform values differ from the search platform); returns
   `count`, `next`, `results[]` with `id`, `name`, `source_count`. Used only by `mediacloud collections`.
-- `/api/version` is open without a key (200, checked in M2).
+- `GET https://search.mediacloud.org/api/sources/collections/<id>/`: one collection record (`name`, `platform`,
+  `source_count`, `public`, `featured`). Used once by hand to confirm 34412234.
+- `GET https://search.mediacloud.org/api/search/api-params`: returns
+  `{"params": {"api-python-client": "5.1.0", "query-rate": "2/m"}}`, so search endpoints allow 2 requests a minute.
+- `/api/version` is open without a key (200, checked in M2). On 2026-11-12: version 3.2.3, GIT_REV
+  cf92de2e2dbee502990ea9c22c0fb680ee0f77ed.
+- Exist but not used yet (a follow-up card builds breadth and top sources):
+  - `GET .../search/count-by-source-over-interval` with `interval=day`: returns
+    `{"source-interval-attention": [...]}`, one row per source per day including zeros, with `media_name`,
+    `interval`, `bucket` (date), `matching_stories`, `total_stories`, `ratio`. For talarico_race national, Aug 1 to
+    24: 249 sources x 24 days = 5976 rows; the per-day sum of `matching_stories` equals the count-over-time count.
+    So breadth (distinct sources per day) is computable.
+  - `GET .../search/sources`: top sources, `{"sources": [{"source": "townhall.com", "count": 42}, ...]}` (67
+    sources for talarico_race national, Aug 1 to 24).
 
 ## Two connector paths
 - With `config/queries/<race_id>.mediacloud.yaml` (Texas Senate only, for now): the query config path. Series
@@ -28,23 +45,25 @@ docs/mediacloud-search-criteria.md; the implementation notes are in docs/mc1-not
 
 ## Fields used
 - `count_over_time.counts[]`: `date` (first 10 characters), `count`, `total_count`, `ratio`. A date with
-  `count: 0` is a zero; a date that is absent is missing. A date that appears twice stops the run.
+  `count: 0` is a zero; a date that is absent is missing. A date that appears twice stops the run. The live API
+  returns zero days explicitly, so a missing date means something went wrong.
+- Days are the `publish_date` as Media Cloud extracted it (usually the publisher's local date), not UTC days.
 - `stories[]`: `id`, `publish_date`, `media_name` (else the URL's domain), `title`, `url`. Nothing else is written.
 
 ## Request handling
 - Every response is cached under `data/raw/news_mediacloud*/` (git-ignored) and reused unless `--refresh`.
 - Requests are paced: 30 s between Media Cloud requests by default (`connectors.news_mediacloud.pace_seconds` in
-  config/project.yaml, `run --mediacloud-pace`, `mediacloud ... --pace`). Cache hits are not paced. The pace applies
-  to every Media Cloud endpoint because the FAQ does not say which ones are limited to 2 a minute.
+  config/project.yaml, `run --mediacloud-pace`, `mediacloud ... --pace`). Cache hits are not paced. `search/api-params`
+  gives a query rate of 2/m, so 30 s is the right pace for search endpoints. The pace applies to every Media Cloud
+  endpoint because only the search value is known. Responses carry no rate-limit headers.
 - HTTP 401, 403 and 429 stop at once with a message naming the status. No retry. 5xx responses get the usual
   bounded retries from `raceattn/http.py`.
 - Each command prints how many HTTP requests it made and how many responses came from the cache.
 
 ## Limits
 - FAQ (https://www.mediacloud.org/documentation/faqs): "The default quota is 4000 API requests per week" and
-  "Certain API endpoints are rate-limited to 2 requests per minute". The Texas config makes 8 count requests per
-  run (7 queries plus the `any_either` support query, one configured collection), 16 once the Texas collection id
-  is filled in. An audit is up to `--max-pages` (default 20) story-list pages per core query and collection.
+  "Certain API endpoints are rate-limited to 2 requests per minute". The Texas config makes 16 count requests per
+  run (7 queries plus the `any_either` support query, times two configured collections), about 8 minutes at 30 s. An audit is up to `--max-pages` (default 20) story-list pages per core query and collection.
 
 ## Terms
 - https://www.mediacloud.org/legal/media-cloud-terms-of-use: "'Platform Outputs' include aggregated data and/or
@@ -53,26 +72,58 @@ docs/mediacloud-search-criteria.md; the implementation notes are in docs/mc1-not
 - Storing and publishing daily counts looks allowed. Still listed in docs/licensing.md for Alex to confirm. Audit
   samples (titles and URLs) stay in git-ignored `data/local/` and are never published.
 
-## Verified (offline only)
+## Verified
+Offline (tests/test_mediacloud.py, tests/test_dotenv.py, fake HTTP with synthetic responses):
 - The query file loads and validates; every query string, the compositions and the hashes are checked by tests.
 - Request params, the Authorization header, caching, `--refresh`, pacing, the 401/403/429 stop, zero vs missing
-  dates, the derived math, the audit CSV, precision, agreement and the `.env` key handling, all against fake HTTP
-  with synthetic responses (tests/test_mediacloud.py, tests/test_dotenv.py).
-- None of this proves the live API behaves the same way.
+  dates, the derived math, the audit CSV, precision, agreement and the `.env` key handling.
 
-## Unverified (needs the key)
-- That collection 34412234 is "United States - National", and its source count.
-- Whether a Texas state-and-local collection exists, its name, id and source count (`texas_local` is null until
-  `python -m raceattn mediacloud collections --state TX` runs with a key).
-- The grammar of `article_title:` searches (headline_either), and whether `language:en` is accepted inside `q`.
-- Whether `count-over-time` returns `ratio` and `total_count` for every day, and whether it returns days with zero
-  matches explicitly or leaves them out.
-- Whether per-source daily counts exist (breadth, spec section 5) and whether top sources are available. Neither is
-  built.
-- The timezone of `publish_date` (`timezone_note: unverified` in the config).
-- The API version (`api_version: null`).
-- The live response shapes of all three endpoints; the `story-list` params `page_size` and `pagination_token`, the
-  maximum page size (1000 is requested) and the default sort order (it matters when the page cap is hit); the
-  `sources/collections/` params `name`, `limit` and `offset`, and its platform values.
-- Which endpoints are limited to 2 requests a minute.
-- Whether Media Cloud collapses syndicated wire copy (the audit reports a duplicate rate instead of assuming).
+Live, 2026-11-12 (raw responses in git-ignored data/raw/mc3_probe/):
+- API version 3.2.3. Search query rate 2/m (`search/api-params`); no rate-limit headers.
+- Collection 34412234 is "United States - National": platform online_news, 246 sources, public, featured.
+- `mediacloud collections --state TX` found one Texas collection: 38381323, "Texas, United States - State & Local",
+  593 sources, platform online_news. Both are now in the query config.
+- `article_title:` works as drafted. `article_title:Talarico AND language:en` gave 115 stories against 458 without
+  the field (national, Aug 1 to 24), and all 115 titles contain "Talarico". `article_title:(Talarico OR Paxton)`
+  and `(article_title:Talarico OR article_title:Paxton)` both gave 163, so the grouped form applies the field to
+  every term. headline_either gave 155 stories, all with Talarico or Paxton in the title.
+- `language:en` inside `q` is accepted and filters: talarico_race national Aug 1 to 24 gave 436 with it, 436
+  without it and 0 with `language:fr`.
+- No query syntax changes are needed; the seven queries and `any_either` stay as drafted.
+- `count-over-time` returns `ratio` and `total_count` for every day; start and end are inclusive (Aug 1 to 24 gave
+  24 dates); days with zero matches are returned explicitly with count 0 (a query matching nothing in the Texas
+  collection gave 24 dates, all 0).
+- `story-list` with `page_size=1000` returned all 436 talarico_race national stories (Aug 1 to 24) in one page with
+  `pagination_token` null; the story count equals the count-over-time total.
+- `publish_date` is a date only, with no time and no timezone. Media Cloud's Story Guide
+  (https://www.mediacloud.org/documentation/story-guide) says publish date "does not include time because few
+  published articles do, and it is impossible to accurately determine the timezone indicated at scale". Days are
+  the extracted publish date, not UTC days. `indexed_date` is UTC but is ingest time, not publish time.
+- Per-source daily counts (`count-by-source-over-interval`) and top sources (`search/sources`) exist. Neither is
+  built yet.
+
+## Unverified
+- The `story-list` default sort order and pagination beyond one page (never needed so far; it matters when the
+  audit page cap is hit).
+- Whether every endpoint is limited to 2 requests a minute (only the `search/api-params` value is known).
+- How accurate Media Cloud's `publish_date` extraction is.
+
+## Live run 2026-11-12
+Texas Senate, both collections. Details and what is still open: docs/mc3-notes.md.
+
+| Item | Result |
+|---|---|
+| Requests | 54 for MC3: 1 key check, 1 collections lookup, 16 probes (syntax and endpoints), 16 tuning-window counts, 4 tuning audit story-list pages, 16 analysis-and-election counts. The full-source rebuild after that: 16 cache hits, 0 requests. No 401, 403 or 429 |
+| Series | 16 count series (8 queries x 2 collections) plus ratio, total_count and derived series, Sept 1 to Nov 4 |
+| Coverage | Every count series 65/65 days, quality ok; analysis phase 63/63 days; no missing days, no near-zero stretches |
+| Explicit zero days | One: headline_either / texas_local on 2026-10-04 |
+| Undefined derived day | talarico_exclusive_share / texas_local on 2026-09-20 (zero denominator, null with a reason) |
+| race_either, analysis / election totals | national 4928 / 974; texas_local 3875 / 893 |
+| Largest race_either national days | Nov 4 (675), Nov 3 (299), Sept 10 (203) |
+| Collection size (total_count per day) | national 5,532 to 13,151; texas_local 1,480 to 8,721, lowest on weekends (Oct 3, 4, 11, 18, 25) |
+| Tuning audit | 4 cells, one story-list page each, every match retrieved, 100 drawn per cell (seed 1), 400 rows; retrieved equals the count-over-time total in every cell |
+| Duplicate rate (same normalized title on 2+ domains), in sample / against retrieved | talarico_race national 6% / 8%, texas_local 28% / 43%; paxton_race national 7% / 14%, texas_local 24% / 41%; overall 90/400 in sample (22.5%) |
+| Syndication | Heavy in the Texas collection; Media Cloud does not collapse it |
+| Query status | Draft, not frozen; precision not coded yet |
+
+Nov 4 being larger than Nov 3 fits publish dates being local dates with no timezone.

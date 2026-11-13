@@ -126,3 +126,20 @@ Default quota is 4,000 requests a week; some endpoints allow 2 requests a minute
 ## 11. Not verified
 
 The collection id and name behind 34412234; whether a Texas state-and-local collection exists and its id; the exact grammar for title searches on the live API; whether per-source daily counts and a normalized ratio are available from the search API; the publish-date timezone. All need the API key.
+
+Resolved on 2026-11-12 against the live API (API version 3.2.3; details in docs/sources/mediacloud.md):
+- Collection 34412234: it is "United States - National", 246 sources, platform online_news.
+- Texas state and local: one exists, "Texas, United States - State & Local", id 38381323, 593 sources, looked up
+  2026-11-12. Both collections are in the query config.
+- Title search grammar: `article_title:` works as drafted, and the grouped form `article_title:(A OR B)` applies
+  the field to every term in the group. `language:en` inside the query is accepted and filters. No query syntax
+  changes are needed; the queries stay as drafted.
+- Per-source daily counts: yes (count-by-source-over-interval with interval=day, one row per source per day,
+  zeros included), so breadth is computable. Top sources: yes (search/sources). Neither is built yet.
+- Normalized ratio: yes, count-over-time gives count, total_count and ratio for every day, and returns zero days
+  explicitly.
+- Publish-date timezone: there is none. publish_date is a date with no time and no timezone (Media Cloud Story
+  Guide). So section 1's "per UTC day" is really "per publish date as Media Cloud records it, no timezone", and the
+  "(UTC)" dates in section 3 are publish dates in that sense.
+- Still open: whether Media Cloud collapses wire copy (the audit duplicate rate stays the measure). Search
+  endpoints are limited to 2 requests a minute (search/api-params), which the 30 s pace respects.

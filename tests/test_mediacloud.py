@@ -95,9 +95,10 @@ def test_renders_all_queries_exactly():
                                      "paxton_any", "headline_either"]
     assert cfg.derived_support == ("any_either",)
     assert cfg.status == "draft" and cfg.version == 1 and cfg.frozen_on is None
-    assert [(c.key, c.id) for c in cfg.collections] == [("national", 34412234), ("texas_local", None)]
+    assert [(c.key, c.id) for c in cfg.collections] == [("national", 34412234), ("texas_local", 38381323)]
     assert cfg.phase("analysis") == (dt.date(2026, 9, 1), dt.date(2026, 11, 2))
-    assert cfg.api_version is None and cfg.timezone_note == "unverified"
+    assert cfg.api_version == "3.2.3" and cfg.timezone_note.startswith("publish_date is a date with no time")
+    assert [c.source_count for c in cfg.collections] == [246, 593]
     for name, q in EXPECTED.items():
         assert cfg.query_hash(name) == hashlib.sha256(q.encode()).hexdigest()
 
@@ -123,8 +124,8 @@ def test_query_hash_canonical_and_config_hash():
      "does not match its composition"),
     (lambda t: t.replace("talarico_any: '((\"James", "talarico_any: '((\"\"James"), "unbalanced double quotes"),
     (lambda t: t.replace("status: draft ", "status: frozen "), "needs a frozen_on date"),
-    (lambda t: t.replace("national: {name: \"United States - National\", id: 34412234",
-                         "national: {name: \"United States - National\", id: null"), "no collection has an id"),
+    (lambda t: t.replace("id: 34412234,", "id: null,").replace("id: 38381323,", "id: null,"),
+     "no collection has an id"),
     (lambda t: t.replace("core_queries: [talarico_race, paxton_race]", "core_queries: [nope]"), "unknown query nope"),
 ])
 def test_validator_rejects(tmp_path, edit, msg):
@@ -165,8 +166,8 @@ def test_connector_series_zero_vs_missing_and_derived(tmp_path):
     cfg = c.query_config(race)
     sess.route = count_route(cfg)
     rows = c.fetch(race, race.window)
-    assert len(sess.requests) == 8  # 8 queries x 1 configured collection; texas_local has no id
-    assert {r["params"]["cs"] for r in sess.requests} == {"34412234"}
+    assert len(sess.requests) == 16  # 8 queries x 2 configured collections
+    assert {r["params"]["cs"] for r in sess.requests} == {"34412234", "38381323"}
     assert all(r["headers"] == {"Authorization": "Token " + KEY} for r in sess.requests)
     vals = {}
     for r in rows:
@@ -185,7 +186,7 @@ def test_connector_series_zero_vs_missing_and_derived(tmp_path):
     nulls = c.derived_nulls["news_mediacloud/talarico_share/national"]
     assert "denominator is 0" in nulls["2026-10-02"] and "input missing" in nulls["2026-10-04"]
     assert c.derived_nulls["news_mediacloud/core_vs_broad/national"]["2026-10-05"] == "denominator is 0 (any_either = 0)"
-    assert not any("texas_local" in r.series for r in rows)
+    assert vals["news_mediacloud/talarico_race/texas_local"] == tr  # same synthetic body for both collections
 
     q = c.quality(rows, race.window)
     t = q["news_mediacloud/talarico_race/national"]
@@ -207,8 +208,9 @@ def test_connector_series_zero_vs_missing_and_derived(tmp_path):
     nat, loc = tq["collections"]["national"], tq["collections"]["texas_local"]
     assert nat["status"] == "fetched" and nat["collection_id"] == 34412234
     assert nat["collection_name"] == "United States - National" and nat["config_sha256"] == cfg.config_sha256
-    assert loc["status"] == "not configured" and loc["collection_id"] is None and "series" not in loc
-    assert m["collections"]["texas_local"]["status"] == "not configured"
+    assert loc["status"] == "fetched" and loc["collection_id"] == 38381323
+    assert loc["collection_name"] == "Texas, United States - State & Local"
+    assert m["collections"]["texas_local"]["status"] == "configured"
     assert KEY not in json.dumps(s)
 
 
@@ -258,14 +260,14 @@ def test_cache_hit_no_refetch_and_refresh(tmp_path):
     cfg = c.query_config(race)
     sess.route = count_route(cfg)
     rows1 = c.fetch(race, race.window)
-    assert len(sess.requests) == 8 and c.http.requests == 8
+    assert len(sess.requests) == 16 and c.http.requests == 16
     c2, sess2 = connector(tmp_path, count_route(cfg))
     rows2 = c2.fetch(race, race.window)
-    assert len(sess2.requests) == 0 and c2.cache_hits == 8 and c2.http.requests == 0
+    assert len(sess2.requests) == 0 and c2.cache_hits == 16 and c2.http.requests == 0
     assert [r.value for r in rows1] == [r.value for r in rows2]
     c3, sess3 = connector(tmp_path, count_route(cfg), refresh=True)
     c3.fetch(race, race.window)
-    assert len(sess3.requests) == 8 and c3.cache_hits == 0
+    assert len(sess3.requests) == 16 and c3.cache_hits == 0
     blob = "".join(open(os.path.join(d, f)).read() for d, _, fs in os.walk(tmp_path / "raw") for f in fs)
     assert KEY not in blob and "Authorization" not in blob
 
@@ -324,9 +326,9 @@ def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     logs = []
     res = run(race, ["kalshi", "wikipedia", "news_mediacloud"], raw_dir=str(raw), out_dir=str(tmp_path / "out"),
               http=http, log=logs.append, settings=settings, env={"MEDIACLOUD_API_KEY": KEY})
-    assert len(sess.requests) == 8
-    assert any("news_mediacloud: 8 HTTP request(s) made, 0 cache hit(s)" in l for l in logs)
-    assert any("texas_local not configured" in l for l in logs)
+    assert len(sess.requests) == 16
+    assert any("news_mediacloud: 16 HTTP request(s) made, 0 cache hit(s)" in l for l in logs)
+    assert not any("not configured" in l for l in logs)
     counts = ["news_mediacloud/%s/national" % n for n in cfg.queries if n != "any_either"]
     daily = res["metrics"]["daily"]
     for s in counts:
@@ -445,13 +447,13 @@ def test_audit_csv_sample_and_syndication(tmp_path):
     client, sess = audit_client(tmp_path, story_route(pages, seen))
     out = str(tmp_path / "audit" / "tuning.csv")
     res = mc.run_audit(cfg, client, "tuning", 100, 1, out_path=out, log=lambda *_: None)
-    # 2 core queries x 1 configured collection x 3 pages
-    assert client.requests == 6 and len(seen) == 6
+    # 2 core queries x 2 configured collections x 3 pages
+    assert client.requests == 12 and len(seen) == 12
     assert seen[0]["start"] == "2026-08-01" and seen[0]["end"] == "2026-08-24" and seen[0]["cs"] == "34412234"
     assert seen[1]["pagination_token"] == "tok-page-2"
     rows = list(csv.DictReader(open(out)))
     assert list(rows[0].keys()) == mc.AUDIT_COLUMNS
-    assert len(rows) == 200 and {r["query"] for r in rows} == {"talarico_race", "paxton_race"}
+    assert len(rows) == 400 and {r["query"] for r in rows} == {"talarico_race", "paxton_race"}
     assert all(r[c] == "" for r in rows for c in mc.CODING_COLUMNS)
     assert len({r["story_id"] for r in rows if r["query"] == "talarico_race"}) == 100
     blob = open(out).read() + open(out.replace(".csv", ".summary.json")).read()
@@ -459,18 +461,48 @@ def test_audit_csv_sample_and_syndication(tmp_path):
     cell = res["cells"][0]
     assert cell["retrieved"] == 250 and cell["page_cap_hit"] is False and cell["sampled"] == 100
     assert "uniform over the 250 retrieved stories" in cell["sampling"]
-    assert res["not_configured"] == ["texas_local"]
+    assert res["not_configured"] == []
     # syndication: 10 of the 250 stories share one title across domains
     assert cell["syndication"]["against_retrieved"]["syndicated"] == sum(
-        1 for r in rows if r["query"] == "talarico_race" and r["title"].startswith("Synthetic headline 1000 "))
+        1 for r in rows if r["query"] == "talarico_race" and r["collection"] == "national"
+        and r["title"].startswith("Synthetic headline 1000 "))
     # deterministic: same seed, same sample (now from the cache, no requests)
     client2, sess2 = audit_client(tmp_path, story_route(pages))
     out2 = str(tmp_path / "audit2.csv")
     mc.run_audit(cfg, client2, "tuning", 100, 1, out_path=out2, log=lambda *_: None)
-    assert open(out2).read() == open(out).read() and client2.requests == 0 and client2.cache_hits == 6
+    assert open(out2).read() == open(out).read() and client2.requests == 0 and client2.cache_hits == 12
     out3 = str(tmp_path / "audit3.csv")
     mc.run_audit(cfg, client2, "tuning", 100, 2, out_path=out3, log=lambda *_: None)
     assert open(out3).read() != open(out).read()
+
+
+def test_collection_without_id_is_skipped_and_listed(tmp_path):
+    """A copy of the real config with texas_local's id set to null: no request, a log line, listed as not configured."""
+    qdir = queries_dir(tmp_path, edit=lambda t: t.replace("id: 38381323,", "id: null,"))
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None, qdir=qdir)
+    logs = []
+    c.log = logs.append
+    cfg = c.query_config(race)
+    assert [(k.key, k.id) for k in cfg.collections] == [("national", 34412234), ("texas_local", None)]
+    sess.route = count_route(cfg)
+    rows = c.fetch(race, race.window)
+    assert len(sess.requests) == 8 and {r["params"]["cs"] for r in sess.requests} == {"34412234"}
+    assert not any("texas_local" in r.series for r in rows)
+    assert any("collection texas_local not configured (no id in tx-mc-5day.mediacloud.yaml); skipped, not counted "
+               "as zero" in l for l in logs)
+    m = c.query_summary(race, race.window)["mediacloud"]
+    assert m["collections"]["texas_local"]["status"] == "not configured"
+    assert m["queries"]["talarico_race"]["collections"]["texas_local"]["status"] == "not configured"
+
+    alogs = []
+    client, _ = audit_client(tmp_path, story_route(fx("story_list.synthetic.json")["pages"]))
+    out = str(tmp_path / "audit" / "tuning.csv")
+    res = mc.run_audit(cfg, client, "tuning", 100, 1, out_path=out, log=alogs.append)
+    assert res["not_configured"] == ["texas_local"]
+    assert json.load(open(out.replace(".csv", ".summary.json")))["not_configured"] == ["texas_local"]
+    assert {cell["collection"] for cell in res["cells"]} == {"national"} and client.requests == 6
+    assert "   collection texas_local: not configured (no id in the query config), no sample drawn" in alogs
 
 
 def test_audit_page_cap_and_refuses_to_overwrite_coding(tmp_path):

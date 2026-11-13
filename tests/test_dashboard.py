@@ -115,7 +115,7 @@ def test_routes(ctx):
     assert s == 200 and b"stale" not in b and json.loads(b)["races"][RACE]   # live from data/processed, not dist
     assert d.route("/data/%s.json" % RACE, ctx)[0] == 200
     q = json.loads(d.route("/local/mediacloud/%s/query-config.json" % RACE, ctx)[2])
-    assert q["news_mediacloud"]["mediacloud"]["collections"]["texas_local"]["status"] == "not configured"
+    assert q["news_mediacloud"]["mediacloud"]["collections"]["texas_local"]["status"] == "configured"
     assert len(q["news_mediacloud"]["mediacloud"]["queries"]) == 8
     a = json.loads(d.route("/local/mediacloud/%s/audit.json" % RACE, ctx)[2])
     assert a["available"] is False and a["phases"] == {}

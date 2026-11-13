@@ -8,13 +8,13 @@ frozen_on: null
 race_id: tx-senate-2026
 language: en
 platform: onlinenews-mediacloud
-api_version: null        # fill from GET https://search.mediacloud.org/api/version on the first keyed run
-timezone_note: unverified  # which timezone Media Cloud uses for publish_date; record it from the live API
+api_version: "3.2.3"     # GET https://search.mediacloud.org/api/version, 2026-11-12 (GIT_REV cf92de2e)
+timezone_note: "publish_date is a date with no time or timezone (Media Cloud Story Guide); days are the extracted publish date, not UTC days"
 collections:
-  # id 34412234 is the id the Media Cloud python client uses in its tests and README; name and source count
-  # are not confirmed (the collection record needs a key). Confirm with `python -m raceattn mediacloud collections`.
-  national: {name: "United States - National", id: 34412234, source_count: null, looked_up_on: null}
-  texas_local: {name: null, id: null, source_count: null, looked_up_on: null}   # fill from the collections lookup
+  # Both confirmed live on 2026-11-12: national from GET sources/collections/34412234/ (platform online_news,
+  # public, featured), texas_local from `python -m raceattn mediacloud collections --state TX` (the only match).
+  national: {name: "United States - National", id: 34412234, source_count: 246, looked_up_on: 2026-11-12}
+  texas_local: {name: "Texas, United States - State & Local", id: 38381323, source_count: 593, looked_up_on: 2026-11-12}
 phases:
   tuning:   {start: 2026-08-01, end: 2026-08-24}
   baseline: {start: 2026-08-25, end: 2026-08-31}
@@ -32,7 +32,8 @@ queries:
   race_both: '((("James Talarico" OR Talarico) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND (("Ken Paxton" OR "Kenneth Paxton" OR Paxton) AND (Senate OR "U.S. Senate" OR "Senate race" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT "Bill Paxton")) AND language:en'
   talarico_any: '(("James Talarico" OR Talarico)) AND language:en'
   paxton_any: '(("Ken Paxton" OR "Kenneth Paxton" OR Paxton) NOT "Bill Paxton") AND language:en'
-  # headline prominence; the grammar of the title field is unverified on the live API
+  # headline prominence; the article_title grammar was confirmed live on 2026-11-12 (the grouped form applies the
+  # field to every term in the group)
   headline_either: '(article_title:(Talarico OR "Ken Paxton" OR Paxton) AND (Senate OR Talarico OR Paxton OR campaign OR poll)) AND language:en'
   # derived support (not one of the seven): the union of the two any-mention queries, the denominator of
   # core_vs_broad. It has to be its own count because a union cannot be computed from two counts.
@@ -51,6 +52,13 @@ derived:
   core_vs_broad: {kind: ratio, numerator: race_either, denominator: any_either}
 exclusions_log: []        # each added exclusion: term, date, the false matches seen
 changes_log: []           # after the freeze: date, what changed, why, new version
+# Findings from the live API before the freeze (no query or logic change). Not read by the validator.
+notes:
+  - {date: 2026-11-12, note: "Syntax checked live: article_title:(A OR B) gives the same count as (article_title:A OR article_title:B); language:en inside q is accepted and filters (language:fr gives 0)."}
+  - {date: 2026-11-12, note: "No query syntax changes needed; the seven queries and any_either stay as drafted."}
+  - {date: 2026-11-12, note: "Collections looked up live: national 34412234 (246 sources), texas_local 38381323 (593 sources)."}
+  - {date: 2026-11-12, note: "publish_date is a date only, no time or timezone (Media Cloud Story Guide); days are the extracted publish date, not UTC days."}
+  - {date: 2026-11-12, note: "GET search/api-params gives query-rate 2/m for search endpoints; the 30 s pace fits. No rate-limit headers."}
 audit:
   core_queries: [talarico_race, paxton_race]   # the main series (section 4); see docs/mc1-notes.md
   per_query_per_collection: 100

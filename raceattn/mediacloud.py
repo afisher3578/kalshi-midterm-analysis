@@ -1,15 +1,20 @@
 """Media Cloud request handling and the audit workflow (docs/mediacloud-search-criteria.md, sections 5, 6 and 10).
 
 Requests: every response is cached on disk (raceattn/cache.py layout) and reused unless --refresh. Calls are
-paced (default 30 s between Media Cloud requests, because some endpoints allow 2 requests a minute and which ones
-is not documented). HTTP 401, 403 and 429 stop the command at once with a message naming the status: no retry,
-no workaround. The key goes in the Authorization header at send time only; it is never stored.
+paced (default 30 s between Media Cloud requests: GET search/api-params gives a query-rate of 2/m for the search
+endpoints, and the rate of the other endpoints is not known, so the pace applies to all of them). HTTP 401, 403 and
+429 stop the command at once with a message naming the status: no retry, no workaround. The key goes in the
+Authorization header at send time only; it is never stored.
 
-Endpoints follow the official python client (https://github.com/mediacloud/api-client, mediacloud/api.py) and are
-UNVERIFIED against the live API (no key here):
-- GET search/count-over-time  q, start, end, platform, cs
-- GET search/story-list       q, start, end, platform, cs, page_size, pagination_token -> stories, pagination_token
+Endpoints follow the official python client (https://github.com/mediacloud/api-client, mediacloud/api.py). Checked
+against the live API (version 3.2.3) on 2026-11-12, see docs/sources/mediacloud.md:
+- GET search/count-over-time  q, start, end, platform, cs -> count_over_time.counts[date, count, total_count, ratio];
+                              start and end inclusive, zero days returned explicitly
+- GET search/story-list       q, start, end, platform, cs, page_size, pagination_token -> stories, pagination_token;
+                              page_size=1000 accepted (one page was enough so far, later pages and the sort order
+                              are not checked)
 - GET sources/collections/    name, platform, limit, offset -> count, next, results[id, name, source_count, ...]
+publish_date is a date with no time or timezone, so days are the publish date as Media Cloud extracted it.
 
 Audit sampling: the story list is paged up to `max_pages` pages; n stories are drawn with random.Random(seed) from
 the stories retrieved. That is uniform over the retrieved stories. When the page cap is hit, the retrieved stories
