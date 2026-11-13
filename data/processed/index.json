@@ -907,7 +907,7 @@
     "timezone": "UTC"
    },
    "path": "tx-senate-2026.json",
-   "generated_at": "2026-11-13T04:00:43Z",
+   "generated_at": "2026-11-13T05:09:42Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -942,9 +942,11 @@
     "news_mediacloud/paxton_any/texas_local/ratio": "ok",
     "news_mediacloud/paxton_any/texas_local/total_count": "ok",
     "news_mediacloud/paxton_race/national": "ok",
+    "news_mediacloud/paxton_race/national/breadth": "ok",
     "news_mediacloud/paxton_race/national/ratio": "ok",
     "news_mediacloud/paxton_race/national/total_count": "ok",
     "news_mediacloud/paxton_race/texas_local": "ok",
+    "news_mediacloud/paxton_race/texas_local/breadth": "ok",
     "news_mediacloud/paxton_race/texas_local/ratio": "ok",
     "news_mediacloud/paxton_race/texas_local/total_count": "ok",
     "news_mediacloud/race_both/national": "ok",
@@ -954,9 +956,11 @@
     "news_mediacloud/race_both/texas_local/ratio": "ok",
     "news_mediacloud/race_both/texas_local/total_count": "ok",
     "news_mediacloud/race_either/national": "ok",
+    "news_mediacloud/race_either/national/breadth": "ok",
     "news_mediacloud/race_either/national/ratio": "ok",
     "news_mediacloud/race_either/national/total_count": "ok",
     "news_mediacloud/race_either/texas_local": "ok",
+    "news_mediacloud/race_either/texas_local/breadth": "ok",
     "news_mediacloud/race_either/texas_local/ratio": "ok",
     "news_mediacloud/race_either/texas_local/total_count": "ok",
     "news_mediacloud/talarico_any/national": "ok",
@@ -968,9 +972,11 @@
     "news_mediacloud/talarico_exclusive_share/national": "ok",
     "news_mediacloud/talarico_exclusive_share/texas_local": "ok",
     "news_mediacloud/talarico_race/national": "ok",
+    "news_mediacloud/talarico_race/national/breadth": "ok",
     "news_mediacloud/talarico_race/national/ratio": "ok",
     "news_mediacloud/talarico_race/national/total_count": "ok",
     "news_mediacloud/talarico_race/texas_local": "ok",
+    "news_mediacloud/talarico_race/texas_local/breadth": "ok",
     "news_mediacloud/talarico_race/texas_local/ratio": "ok",
     "news_mediacloud/talarico_race/texas_local/total_count": "ok",
     "news_mediacloud/talarico_share/national": "ok",
@@ -1052,7 +1058,7 @@
      "note": "mean coverage (days with data / window days) over the attention series that ran"
     },
     "quality_summary": {
-     "ok": 62,
+     "ok": 68,
      "degraded": 1,
      "unusable": 0,
      "unusable_series": {},
@@ -1315,5 +1321,5 @@
    }
   }
  },
- "updated_at": "2026-11-13T04:00:43Z"
+ "updated_at": "2026-11-13T05:09:42Z"
 }

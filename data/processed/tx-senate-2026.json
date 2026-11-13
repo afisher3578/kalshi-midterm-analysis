@@ -2,7 +2,7 @@
  "project": "kalshi-midterm-analysis",
  "version": "0.1.0",
  "schema_version": 2,
- "generated_at": "2026-11-13T04:00:43Z",
+ "generated_at": "2026-11-13T05:09:42Z",
  "race": {
   "race_id": "tx-senate-2026",
   "state": "TX",
@@ -539,7 +539,7 @@
    }
   },
   "news_mediacloud": {
-   "query_hash": "becebd3dcc7198f7",
+   "query_hash": "ccb179344e89c42a",
    "queries": [
     {
      "label": "talarico_race/national",
@@ -732,6 +732,156 @@
       "cs": "38381323"
      },
      "query_hash": "1789e8a3c914cc60"
+    },
+    {
+     "label": "talarico_race/national/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "c861e4dafb4d7f72"
+    },
+    {
+     "label": "talarico_race/national/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "ea1b0459efe06963"
+    },
+    {
+     "label": "talarico_race/texas_local/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "997ce34218877f83"
+    },
+    {
+     "label": "talarico_race/texas_local/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "6e91804e8a55f616"
+    },
+    {
+     "label": "paxton_race/national/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\") AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "5704accec6788b38"
+    },
+    {
+     "label": "paxton_race/national/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\") AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "2ced1a7aa8f0dc8f"
+    },
+    {
+     "label": "paxton_race/texas_local/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\") AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "12032f1310e315d1"
+    },
+    {
+     "label": "paxton_race/texas_local/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\") AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "c4297a5cd1e6008e"
+    },
+    {
+     "label": "race_either/national/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "(((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) OR ((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\")) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "c1a69dd8cd8b2e98"
+    },
+    {
+     "label": "race_either/national/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "(((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) OR ((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\")) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "34412234",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "29e3450421fdbb73"
+    },
+    {
+     "label": "race_either/texas_local/breadth",
+     "endpoint": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "params": {
+      "q": "(((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) OR ((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\")) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "interval": "day"
+     },
+     "query_hash": "0ccb169b822c749b"
+    },
+    {
+     "label": "race_either/texas_local/top_sources",
+     "endpoint": "https://search.mediacloud.org/api/search/sources",
+     "params": {
+      "q": "(((\"James Talarico\" OR Talarico) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR poll OR polls OR debate OR Paxton)) OR ((\"Ken Paxton\" OR \"Kenneth Paxton\" OR Paxton) AND (Senate OR \"U.S. Senate\" OR \"Senate race\" OR campaign OR election OR candidate OR nominee OR runoff OR poll OR polls OR debate OR Cornyn OR Talarico) NOT \"Bill Paxton\")) AND language:en",
+      "platform": "onlinenews-mediacloud",
+      "cs": "38381323",
+      "start": "2026-09-01",
+      "end": "2026-11-02"
+     },
+     "query_hash": "710b992d367b22aa"
     }
    ],
    "series_query_hash": {
@@ -783,6 +933,12 @@
     "news_mediacloud/any_either/texas_local": "1789e8a3c914cc60",
     "news_mediacloud/any_either/texas_local/ratio": "1789e8a3c914cc60",
     "news_mediacloud/any_either/texas_local/total_count": "1789e8a3c914cc60",
+    "news_mediacloud/talarico_race/national/breadth": "c861e4dafb4d7f72",
+    "news_mediacloud/talarico_race/texas_local/breadth": "997ce34218877f83",
+    "news_mediacloud/paxton_race/national/breadth": "5704accec6788b38",
+    "news_mediacloud/paxton_race/texas_local/breadth": "12032f1310e315d1",
+    "news_mediacloud/race_either/national/breadth": "c1a69dd8cd8b2e98",
+    "news_mediacloud/race_either/texas_local/breadth": "0ccb169b822c749b",
     "news_mediacloud/talarico_share/national": "0b11a000e3f630de",
     "news_mediacloud/talarico_share/texas_local": "4d9577237f6cd1ac",
     "news_mediacloud/talarico_exclusive_share/national": "d3528181eafe1d6e",
@@ -838,6 +994,11 @@
     "derived_support": [
      "any_either"
     ],
+    "per_source_queries": [
+     "talarico_race",
+     "paxton_race",
+     "race_either"
+    ],
     "derived": {
      "talarico_share": {
       "numerator": "talarico_race",
@@ -875,8 +1036,11 @@
         "series": {
          "count": "news_mediacloud/talarico_race/national",
          "ratio": "news_mediacloud/talarico_race/national/ratio",
-         "total_count": "news_mediacloud/talarico_race/national/total_count"
-        }
+         "total_count": "news_mediacloud/talarico_race/national/total_count",
+         "breadth": "news_mediacloud/talarico_race/national/breadth"
+        },
+        "breadth_request_hash": "c861e4dafb4d7f72",
+        "top_sources_request_hash": "ea1b0459efe06963"
        },
        "texas_local": {
         "collection_id": 38381323,
@@ -889,8 +1053,11 @@
         "series": {
          "count": "news_mediacloud/talarico_race/texas_local",
          "ratio": "news_mediacloud/talarico_race/texas_local/ratio",
-         "total_count": "news_mediacloud/talarico_race/texas_local/total_count"
-        }
+         "total_count": "news_mediacloud/talarico_race/texas_local/total_count",
+         "breadth": "news_mediacloud/talarico_race/texas_local/breadth"
+        },
+        "breadth_request_hash": "997ce34218877f83",
+        "top_sources_request_hash": "6e91804e8a55f616"
        }
       }
      },
@@ -910,8 +1077,11 @@
         "series": {
          "count": "news_mediacloud/paxton_race/national",
          "ratio": "news_mediacloud/paxton_race/national/ratio",
-         "total_count": "news_mediacloud/paxton_race/national/total_count"
-        }
+         "total_count": "news_mediacloud/paxton_race/national/total_count",
+         "breadth": "news_mediacloud/paxton_race/national/breadth"
+        },
+        "breadth_request_hash": "5704accec6788b38",
+        "top_sources_request_hash": "2ced1a7aa8f0dc8f"
        },
        "texas_local": {
         "collection_id": 38381323,
@@ -924,8 +1094,11 @@
         "series": {
          "count": "news_mediacloud/paxton_race/texas_local",
          "ratio": "news_mediacloud/paxton_race/texas_local/ratio",
-         "total_count": "news_mediacloud/paxton_race/texas_local/total_count"
-        }
+         "total_count": "news_mediacloud/paxton_race/texas_local/total_count",
+         "breadth": "news_mediacloud/paxton_race/texas_local/breadth"
+        },
+        "breadth_request_hash": "12032f1310e315d1",
+        "top_sources_request_hash": "c4297a5cd1e6008e"
        }
       }
      },
@@ -945,8 +1118,11 @@
         "series": {
          "count": "news_mediacloud/race_either/national",
          "ratio": "news_mediacloud/race_either/national/ratio",
-         "total_count": "news_mediacloud/race_either/national/total_count"
-        }
+         "total_count": "news_mediacloud/race_either/national/total_count",
+         "breadth": "news_mediacloud/race_either/national/breadth"
+        },
+        "breadth_request_hash": "c1a69dd8cd8b2e98",
+        "top_sources_request_hash": "29e3450421fdbb73"
        },
        "texas_local": {
         "collection_id": 38381323,
@@ -959,8 +1135,11 @@
         "series": {
          "count": "news_mediacloud/race_either/texas_local",
          "ratio": "news_mediacloud/race_either/texas_local/ratio",
-         "total_count": "news_mediacloud/race_either/texas_local/total_count"
-        }
+         "total_count": "news_mediacloud/race_either/texas_local/total_count",
+         "breadth": "news_mediacloud/race_either/texas_local/breadth"
+        },
+        "breadth_request_hash": "0ccb169b822c749b",
+        "top_sources_request_hash": "710b992d367b22aa"
        }
       }
      },
@@ -1150,7 +1329,2516 @@
      "news_mediacloud/core_vs_broad/national": {},
      "news_mediacloud/core_vs_broad/texas_local": {}
     },
-    "series_design": "news_mediacloud/<query>/<collection> is the daily story count; /ratio and /total_count are Media Cloud's normalized ratio and the collection's total stories that day; news_mediacloud/<derived>/<collection> are the derived shares and ratios. Only counts of non-support queries enter the lag and event metrics."
+    "endpoints": {
+     "count": "https://search.mediacloud.org/api/search/count-over-time",
+     "breadth": "https://search.mediacloud.org/api/search/count-by-source-over-interval",
+     "top_sources": "https://search.mediacloud.org/api/search/sources"
+    },
+    "top_sources": {
+     "talarico_race": {
+      "national": {
+       "query": "talarico_race",
+       "collection": "national",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "cnn.com",
+         "count": 239
+        },
+        {
+         "source": "usatoday.com",
+         "count": 170
+        },
+        {
+         "source": "cbsnews.com",
+         "count": 154
+        },
+        {
+         "source": "thedailybeast.com",
+         "count": 154
+        },
+        {
+         "source": "rawstory.com",
+         "count": 153
+        },
+        {
+         "source": "foxnews.com",
+         "count": 151
+        },
+        {
+         "source": "inquirer.com",
+         "count": 136
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 126
+        },
+        {
+         "source": "townhall.com",
+         "count": 125
+        },
+        {
+         "source": "redstate.com",
+         "count": 108
+        },
+        {
+         "source": "breitbart.com",
+         "count": 107
+        },
+        {
+         "source": "pjmedia.com",
+         "count": 95
+        },
+        {
+         "source": "theguardian.com",
+         "count": 94
+        },
+        {
+         "source": "usnews.com",
+         "count": 85
+        },
+        {
+         "source": "nbcnews.com",
+         "count": 84
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 78
+        },
+        {
+         "source": "hotair.com",
+         "count": 75
+        },
+        {
+         "source": "huffpost.com",
+         "count": 75
+        },
+        {
+         "source": "chron.com",
+         "count": 74
+        },
+        {
+         "source": "seattletimes.com",
+         "count": 72
+        },
+        {
+         "source": "ms.now",
+         "count": 65
+        },
+        {
+         "source": "nypost.com",
+         "count": 65
+        },
+        {
+         "source": "dailykos.com",
+         "count": 64
+        },
+        {
+         "source": "patriotpost.us",
+         "count": 63
+        },
+        {
+         "source": "alternet.org",
+         "count": 62
+        },
+        {
+         "source": "newsday.com",
+         "count": 61
+        },
+        {
+         "source": "bostonglobe.com",
+         "count": 57
+        },
+        {
+         "source": "courant.com",
+         "count": 56
+        },
+        {
+         "source": "sandiegouniontribune.com",
+         "count": 54
+        },
+        {
+         "source": "sfgate.com",
+         "count": 52
+        },
+        {
+         "source": "baltimoresun.com",
+         "count": 51
+        },
+        {
+         "source": "mercurynews.com",
+         "count": 51
+        },
+        {
+         "source": "sun-sentinel.com",
+         "count": 50
+        },
+        {
+         "source": "twincities.com",
+         "count": 49
+        },
+        {
+         "source": "orlandosentinel.com",
+         "count": 47
+        },
+        {
+         "source": "ocregister.com",
+         "count": 46
+        },
+        {
+         "source": "pilotonline.com",
+         "count": 46
+        },
+        {
+         "source": "pbs.org",
+         "count": 40
+        },
+        {
+         "source": "dailycaller.com",
+         "count": 39
+        },
+        {
+         "source": "latimes.com",
+         "count": 27
+        },
+        {
+         "source": "salon.com",
+         "count": 27
+        },
+        {
+         "source": "radaronline.com",
+         "count": 26
+        },
+        {
+         "source": "motherjones.com",
+         "count": 25
+        },
+        {
+         "source": "cnbc.com",
+         "count": 24
+        },
+        {
+         "source": "newsmax.com",
+         "count": 24
+        },
+        {
+         "source": "rollcall.com",
+         "count": 24
+        },
+        {
+         "source": "rollingstone.com",
+         "count": 24
+        },
+        {
+         "source": "thenation.com",
+         "count": 20
+        },
+        {
+         "source": "dailysignal.com",
+         "count": 18
+        },
+        {
+         "source": "npr.org",
+         "count": 18
+        },
+        {
+         "source": "talkingpointsmemo.com",
+         "count": 18
+        },
+        {
+         "source": "time.com",
+         "count": 18
+        },
+        {
+         "source": "ibtimes.com",
+         "count": 17
+        },
+        {
+         "source": "slate.com",
+         "count": 17
+        },
+        {
+         "source": "vox.com",
+         "count": 17
+        },
+        {
+         "source": "jezebel.com",
+         "count": 16
+        },
+        {
+         "source": "arkansasonline.com",
+         "count": 15
+        },
+        {
+         "source": "spectator.org",
+         "count": 15
+        },
+        {
+         "source": "fortune.com",
+         "count": 14
+        },
+        {
+         "source": "newyorker.com",
+         "count": 14
+        },
+        {
+         "source": "oann.com",
+         "count": 14
+        },
+        {
+         "source": "bloomberg.com",
+         "count": 12
+        },
+        {
+         "source": "chicagotribune.com",
+         "count": 12
+        },
+        {
+         "source": "nationalmemo.com",
+         "count": 12
+        },
+        {
+         "source": "nytimes.com",
+         "count": 12
+        },
+        {
+         "source": "factcheck.org",
+         "count": 11
+        },
+        {
+         "source": "variety.com",
+         "count": 11
+        },
+        {
+         "source": "wired.com",
+         "count": 11
+        },
+        {
+         "source": "denverpost.com",
+         "count": 9
+        },
+        {
+         "source": "hollywoodreporter.com",
+         "count": 7
+        },
+        {
+         "source": "theroot.com",
+         "count": 7
+        },
+        {
+         "source": "tmz.com",
+         "count": 7
+        },
+        {
+         "source": "nationalenquirer.com",
+         "count": 6
+        },
+        {
+         "source": "newsone.com",
+         "count": 6
+        },
+        {
+         "source": "theconversation.com",
+         "count": 6
+        },
+        {
+         "source": "theintercept.com",
+         "count": 6
+        },
+        {
+         "source": "theweek.com",
+         "count": 6
+        },
+        {
+         "source": "vanityfair.com",
+         "count": 6
+        },
+        {
+         "source": "businessinsider.com",
+         "count": 5
+        },
+        {
+         "source": "buzzfeed.com",
+         "count": 5
+        },
+        {
+         "source": "gizmodo.com",
+         "count": 5
+        },
+        {
+         "source": "kansascity.com",
+         "count": 5
+        },
+        {
+         "source": "miamiherald.com",
+         "count": 5
+        },
+        {
+         "source": "politicalwire.com",
+         "count": 5
+        },
+        {
+         "source": "postandcourier.com",
+         "count": 5
+        },
+        {
+         "source": "sacbee.com",
+         "count": 5
+        },
+        {
+         "source": "theverge.com",
+         "count": 5
+        },
+        {
+         "source": "gq.com",
+         "count": 4
+        },
+        {
+         "source": "cincinnati.com",
+         "count": 3
+        },
+        {
+         "source": "cnet.com",
+         "count": 3
+        },
+        {
+         "source": "csmonitor.com",
+         "count": 3
+        },
+        {
+         "source": "dispatch.com",
+         "count": 3
+        },
+        {
+         "source": "mashable.com",
+         "count": 3
+        },
+        {
+         "source": "propublica.org",
+         "count": 3
+        },
+        {
+         "source": "usmagazine.com",
+         "count": 3
+        },
+        {
+         "source": "billboard.com",
+         "count": 2
+        },
+        {
+         "source": "foxbusiness.com",
+         "count": 2
+        },
+        {
+         "source": "newsweek.com",
+         "count": 2
+        },
+        {
+         "source": "schwartzreport.net",
+         "count": 2
+        },
+        {
+         "source": "therealnews.com",
+         "count": 2
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 4032,
+       "total_stories": 4045,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 4032 of 4045 talarico_race stories in national (99.7%)"
+      },
+      "texas_local": {
+       "query": "talarico_race",
+       "collection": "texas_local",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "kdhnews.com",
+         "count": 284
+        },
+        {
+         "source": "ksat.com",
+         "count": 156
+        },
+        {
+         "source": "theeagle.com",
+         "count": 139
+        },
+        {
+         "source": "click2houston.com",
+         "count": 131
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 126
+        },
+        {
+         "source": "fox4news.com",
+         "count": 110
+        },
+        {
+         "source": "fox7austin.com",
+         "count": 95
+        },
+        {
+         "source": "texastribune.org",
+         "count": 93
+        },
+        {
+         "source": "gilmermirror.com",
+         "count": 86
+        },
+        {
+         "source": "tpr.org",
+         "count": 81
+        },
+        {
+         "source": "sacurrent.com",
+         "count": 79
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 78
+        },
+        {
+         "source": "chron.com",
+         "count": 74
+        },
+        {
+         "source": "elpasotimes.com",
+         "count": 65
+        },
+        {
+         "source": "star-telegram.com",
+         "count": 61
+        },
+        {
+         "source": "fox26houston.com",
+         "count": 60
+        },
+        {
+         "source": "houstonpublicmedia.org",
+         "count": 60
+        },
+        {
+         "source": "nbcdfw.com",
+         "count": 55
+        },
+        {
+         "source": "crossroadstoday.com",
+         "count": 53
+        },
+        {
+         "source": "elpasoinc.com",
+         "count": 50
+        },
+        {
+         "source": "kten.com",
+         "count": 47
+        },
+        {
+         "source": "mrt.com",
+         "count": 47
+        },
+        {
+         "source": "kwtx.com",
+         "count": 45
+        },
+        {
+         "source": "thefacts.com",
+         "count": 42
+        },
+        {
+         "source": "lmtonline.com",
+         "count": 39
+        },
+        {
+         "source": "beaumontenterprise.com",
+         "count": 38
+        },
+        {
+         "source": "myplainview.com",
+         "count": 36
+        },
+        {
+         "source": "yourconroenews.com",
+         "count": 36
+        },
+        {
+         "source": "statesman.com",
+         "count": 35
+        },
+        {
+         "source": "marshallnewsmessenger.com",
+         "count": 34
+        },
+        {
+         "source": "news-journal.com",
+         "count": 31
+        },
+        {
+         "source": "kbtx.com",
+         "count": 28
+        },
+        {
+         "source": "krgv.com",
+         "count": 28
+        },
+        {
+         "source": "marfapublicradio.org",
+         "count": 27
+        },
+        {
+         "source": "dallasobserver.com",
+         "count": 26
+        },
+        {
+         "source": "tylerpaper.com",
+         "count": 25
+        },
+        {
+         "source": "texasmetronews.com",
+         "count": 23
+        },
+        {
+         "source": "garlandjournal.com",
+         "count": 20
+        },
+        {
+         "source": "kurv.com",
+         "count": 20
+        },
+        {
+         "source": "kxxv.com",
+         "count": 20
+        },
+        {
+         "source": "kltv.com",
+         "count": 19
+        },
+        {
+         "source": "abc13.com",
+         "count": 18
+        },
+        {
+         "source": "ktre.com",
+         "count": 18
+        },
+        {
+         "source": "texasenergyreport.com",
+         "count": 17
+        },
+        {
+         "source": "texasmonthly.com",
+         "count": 17
+        },
+        {
+         "source": "fox34.com",
+         "count": 16
+        },
+        {
+         "source": "kcbd.com",
+         "count": 16
+        },
+        {
+         "source": "sanangelolive.com",
+         "count": 16
+        },
+        {
+         "source": "kristv.com",
+         "count": 15
+        },
+        {
+         "source": "kxii.com",
+         "count": 15
+        },
+        {
+         "source": "lubbockonline.com",
+         "count": 15
+        },
+        {
+         "source": "dentonrc.com",
+         "count": 14
+        },
+        {
+         "source": "galvnews.com",
+         "count": 14
+        },
+        {
+         "source": "kgns.tv",
+         "count": 14
+        },
+        {
+         "source": "banderabulletin.com",
+         "count": 13
+        },
+        {
+         "source": "defendernetwork.com",
+         "count": 13
+        },
+        {
+         "source": "newschannel10.com",
+         "count": 13
+        },
+        {
+         "source": "kztv10.com",
+         "count": 12
+        },
+        {
+         "source": "therecordlive.com",
+         "count": 12
+        },
+        {
+         "source": "herald-zeitung.com",
+         "count": 11
+        },
+        {
+         "source": "community-news.com",
+         "count": 10
+        },
+        {
+         "source": "houstonpress.com",
+         "count": 10
+        },
+        {
+         "source": "ntdaily.com",
+         "count": 10
+        },
+        {
+         "source": "victoriaadvocate.com",
+         "count": 10
+        },
+        {
+         "source": "bannerpresspaper.com",
+         "count": 9
+        },
+        {
+         "source": "dallasexaminer.com",
+         "count": 9
+        },
+        {
+         "source": "dallasvoice.com",
+         "count": 9
+        },
+        {
+         "source": "taylorpress.net",
+         "count": 9
+        },
+        {
+         "source": "texasinsider.org",
+         "count": 9
+        },
+        {
+         "source": "thepostnewspaper.net",
+         "count": 9
+        },
+        {
+         "source": "boernestar.com",
+         "count": 8
+        },
+        {
+         "source": "elgincourier.com",
+         "count": 8
+        },
+        {
+         "source": "grahamleader.com",
+         "count": 8
+        },
+        {
+         "source": "ktsa.com",
+         "count": 8
+        },
+        {
+         "source": "dailysentinel.com",
+         "count": 7
+        },
+        {
+         "source": "lufkindailynews.com",
+         "count": 7
+        },
+        {
+         "source": "thebatt.com",
+         "count": 7
+        },
+        {
+         "source": "thecomanchechief.com",
+         "count": 7
+        },
+        {
+         "source": "aframnews.com",
+         "count": 6
+        },
+        {
+         "source": "caller.com",
+         "count": 6
+        },
+        {
+         "source": "coloradocountycitizen.com",
+         "count": 6
+        },
+        {
+         "source": "kfyo.com",
+         "count": 6
+        },
+        {
+         "source": "myimessenger.com",
+         "count": 6
+        },
+        {
+         "source": "newschannel6now.com",
+         "count": 6
+        },
+        {
+         "source": "panolawatchman.com",
+         "count": 6
+        },
+        {
+         "source": "texasobserver.org",
+         "count": 6
+        },
+        {
+         "source": "canadianrecord.com",
+         "count": 5
+        },
+        {
+         "source": "kilgorenewsherald.com",
+         "count": 5
+        },
+        {
+         "source": "thekatynews.com",
+         "count": 5
+        },
+        {
+         "source": "baycitytribune.com",
+         "count": 4
+        },
+        {
+         "source": "dailytoreador.com",
+         "count": 4
+        },
+        {
+         "source": "fwweekly.com",
+         "count": 4
+        },
+        {
+         "source": "haysfreepress.com",
+         "count": 4
+        },
+        {
+         "source": "smudailycampus.com",
+         "count": 4
+        },
+        {
+         "source": "tccd.edu",
+         "count": 4
+        },
+        {
+         "source": "tdtnews.com",
+         "count": 4
+        },
+        {
+         "source": "theshorthorn.com",
+         "count": 4
+        },
+        {
+         "source": "thevindicator.com",
+         "count": 4
+        },
+        {
+         "source": "trinitonian.com",
+         "count": 4
+        },
+        {
+         "source": "wbap.com",
+         "count": 4
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 3142,
+       "total_stories": 3222,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 3142 of 3222 talarico_race stories in texas_local (97.5%)"
+      }
+     },
+     "paxton_race": {
+      "national": {
+       "query": "paxton_race",
+       "collection": "national",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "cnn.com",
+         "count": 286
+        },
+        {
+         "source": "rawstory.com",
+         "count": 183
+        },
+        {
+         "source": "thedailybeast.com",
+         "count": 172
+        },
+        {
+         "source": "cbsnews.com",
+         "count": 168
+        },
+        {
+         "source": "usatoday.com",
+         "count": 156
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 132
+        },
+        {
+         "source": "inquirer.com",
+         "count": 128
+        },
+        {
+         "source": "foxnews.com",
+         "count": 127
+        },
+        {
+         "source": "theguardian.com",
+         "count": 88
+        },
+        {
+         "source": "usnews.com",
+         "count": 88
+        },
+        {
+         "source": "alternet.org",
+         "count": 84
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 80
+        },
+        {
+         "source": "nbcnews.com",
+         "count": 80
+        },
+        {
+         "source": "chron.com",
+         "count": 75
+        },
+        {
+         "source": "townhall.com",
+         "count": 75
+        },
+        {
+         "source": "huffpost.com",
+         "count": 74
+        },
+        {
+         "source": "seattletimes.com",
+         "count": 70
+        },
+        {
+         "source": "ms.now",
+         "count": 68
+        },
+        {
+         "source": "redstate.com",
+         "count": 67
+        },
+        {
+         "source": "dailykos.com",
+         "count": 66
+        },
+        {
+         "source": "breitbart.com",
+         "count": 65
+        },
+        {
+         "source": "newsday.com",
+         "count": 63
+        },
+        {
+         "source": "bostonglobe.com",
+         "count": 57
+        },
+        {
+         "source": "nypost.com",
+         "count": 55
+        },
+        {
+         "source": "courant.com",
+         "count": 53
+        },
+        {
+         "source": "sandiegouniontribune.com",
+         "count": 53
+        },
+        {
+         "source": "sfgate.com",
+         "count": 50
+        },
+        {
+         "source": "sun-sentinel.com",
+         "count": 47
+        },
+        {
+         "source": "baltimoresun.com",
+         "count": 46
+        },
+        {
+         "source": "ocregister.com",
+         "count": 46
+        },
+        {
+         "source": "orlandosentinel.com",
+         "count": 46
+        },
+        {
+         "source": "twincities.com",
+         "count": 45
+        },
+        {
+         "source": "pjmedia.com",
+         "count": 44
+        },
+        {
+         "source": "mercurynews.com",
+         "count": 43
+        },
+        {
+         "source": "pilotonline.com",
+         "count": 42
+        },
+        {
+         "source": "dailycaller.com",
+         "count": 40
+        },
+        {
+         "source": "hotair.com",
+         "count": 40
+        },
+        {
+         "source": "pbs.org",
+         "count": 35
+        },
+        {
+         "source": "rollcall.com",
+         "count": 28
+        },
+        {
+         "source": "patriotpost.us",
+         "count": 27
+        },
+        {
+         "source": "salon.com",
+         "count": 27
+        },
+        {
+         "source": "npr.org",
+         "count": 26
+        },
+        {
+         "source": "radaronline.com",
+         "count": 25
+        },
+        {
+         "source": "newsmax.com",
+         "count": 24
+        },
+        {
+         "source": "rollingstone.com",
+         "count": 24
+        },
+        {
+         "source": "latimes.com",
+         "count": 23
+        },
+        {
+         "source": "cnbc.com",
+         "count": 22
+        },
+        {
+         "source": "talkingpointsmemo.com",
+         "count": 21
+        },
+        {
+         "source": "motherjones.com",
+         "count": 18
+        },
+        {
+         "source": "oann.com",
+         "count": 18
+        },
+        {
+         "source": "slate.com",
+         "count": 18
+        },
+        {
+         "source": "thenation.com",
+         "count": 17
+        },
+        {
+         "source": "arkansasonline.com",
+         "count": 16
+        },
+        {
+         "source": "ibtimes.com",
+         "count": 16
+        },
+        {
+         "source": "jezebel.com",
+         "count": 16
+        },
+        {
+         "source": "time.com",
+         "count": 15
+        },
+        {
+         "source": "fortune.com",
+         "count": 14
+        },
+        {
+         "source": "nytimes.com",
+         "count": 14
+        },
+        {
+         "source": "spectator.org",
+         "count": 13
+        },
+        {
+         "source": "bloomberg.com",
+         "count": 12
+        },
+        {
+         "source": "chicagotribune.com",
+         "count": 12
+        },
+        {
+         "source": "dailysignal.com",
+         "count": 12
+        },
+        {
+         "source": "newyorker.com",
+         "count": 12
+        },
+        {
+         "source": "nationalmemo.com",
+         "count": 10
+        },
+        {
+         "source": "wired.com",
+         "count": 10
+        },
+        {
+         "source": "factcheck.org",
+         "count": 9
+        },
+        {
+         "source": "newsone.com",
+         "count": 7
+        },
+        {
+         "source": "politicalwire.com",
+         "count": 7
+        },
+        {
+         "source": "vox.com",
+         "count": 7
+        },
+        {
+         "source": "denverpost.com",
+         "count": 6
+        },
+        {
+         "source": "gizmodo.com",
+         "count": 6
+        },
+        {
+         "source": "kansascity.com",
+         "count": 6
+        },
+        {
+         "source": "miamiherald.com",
+         "count": 6
+        },
+        {
+         "source": "sacbee.com",
+         "count": 6
+        },
+        {
+         "source": "tmz.com",
+         "count": 6
+        },
+        {
+         "source": "hollywoodreporter.com",
+         "count": 5
+        },
+        {
+         "source": "theintercept.com",
+         "count": 5
+        },
+        {
+         "source": "theweek.com",
+         "count": 5
+        },
+        {
+         "source": "vanityfair.com",
+         "count": 5
+        },
+        {
+         "source": "buzzfeed.com",
+         "count": 4
+        },
+        {
+         "source": "propublica.org",
+         "count": 4
+        },
+        {
+         "source": "variety.com",
+         "count": 4
+        },
+        {
+         "source": "businessinsider.com",
+         "count": 3
+        },
+        {
+         "source": "centralmaine.com",
+         "count": 3
+        },
+        {
+         "source": "cincinnati.com",
+         "count": 3
+        },
+        {
+         "source": "csmonitor.com",
+         "count": 3
+        },
+        {
+         "source": "dispatch.com",
+         "count": 3
+        },
+        {
+         "source": "fansided.com",
+         "count": 3
+        },
+        {
+         "source": "postandcourier.com",
+         "count": 3
+        },
+        {
+         "source": "theatlantic.com",
+         "count": 3
+        },
+        {
+         "source": "theroot.com",
+         "count": 3
+        },
+        {
+         "source": "arstechnica.com",
+         "count": 2
+        },
+        {
+         "source": "billboard.com",
+         "count": 2
+        },
+        {
+         "source": "foxbusiness.com",
+         "count": 2
+        },
+        {
+         "source": "gq.com",
+         "count": 2
+        },
+        {
+         "source": "newsweek.com",
+         "count": 2
+        },
+        {
+         "source": "theverge.com",
+         "count": 2
+        },
+        {
+         "source": "univision.com",
+         "count": 2
+        },
+        {
+         "source": "ajc.com",
+         "count": 1
+        },
+        {
+         "source": "cnet.com",
+         "count": 1
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 3768,
+       "total_stories": 3782,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 3768 of 3782 paxton_race stories in national (99.6%)"
+      },
+      "texas_local": {
+       "query": "paxton_race",
+       "collection": "texas_local",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "kdhnews.com",
+         "count": 256
+        },
+        {
+         "source": "ksat.com",
+         "count": 184
+        },
+        {
+         "source": "click2houston.com",
+         "count": 143
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 132
+        },
+        {
+         "source": "fox4news.com",
+         "count": 120
+        },
+        {
+         "source": "texastribune.org",
+         "count": 112
+        },
+        {
+         "source": "fox7austin.com",
+         "count": 106
+        },
+        {
+         "source": "gilmermirror.com",
+         "count": 98
+        },
+        {
+         "source": "houstonpublicmedia.org",
+         "count": 91
+        },
+        {
+         "source": "tpr.org",
+         "count": 90
+        },
+        {
+         "source": "sacurrent.com",
+         "count": 85
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 80
+        },
+        {
+         "source": "chron.com",
+         "count": 75
+        },
+        {
+         "source": "elpasotimes.com",
+         "count": 67
+        },
+        {
+         "source": "fox26houston.com",
+         "count": 64
+        },
+        {
+         "source": "crossroadstoday.com",
+         "count": 62
+        },
+        {
+         "source": "star-telegram.com",
+         "count": 60
+        },
+        {
+         "source": "kten.com",
+         "count": 59
+        },
+        {
+         "source": "nbcdfw.com",
+         "count": 56
+        },
+        {
+         "source": "kwtx.com",
+         "count": 50
+        },
+        {
+         "source": "elpasoinc.com",
+         "count": 49
+        },
+        {
+         "source": "theeagle.com",
+         "count": 47
+        },
+        {
+         "source": "statesman.com",
+         "count": 44
+        },
+        {
+         "source": "mrt.com",
+         "count": 43
+        },
+        {
+         "source": "lmtonline.com",
+         "count": 41
+        },
+        {
+         "source": "beaumontenterprise.com",
+         "count": 38
+        },
+        {
+         "source": "yourconroenews.com",
+         "count": 36
+        },
+        {
+         "source": "myplainview.com",
+         "count": 35
+        },
+        {
+         "source": "marfapublicradio.org",
+         "count": 34
+        },
+        {
+         "source": "marshallnewsmessenger.com",
+         "count": 33
+        },
+        {
+         "source": "kbtx.com",
+         "count": 31
+        },
+        {
+         "source": "news-journal.com",
+         "count": 31
+        },
+        {
+         "source": "krgv.com",
+         "count": 30
+        },
+        {
+         "source": "dallasobserver.com",
+         "count": 28
+        },
+        {
+         "source": "kxxv.com",
+         "count": 25
+        },
+        {
+         "source": "tylerpaper.com",
+         "count": 25
+        },
+        {
+         "source": "wacotrib.com",
+         "count": 22
+        },
+        {
+         "source": "abc13.com",
+         "count": 21
+        },
+        {
+         "source": "dentonrc.com",
+         "count": 20
+        },
+        {
+         "source": "kltv.com",
+         "count": 20
+        },
+        {
+         "source": "kristv.com",
+         "count": 19
+        },
+        {
+         "source": "texasenergyreport.com",
+         "count": 19
+        },
+        {
+         "source": "texasmonthly.com",
+         "count": 19
+        },
+        {
+         "source": "ktre.com",
+         "count": 18
+        },
+        {
+         "source": "lubbockonline.com",
+         "count": 18
+        },
+        {
+         "source": "kurv.com",
+         "count": 17
+        },
+        {
+         "source": "texasmetronews.com",
+         "count": 17
+        },
+        {
+         "source": "defendernetwork.com",
+         "count": 16
+        },
+        {
+         "source": "fox34.com",
+         "count": 15
+        },
+        {
+         "source": "kcbd.com",
+         "count": 15
+        },
+        {
+         "source": "kgns.tv",
+         "count": 14
+        },
+        {
+         "source": "kxii.com",
+         "count": 14
+        },
+        {
+         "source": "sanangelolive.com",
+         "count": 14
+        },
+        {
+         "source": "banderabulletin.com",
+         "count": 13
+        },
+        {
+         "source": "newschannel10.com",
+         "count": 13
+        },
+        {
+         "source": "galvnews.com",
+         "count": 12
+        },
+        {
+         "source": "houstonpress.com",
+         "count": 12
+        },
+        {
+         "source": "kztv10.com",
+         "count": 12
+        },
+        {
+         "source": "therecordlive.com",
+         "count": 12
+        },
+        {
+         "source": "community-news.com",
+         "count": 11
+        },
+        {
+         "source": "garlandjournal.com",
+         "count": 11
+        },
+        {
+         "source": "herald-zeitung.com",
+         "count": 11
+        },
+        {
+         "source": "ktsa.com",
+         "count": 11
+        },
+        {
+         "source": "lufkindailynews.com",
+         "count": 11
+        },
+        {
+         "source": "victoriaadvocate.com",
+         "count": 10
+        },
+        {
+         "source": "bannerpresspaper.com",
+         "count": 8
+        },
+        {
+         "source": "boernestar.com",
+         "count": 8
+        },
+        {
+         "source": "dallasvoice.com",
+         "count": 8
+        },
+        {
+         "source": "ntdaily.com",
+         "count": 8
+        },
+        {
+         "source": "taylorpress.net",
+         "count": 8
+        },
+        {
+         "source": "aframnews.com",
+         "count": 7
+        },
+        {
+         "source": "dallasexaminer.com",
+         "count": 7
+        },
+        {
+         "source": "elgincourier.com",
+         "count": 7
+        },
+        {
+         "source": "grahamleader.com",
+         "count": 7
+        },
+        {
+         "source": "texasobserver.org",
+         "count": 7
+        },
+        {
+         "source": "thepostnewspaper.net",
+         "count": 7
+        },
+        {
+         "source": "caller.com",
+         "count": 6
+        },
+        {
+         "source": "dailysentinel.com",
+         "count": 6
+        },
+        {
+         "source": "dailytoreador.com",
+         "count": 6
+        },
+        {
+         "source": "fwweekly.com",
+         "count": 6
+        },
+        {
+         "source": "kfyo.com",
+         "count": 6
+        },
+        {
+         "source": "kilgorenewsherald.com",
+         "count": 6
+        },
+        {
+         "source": "newschannel6now.com",
+         "count": 6
+        },
+        {
+         "source": "panolawatchman.com",
+         "count": 6
+        },
+        {
+         "source": "thebatt.com",
+         "count": 6
+        },
+        {
+         "source": "thecomanchechief.com",
+         "count": 6
+        },
+        {
+         "source": "wbap.com",
+         "count": 6
+        },
+        {
+         "source": "coloradocountycitizen.com",
+         "count": 5
+        },
+        {
+         "source": "myimessenger.com",
+         "count": 5
+        },
+        {
+         "source": "thefacts.com",
+         "count": 5
+        },
+        {
+         "source": "thekatynews.com",
+         "count": 5
+        },
+        {
+         "source": "baycitytribune.com",
+         "count": 4
+        },
+        {
+         "source": "canadianrecord.com",
+         "count": 4
+        },
+        {
+         "source": "haysfreepress.com",
+         "count": 4
+        },
+        {
+         "source": "hccommunityjournal.com",
+         "count": 4
+        },
+        {
+         "source": "iowaparkleader.com",
+         "count": 4
+        },
+        {
+         "source": "theshorthorn.com",
+         "count": 4
+        },
+        {
+         "source": "thevindicator.com",
+         "count": 4
+        },
+        {
+         "source": "austinmonthly.com",
+         "count": 3
+        },
+        {
+         "source": "reporternews.com",
+         "count": 3
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 3199,
+       "total_stories": 3290,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 3199 of 3290 paxton_race stories in texas_local (97.2%)"
+      }
+     },
+     "race_either": {
+      "national": {
+       "query": "race_either",
+       "collection": "national",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "cnn.com",
+         "count": 390
+        },
+        {
+         "source": "rawstory.com",
+         "count": 214
+        },
+        {
+         "source": "thedailybeast.com",
+         "count": 192
+        },
+        {
+         "source": "cbsnews.com",
+         "count": 185
+        },
+        {
+         "source": "usatoday.com",
+         "count": 183
+        },
+        {
+         "source": "foxnews.com",
+         "count": 178
+        },
+        {
+         "source": "inquirer.com",
+         "count": 171
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 146
+        },
+        {
+         "source": "townhall.com",
+         "count": 138
+        },
+        {
+         "source": "breitbart.com",
+         "count": 118
+        },
+        {
+         "source": "redstate.com",
+         "count": 117
+        },
+        {
+         "source": "theguardian.com",
+         "count": 113
+        },
+        {
+         "source": "pjmedia.com",
+         "count": 105
+        },
+        {
+         "source": "nbcnews.com",
+         "count": 103
+        },
+        {
+         "source": "usnews.com",
+         "count": 100
+        },
+        {
+         "source": "alternet.org",
+         "count": 98
+        },
+        {
+         "source": "huffpost.com",
+         "count": 97
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 89
+        },
+        {
+         "source": "seattletimes.com",
+         "count": 87
+        },
+        {
+         "source": "chron.com",
+         "count": 84
+        },
+        {
+         "source": "dailykos.com",
+         "count": 82
+        },
+        {
+         "source": "ms.now",
+         "count": 81
+        },
+        {
+         "source": "hotair.com",
+         "count": 79
+        },
+        {
+         "source": "bostonglobe.com",
+         "count": 77
+        },
+        {
+         "source": "nypost.com",
+         "count": 75
+        },
+        {
+         "source": "newsday.com",
+         "count": 72
+        },
+        {
+         "source": "patriotpost.us",
+         "count": 69
+        },
+        {
+         "source": "courant.com",
+         "count": 63
+        },
+        {
+         "source": "sandiegouniontribune.com",
+         "count": 62
+        },
+        {
+         "source": "sfgate.com",
+         "count": 59
+        },
+        {
+         "source": "sun-sentinel.com",
+         "count": 58
+        },
+        {
+         "source": "baltimoresun.com",
+         "count": 57
+        },
+        {
+         "source": "mercurynews.com",
+         "count": 57
+        },
+        {
+         "source": "twincities.com",
+         "count": 55
+        },
+        {
+         "source": "orlandosentinel.com",
+         "count": 54
+        },
+        {
+         "source": "ocregister.com",
+         "count": 53
+        },
+        {
+         "source": "pilotonline.com",
+         "count": 51
+        },
+        {
+         "source": "dailycaller.com",
+         "count": 47
+        },
+        {
+         "source": "pbs.org",
+         "count": 46
+        },
+        {
+         "source": "salon.com",
+         "count": 35
+        },
+        {
+         "source": "latimes.com",
+         "count": 32
+        },
+        {
+         "source": "radaronline.com",
+         "count": 32
+        },
+        {
+         "source": "rollcall.com",
+         "count": 30
+        },
+        {
+         "source": "rollingstone.com",
+         "count": 30
+        },
+        {
+         "source": "npr.org",
+         "count": 29
+        },
+        {
+         "source": "cnbc.com",
+         "count": 28
+        },
+        {
+         "source": "motherjones.com",
+         "count": 28
+        },
+        {
+         "source": "talkingpointsmemo.com",
+         "count": 27
+        },
+        {
+         "source": "newsmax.com",
+         "count": 26
+        },
+        {
+         "source": "thenation.com",
+         "count": 26
+        },
+        {
+         "source": "slate.com",
+         "count": 23
+        },
+        {
+         "source": "dailysignal.com",
+         "count": 22
+        },
+        {
+         "source": "jezebel.com",
+         "count": 20
+        },
+        {
+         "source": "oann.com",
+         "count": 20
+        },
+        {
+         "source": "vox.com",
+         "count": 20
+        },
+        {
+         "source": "ibtimes.com",
+         "count": 19
+        },
+        {
+         "source": "arkansasonline.com",
+         "count": 18
+        },
+        {
+         "source": "time.com",
+         "count": 18
+        },
+        {
+         "source": "newyorker.com",
+         "count": 17
+        },
+        {
+         "source": "spectator.org",
+         "count": 17
+        },
+        {
+         "source": "chicagotribune.com",
+         "count": 16
+        },
+        {
+         "source": "fortune.com",
+         "count": 15
+        },
+        {
+         "source": "nytimes.com",
+         "count": 15
+        },
+        {
+         "source": "bloomberg.com",
+         "count": 14
+        },
+        {
+         "source": "nationalmemo.com",
+         "count": 13
+        },
+        {
+         "source": "wired.com",
+         "count": 12
+        },
+        {
+         "source": "factcheck.org",
+         "count": 11
+        },
+        {
+         "source": "variety.com",
+         "count": 11
+        },
+        {
+         "source": "denverpost.com",
+         "count": 10
+        },
+        {
+         "source": "theweek.com",
+         "count": 9
+        },
+        {
+         "source": "buzzfeed.com",
+         "count": 8
+        },
+        {
+         "source": "hollywoodreporter.com",
+         "count": 8
+        },
+        {
+         "source": "newsone.com",
+         "count": 8
+        },
+        {
+         "source": "theintercept.com",
+         "count": 8
+        },
+        {
+         "source": "theroot.com",
+         "count": 8
+        },
+        {
+         "source": "gizmodo.com",
+         "count": 7
+        },
+        {
+         "source": "politicalwire.com",
+         "count": 7
+        },
+        {
+         "source": "tmz.com",
+         "count": 7
+        },
+        {
+         "source": "kansascity.com",
+         "count": 6
+        },
+        {
+         "source": "miamiherald.com",
+         "count": 6
+        },
+        {
+         "source": "nationalenquirer.com",
+         "count": 6
+        },
+        {
+         "source": "postandcourier.com",
+         "count": 6
+        },
+        {
+         "source": "sacbee.com",
+         "count": 6
+        },
+        {
+         "source": "theconversation.com",
+         "count": 6
+        },
+        {
+         "source": "vanityfair.com",
+         "count": 6
+        },
+        {
+         "source": "businessinsider.com",
+         "count": 5
+        },
+        {
+         "source": "theverge.com",
+         "count": 5
+        },
+        {
+         "source": "cincinnati.com",
+         "count": 4
+        },
+        {
+         "source": "csmonitor.com",
+         "count": 4
+        },
+        {
+         "source": "gq.com",
+         "count": 4
+        },
+        {
+         "source": "propublica.org",
+         "count": 4
+        },
+        {
+         "source": "theatlantic.com",
+         "count": 4
+        },
+        {
+         "source": "centralmaine.com",
+         "count": 3
+        },
+        {
+         "source": "cnet.com",
+         "count": 3
+        },
+        {
+         "source": "dispatch.com",
+         "count": 3
+        },
+        {
+         "source": "fansided.com",
+         "count": 3
+        },
+        {
+         "source": "foxbusiness.com",
+         "count": 3
+        },
+        {
+         "source": "mashable.com",
+         "count": 3
+        },
+        {
+         "source": "usmagazine.com",
+         "count": 3
+        },
+        {
+         "source": "arstechnica.com",
+         "count": 2
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 4904,
+       "total_stories": 4928,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 4904 of 4928 race_either stories in national (99.5%)"
+      },
+      "texas_local": {
+       "query": "race_either",
+       "collection": "texas_local",
+       "start": "2026-09-01",
+       "end": "2026-11-02",
+       "sources": [
+        {
+         "source": "kdhnews.com",
+         "count": 328
+        },
+        {
+         "source": "ksat.com",
+         "count": 201
+        },
+        {
+         "source": "click2houston.com",
+         "count": 160
+        },
+        {
+         "source": "dallasnews.com",
+         "count": 146
+        },
+        {
+         "source": "theeagle.com",
+         "count": 145
+        },
+        {
+         "source": "fox4news.com",
+         "count": 139
+        },
+        {
+         "source": "texastribune.org",
+         "count": 123
+        },
+        {
+         "source": "fox7austin.com",
+         "count": 115
+        },
+        {
+         "source": "gilmermirror.com",
+         "count": 111
+        },
+        {
+         "source": "sacurrent.com",
+         "count": 101
+        },
+        {
+         "source": "tpr.org",
+         "count": 100
+        },
+        {
+         "source": "houstonpublicmedia.org",
+         "count": 93
+        },
+        {
+         "source": "mysanantonio.com",
+         "count": 89
+        },
+        {
+         "source": "chron.com",
+         "count": 84
+        },
+        {
+         "source": "crossroadstoday.com",
+         "count": 71
+        },
+        {
+         "source": "elpasotimes.com",
+         "count": 70
+        },
+        {
+         "source": "fox26houston.com",
+         "count": 70
+        },
+        {
+         "source": "nbcdfw.com",
+         "count": 69
+        },
+        {
+         "source": "kten.com",
+         "count": 68
+        },
+        {
+         "source": "star-telegram.com",
+         "count": 67
+        },
+        {
+         "source": "kwtx.com",
+         "count": 54
+        },
+        {
+         "source": "mrt.com",
+         "count": 52
+        },
+        {
+         "source": "elpasoinc.com",
+         "count": 50
+        },
+        {
+         "source": "statesman.com",
+         "count": 48
+        },
+        {
+         "source": "lmtonline.com",
+         "count": 45
+        },
+        {
+         "source": "beaumontenterprise.com",
+         "count": 42
+        },
+        {
+         "source": "thefacts.com",
+         "count": 42
+        },
+        {
+         "source": "myplainview.com",
+         "count": 40
+        },
+        {
+         "source": "yourconroenews.com",
+         "count": 40
+        },
+        {
+         "source": "marshallnewsmessenger.com",
+         "count": 37
+        },
+        {
+         "source": "marfapublicradio.org",
+         "count": 36
+        },
+        {
+         "source": "kbtx.com",
+         "count": 34
+        },
+        {
+         "source": "news-journal.com",
+         "count": 34
+        },
+        {
+         "source": "dallasobserver.com",
+         "count": 32
+        },
+        {
+         "source": "krgv.com",
+         "count": 31
+        },
+        {
+         "source": "texasmonthly.com",
+         "count": 26
+        },
+        {
+         "source": "tylerpaper.com",
+         "count": 26
+        },
+        {
+         "source": "kxxv.com",
+         "count": 25
+        },
+        {
+         "source": "kltv.com",
+         "count": 24
+        },
+        {
+         "source": "texasenergyreport.com",
+         "count": 24
+        },
+        {
+         "source": "texasmetronews.com",
+         "count": 24
+        },
+        {
+         "source": "kurv.com",
+         "count": 23
+        },
+        {
+         "source": "abc13.com",
+         "count": 22
+        },
+        {
+         "source": "wacotrib.com",
+         "count": 22
+        },
+        {
+         "source": "ktre.com",
+         "count": 21
+        },
+        {
+         "source": "dentonrc.com",
+         "count": 20
+        },
+        {
+         "source": "garlandjournal.com",
+         "count": 20
+        },
+        {
+         "source": "defendernetwork.com",
+         "count": 19
+        },
+        {
+         "source": "kristv.com",
+         "count": 19
+        },
+        {
+         "source": "galvnews.com",
+         "count": 18
+        },
+        {
+         "source": "lubbockonline.com",
+         "count": 18
+        },
+        {
+         "source": "sanangelolive.com",
+         "count": 18
+        },
+        {
+         "source": "fox34.com",
+         "count": 17
+        },
+        {
+         "source": "kcbd.com",
+         "count": 17
+        },
+        {
+         "source": "kgns.tv",
+         "count": 17
+        },
+        {
+         "source": "kxii.com",
+         "count": 16
+        },
+        {
+         "source": "banderabulletin.com",
+         "count": 15
+        },
+        {
+         "source": "kztv10.com",
+         "count": 15
+        },
+        {
+         "source": "newschannel10.com",
+         "count": 15
+        },
+        {
+         "source": "herald-zeitung.com",
+         "count": 13
+        },
+        {
+         "source": "community-news.com",
+         "count": 12
+        },
+        {
+         "source": "houstonpress.com",
+         "count": 12
+        },
+        {
+         "source": "therecordlive.com",
+         "count": 12
+        },
+        {
+         "source": "ktsa.com",
+         "count": 11
+        },
+        {
+         "source": "lufkindailynews.com",
+         "count": 11
+        },
+        {
+         "source": "ntdaily.com",
+         "count": 11
+        },
+        {
+         "source": "victoriaadvocate.com",
+         "count": 11
+        },
+        {
+         "source": "dallasvoice.com",
+         "count": 10
+        },
+        {
+         "source": "texasinsider.org",
+         "count": 10
+        },
+        {
+         "source": "bannerpresspaper.com",
+         "count": 9
+        },
+        {
+         "source": "boernestar.com",
+         "count": 9
+        },
+        {
+         "source": "dallasexaminer.com",
+         "count": 9
+        },
+        {
+         "source": "taylorpress.net",
+         "count": 9
+        },
+        {
+         "source": "thepostnewspaper.net",
+         "count": 9
+        },
+        {
+         "source": "aframnews.com",
+         "count": 8
+        },
+        {
+         "source": "elgincourier.com",
+         "count": 8
+        },
+        {
+         "source": "grahamleader.com",
+         "count": 8
+        },
+        {
+         "source": "thebatt.com",
+         "count": 8
+        },
+        {
+         "source": "thecomanchechief.com",
+         "count": 8
+        },
+        {
+         "source": "caller.com",
+         "count": 7
+        },
+        {
+         "source": "dailysentinel.com",
+         "count": 7
+        },
+        {
+         "source": "kfyo.com",
+         "count": 7
+        },
+        {
+         "source": "newschannel6now.com",
+         "count": 7
+        },
+        {
+         "source": "texasobserver.org",
+         "count": 7
+        },
+        {
+         "source": "wbap.com",
+         "count": 7
+        },
+        {
+         "source": "coloradocountycitizen.com",
+         "count": 6
+        },
+        {
+         "source": "dailytoreador.com",
+         "count": 6
+        },
+        {
+         "source": "fwweekly.com",
+         "count": 6
+        },
+        {
+         "source": "kilgorenewsherald.com",
+         "count": 6
+        },
+        {
+         "source": "myimessenger.com",
+         "count": 6
+        },
+        {
+         "source": "panolawatchman.com",
+         "count": 6
+        },
+        {
+         "source": "thekatynews.com",
+         "count": 6
+        },
+        {
+         "source": "canadianrecord.com",
+         "count": 5
+        },
+        {
+         "source": "haysfreepress.com",
+         "count": 5
+        },
+        {
+         "source": "baycitytribune.com",
+         "count": 4
+        },
+        {
+         "source": "hccommunityjournal.com",
+         "count": 4
+        },
+        {
+         "source": "iowaparkleader.com",
+         "count": 4
+        },
+        {
+         "source": "smudailycampus.com",
+         "count": 4
+        },
+        {
+         "source": "tccd.edu",
+         "count": 4
+        },
+        {
+         "source": "tdtnews.com",
+         "count": 4
+        }
+       ],
+       "capped": true,
+       "cap": 100,
+       "covered_stories": 3764,
+       "total_stories": 3875,
+       "missing_count_days": 0,
+       "note": "search/sources returns at most 100 sources; the 100 listed cover 3764 of 3875 race_either stories in texas_local (97.1%)"
+      }
+     }
+    },
+    "top_sources_window": [
+     "2026-09-01",
+     "2026-11-02"
+    ],
+    "breadth_checks": {
+     "news_mediacloud/talarico_race/national/breadth": [],
+     "news_mediacloud/talarico_race/texas_local/breadth": [],
+     "news_mediacloud/paxton_race/national/breadth": [],
+     "news_mediacloud/paxton_race/texas_local/breadth": [],
+     "news_mediacloud/race_either/national/breadth": [],
+     "news_mediacloud/race_either/texas_local/breadth": []
+    },
+    "series_design": "news_mediacloud/<query>/<collection> is the daily story count; /ratio and /total_count are Media Cloud's normalized ratio and the collection's total stories that day; /breadth is the number of distinct sources with at least one matching story that day (count-by-source-over-interval; syndicated copies on several domains each count as a source); news_mediacloud/<derived>/<collection> are the derived shares and ratios. top_sources.<query>.<collection> lists stories per source over the analysis phase (search/sources; source and count only). Only counts of non-support queries enter the lag and event metrics."
    }
   },
   "bluesky": {
@@ -1734,6 +4422,60 @@
     "unit": "share",
     "query_hash": "71a570c94f1b3706",
     "fetched_at": "2026-11-13T04:00:15Z",
+    "role": "context"
+   },
+   "news_mediacloud/talarico_race/national/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "c861e4dafb4d7f72",
+    "fetched_at": "2026-11-13T05:01:31Z",
+    "role": "context"
+   },
+   "news_mediacloud/talarico_race/texas_local/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "997ce34218877f83",
+    "fetched_at": "2026-11-13T05:02:36Z",
+    "role": "context"
+   },
+   "news_mediacloud/paxton_race/national/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "5704accec6788b38",
+    "fetched_at": "2026-11-13T05:03:38Z",
+    "role": "context"
+   },
+   "news_mediacloud/paxton_race/texas_local/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "12032f1310e315d1",
+    "fetched_at": "2026-11-13T05:04:39Z",
+    "role": "context"
+   },
+   "news_mediacloud/race_either/national/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "c1a69dd8cd8b2e98",
+    "fetched_at": "2026-11-13T05:05:40Z",
+    "role": "context"
+   },
+   "news_mediacloud/race_either/texas_local/breadth": {
+    "source": "news_mediacloud",
+    "connector": "news_mediacloud",
+    "granularity": "day",
+    "unit": "sources",
+    "query_hash": "0ccb169b822c749b",
+    "fetched_at": "2026-11-13T05:06:42Z",
     "role": "context"
    },
    "bluesky/post_count": {
@@ -18846,16 +21588,20 @@
     "news_mediacloud/paxton_any/national/total_count",
     "news_mediacloud/paxton_any/texas_local/ratio",
     "news_mediacloud/paxton_any/texas_local/total_count",
+    "news_mediacloud/paxton_race/national/breadth",
     "news_mediacloud/paxton_race/national/ratio",
     "news_mediacloud/paxton_race/national/total_count",
+    "news_mediacloud/paxton_race/texas_local/breadth",
     "news_mediacloud/paxton_race/texas_local/ratio",
     "news_mediacloud/paxton_race/texas_local/total_count",
     "news_mediacloud/race_both/national/ratio",
     "news_mediacloud/race_both/national/total_count",
     "news_mediacloud/race_both/texas_local/ratio",
     "news_mediacloud/race_both/texas_local/total_count",
+    "news_mediacloud/race_either/national/breadth",
     "news_mediacloud/race_either/national/ratio",
     "news_mediacloud/race_either/national/total_count",
+    "news_mediacloud/race_either/texas_local/breadth",
     "news_mediacloud/race_either/texas_local/ratio",
     "news_mediacloud/race_either/texas_local/total_count",
     "news_mediacloud/talarico_any/national/ratio",
@@ -18864,8 +21610,10 @@
     "news_mediacloud/talarico_any/texas_local/total_count",
     "news_mediacloud/talarico_exclusive_share/national",
     "news_mediacloud/talarico_exclusive_share/texas_local",
+    "news_mediacloud/talarico_race/national/breadth",
     "news_mediacloud/talarico_race/national/ratio",
     "news_mediacloud/talarico_race/national/total_count",
+    "news_mediacloud/talarico_race/texas_local/breadth",
     "news_mediacloud/talarico_race/texas_local/ratio",
     "news_mediacloud/talarico_race/texas_local/total_count",
     "news_mediacloud/talarico_share/national",
@@ -18914,16 +21662,20 @@
      11012.0,
      0.0052417006406523005,
      5151.0,
+     28.0,
      0.004177261169633128,
      11012.0,
+     19.0,
      0.005047563579887401,
      5151.0,
      0.003723211042499092,
      11012.0,
      0.005047563579887401,
      5151.0,
+     33.0,
      0.005176171449328006,
      11012.0,
+     21.0,
      0.005629974762182101,
      5151.0,
      0.004812931347620777,
@@ -18932,8 +21684,10 @@
      5151.0,
      0.6875,
      1.0,
+     31.0,
      0.00472212132219397,
      11012.0,
+     21.0,
      0.005629974762182101,
      5151.0,
      0.530612,
@@ -18981,16 +21735,20 @@
      11340.0,
      0.005183137525915688,
      5788.0,
+     23.0,
      0.003703703703703704,
      11340.0,
+     22.0,
      0.005183137525915688,
      5788.0,
      0.0028218694885361554,
      11340.0,
      0.00414651002073255,
      5788.0,
+     29.0,
      0.0048500881834215165,
      11340.0,
+     28.0,
      0.006910850034554251,
      5788.0,
      0.004056437389770723,
@@ -18999,8 +21757,10 @@
      5788.0,
      0.565217,
      0.625,
+     27.0,
      0.003968253968253968,
      11340.0,
+     25.0,
      0.005874222529371113,
      5788.0,
      0.517241,
@@ -19048,16 +21808,20 @@
      11675.0,
      0.008928571428571428,
      5600.0,
+     42.0,
      0.005139186295503212,
      11675.0,
+     35.0,
      0.00875,
      5600.0,
      0.004539614561027837,
      11675.0,
      0.008214285714285714,
      5600.0,
+     44.0,
      0.0059957173447537475,
      11675.0,
+     36.0,
      0.009464285714285715,
      5600.0,
      0.005481798715203426,
@@ -19066,8 +21830,10 @@
      5600.0,
      0.588235,
      0.571429,
+     42.0,
      0.005396145610278373,
      11675.0,
+     35.0,
      0.008928571428571428,
      5600.0,
      0.512195,
@@ -19115,16 +21881,20 @@
      10315.0,
      0.008390243902439025,
      5125.0,
+     22.0,
      0.0031022782355792536,
      10315.0,
+     26.0,
      0.007804878048780488,
      5125.0,
      0.002132816286960737,
      10315.0,
      0.006048780487804878,
      5125.0,
+     38.0,
      0.005428986912263694,
      10315.0,
+     35.0,
      0.010926829268292682,
      5125.0,
      0.004459524963645177,
@@ -19133,8 +21903,10 @@
      5125.0,
      0.705882,
      0.64,
+     31.0,
      0.004459524963645177,
      10315.0,
+     31.0,
      0.009170731707317073,
      5125.0,
      0.589744,
@@ -19182,16 +21954,20 @@
      6246.0,
      0.011529126213592233,
      3296.0,
+     30.0,
      0.0068844060198527054,
      6246.0,
+     21.0,
      0.009405339805825242,
      3296.0,
      0.005763688760806916,
      6246.0,
      0.008798543689320388,
      3296.0,
+     32.0,
      0.007524815882164585,
      6246.0,
+     24.0,
      0.010618932038834952,
      3296.0,
      0.006404098623118796,
@@ -19200,8 +21976,10 @@
      3296.0,
      0.363636,
      0.666667,
+     29.0,
      0.006404098623118796,
      6246.0,
+     24.0,
      0.010012135922330098,
      3296.0,
      0.481928,
@@ -19249,16 +22027,20 @@
      5862.0,
      0.0069721115537848604,
      3012.0,
+     18.0,
      0.0040941658137154556,
      5862.0,
+     17.0,
      0.0063081009296148734,
      3012.0,
      0.002729443875810304,
      5862.0,
      0.00597609561752988,
      3012.0,
+     21.0,
      0.004605936540429887,
      5862.0,
+     18.0,
      0.008964143426294821,
      3012.0,
      0.0032412146025247355,
@@ -19267,8 +22049,10 @@
      3012.0,
      0.272727,
      0.888889,
+     15.0,
      0.0032412146025247355,
      5862.0,
+     17.0,
      0.008632138114209827,
      3012.0,
      0.44186,
@@ -19316,16 +22100,20 @@
      6860.0,
      0.0052812252442566675,
      3787.0,
+     17.0,
      0.0039358600583090375,
      6860.0,
+     12.0,
      0.004753102719831001,
      3787.0,
      0.003061224489795918,
      6860.0,
      0.003960918933192501,
      3787.0,
+     19.0,
      0.004664723032069971,
      6860.0,
+     12.0,
      0.004753102719831001,
      3787.0,
      0.0039358600583090375,
@@ -19334,8 +22122,10 @@
      3787.0,
      0.454545,
      0.0,
+     17.0,
      0.0037900874635568515,
      6860.0,
+     10.0,
      0.003960918933192501,
      3787.0,
      0.490566,
@@ -19383,16 +22173,20 @@
      10640.0,
      0.020342205323193915,
      5260.0,
+     38.0,
      0.009116541353383458,
      10640.0,
+     40.0,
      0.019011406844106463,
      5260.0,
      0.006484962406015038,
      10640.0,
      0.013878326996197718,
      5260.0,
+     41.0,
      0.009868421052631578,
      10640.0,
+     41.0,
      0.019201520912547527,
      5260.0,
      0.007330827067669173,
@@ -19401,8 +22195,10 @@
      5260.0,
      0.222222,
      0.035714,
+     38.0,
      0.007236842105263158,
      10640.0,
+     34.0,
      0.014068441064638783,
      5260.0,
      0.442529,
@@ -19450,16 +22246,20 @@
      11763.0,
      0.016663889351774704,
      6001.0,
+     48.0,
      0.010371503868060869,
      11763.0,
+     40.0,
      0.01583069488418597,
      6001.0,
      0.007821134064439343,
      11763.0,
      0.011498083652724546,
      6001.0,
+     50.0,
      0.013176910652044547,
      11763.0,
+     53.0,
      0.019830028328611898,
      6001.0,
      0.010711553175210406,
@@ -19468,8 +22268,10 @@
      6001.0,
      0.52381,
      0.48,
+     46.0,
      0.010626540848423021,
      11763.0,
+     49.0,
      0.015497417097150475,
      6001.0,
      0.506073,
@@ -19517,16 +22319,20 @@
      11842.0,
      0.02188006482982172,
      6170.0,
+     60.0,
      0.012920114845465293,
      11842.0,
+     47.0,
      0.018962722852512156,
      6170.0,
      0.010640094578618477,
      11842.0,
      0.017179902755267422,
      6170.0,
+     71.0,
      0.01714237459888532,
      11842.0,
+     47.0,
      0.023987034035656402,
      6170.0,
      0.015706806282722512,
@@ -19535,8 +22341,10 @@
      6170.0,
      0.649351,
      0.738095,
+     68.0,
      0.014862354332038507,
      11842.0,
+     45.0,
      0.022204213938411668,
      6170.0,
      0.534954,
@@ -19584,16 +22392,20 @@
      10454.0,
      0.015181781861765881,
      5006.0,
+     42.0,
      0.006791658695236273,
      10454.0,
+     34.0,
      0.011386336396324411,
      5006.0,
      0.005930744212741534,
      10454.0,
      0.00998801438274071,
      5006.0,
+     48.0,
      0.010330973789936866,
      10454.0,
+     39.0,
      0.01418298042349181,
      5006.0,
      0.010330973789936866,
@@ -19602,8 +22414,10 @@
      5006.0,
      0.804348,
      0.666667,
+     46.0,
      0.009470059307442127,
      10454.0,
+     35.0,
      0.01278465840990811,
      5006.0,
      0.582353,
@@ -19651,16 +22465,20 @@
      6592.0,
      0.003654765251616531,
      3557.0,
+     12.0,
      0.0028822815533980583,
      6592.0,
+     11.0,
      0.0033736294630306437,
      3557.0,
      0.0019720873786407767,
      6592.0,
      0.002530222097272983,
      3557.0,
+     22.0,
      0.0048543689320388345,
      6592.0,
+     11.0,
      0.003935901040202418,
      3557.0,
      0.004095873786407767,
@@ -19669,8 +22487,10 @@
      3557.0,
      0.684211,
      0.4,
+     20.0,
      0.003944174757281553,
      6592.0,
+     9.0,
      0.003092493674444757,
      3557.0,
      0.577778,
@@ -19718,16 +22538,20 @@
      7163.0,
      0.0045792787635947334,
      3494.0,
+     9.0,
      0.002094094653078319,
      7163.0,
+     11.0,
      0.004293073840870063,
      3494.0,
      0.0016752757224626554,
      7163.0,
      0.004006868918145392,
      3494.0,
+     12.0,
      0.002652519893899204,
      7163.0,
+     14.0,
      0.005151688609044075,
      3494.0,
      0.002373307273488762,
@@ -19736,8 +22560,10 @@
      3494.0,
      0.571429,
      0.75,
+     10.0,
      0.0022337009632835405,
      7163.0,
+     13.0,
      0.004865483686319404,
      3494.0,
      0.516129,
@@ -19785,16 +22611,20 @@
      10474.0,
      0.008759976640062294,
      5137.0,
+     36.0,
      0.006301317548214626,
      10474.0,
+     32.0,
      0.008565310492505354,
      5137.0,
      0.004105403857170136,
      10474.0,
      0.005450652131594316,
      5137.0,
+     44.0,
      0.009165552797403094,
      10474.0,
+     32.0,
      0.012458633443644151,
      5137.0,
      0.007447011647890013,
@@ -19803,8 +22633,10 @@
      5137.0,
      0.566038,
      0.555556,
+     42.0,
      0.006969639106358602,
      10474.0,
+     30.0,
      0.009343975082733113,
      5137.0,
      0.52518,
@@ -19852,16 +22684,20 @@
      11099.0,
      0.008268919647672119,
      5563.0,
+     40.0,
      0.005225696008649428,
      11099.0,
+     27.0,
      0.008089160524896638,
      5563.0,
      0.0036039282818271915,
      11099.0,
      0.005392773683264426,
      5563.0,
+     46.0,
      0.006577169114334625,
      11099.0,
+     33.0,
      0.010066510875426928,
      5563.0,
      0.005225696008649428,
@@ -19870,8 +22706,10 @@
      5563.0,
      0.454545,
      0.423077,
+     39.0,
      0.004955401387512388,
      11099.0,
+     29.0,
      0.007370124033794715,
      5563.0,
      0.486726,
@@ -19919,16 +22757,20 @@
      11550.0,
      0.009567852017222133,
      6271.0,
+     22.0,
      0.0027705627705627706,
      11550.0,
+     30.0,
      0.006538032211768458,
      6271.0,
      0.001645021645021645,
      11550.0,
      0.003986605007175889,
      6271.0,
+     33.0,
      0.0049350649350649355,
      11550.0,
+     35.0,
      0.0073353532132036355,
      6271.0,
      0.003896103896103896,
@@ -19937,8 +22779,10 @@
      6271.0,
      0.657895,
      0.238095,
+     27.0,
      0.0038095238095238095,
      11550.0,
+     27.0,
      0.004783926008611067,
      6271.0,
      0.578947,
@@ -19986,16 +22830,20 @@
      11031.0,
      0.009281133985825177,
      5926.0,
+     29.0,
      0.003263530051672559,
      11031.0,
+     35.0,
      0.007931150860614243,
      5926.0,
      0.0019943794760221194,
      11031.0,
      0.006074924063449207,
      5926.0,
+     32.0,
      0.004079412564590699,
      11031.0,
+     35.0,
      0.007931150860614243,
      5926.0,
      0.002991569214033179,
@@ -20004,8 +22852,10 @@
      5926.0,
      0.391304,
      0.0,
+     23.0,
      0.002810261988940259,
      11031.0,
+     27.0,
      0.006074924063449207,
      5926.0,
      0.462687,
@@ -20053,16 +22903,20 @@
      10447.0,
      0.007956600361663653,
      5530.0,
+     28.0,
      0.0028716377907533263,
      10447.0,
+     23.0,
      0.006148282097649186,
      5530.0,
      0.0023930314922944386,
      10447.0,
      0.0027124773960217,
      5530.0,
+     33.0,
      0.0038288503876711018,
      10447.0,
+     23.0,
      0.006148282097649186,
      5530.0,
      0.0034459653489039917,
@@ -20071,8 +22925,10 @@
      5530.0,
      0.666667,
      0.0,
+     30.0,
      0.003350244089212214,
      10447.0,
+     14.0,
      0.0027124773960217,
      5530.0,
      0.538462,
@@ -20120,16 +22976,20 @@
      5840.0,
      0.0024176488365064974,
      3309.0,
+     10.0,
      0.0018835616438356165,
      5840.0,
+     7.0,
      0.0021154427319431852,
      3309.0,
      0.0008561643835616438,
      5840.0,
      0.0012088244182532487,
      3309.0,
+     13.0,
      0.0027397260273972603,
      5840.0,
+     7.0,
      0.0021154427319431852,
      3309.0,
      0.002226027397260274,
@@ -20138,8 +22998,10 @@
      3309.0,
      0.454545,
      0.0,
+     9.0,
      0.0017123287671232876,
      5840.0,
+     4.0,
      0.0012088244182532487,
      3309.0,
      0.47619,
@@ -20187,16 +23049,20 @@
      6996.0,
      0.0017050298380221654,
      3519.0,
+     9.0,
      0.0017152658662092624,
      6996.0,
+     6.0,
      0.0017050298380221654,
      3519.0,
      0.0015723270440251573,
      6996.0,
      0.0017050298380221654,
      3519.0,
+     12.0,
      0.0024299599771297883,
      6996.0,
+     6.0,
      0.0017050298380221654,
      3519.0,
      0.002287021154945683,
@@ -20205,8 +23071,10 @@
      3519.0,
      0.833333,
      null,
+     12.0,
      0.002287021154945683,
      6996.0,
+     6.0,
      0.0017050298380221654,
      3519.0,
      0.571429,
@@ -20254,16 +23122,20 @@
      9735.0,
      0.004530866528223523,
      5297.0,
+     21.0,
      0.002876219825372368,
      9735.0,
+     12.0,
      0.003398149896167642,
      5297.0,
      0.002362609142270159,
      9735.0,
      0.0022654332641117614,
      5297.0,
+     26.0,
      0.003903441191576785,
      9735.0,
+     13.0,
      0.0039645082121955826,
      5297.0,
      0.003389830508474576,
@@ -20272,8 +23144,10 @@
      5297.0,
      0.666667,
      0.333333,
+     23.0,
      0.003389830508474576,
      9735.0,
+     11.0,
      0.0028317915801397016,
      5297.0,
      0.540984,
@@ -20321,16 +23195,20 @@
      10438.0,
      0.007654455986878075,
      5487.0,
+     19.0,
      0.0022992910519256562,
      10438.0,
+     26.0,
      0.007107709130672498,
      5487.0,
      0.0014370569074535352,
      10438.0,
      0.0063787133223983964,
      5487.0,
+     23.0,
      0.003065721402567542,
      10438.0,
+     26.0,
      0.007289958082741024,
      5487.0,
      0.0022034872580954205,
@@ -20339,8 +23217,10 @@
      5487.0,
      0.470588,
      0.2,
+     19.0,
      0.0022034872580954205,
      10438.0,
+     23.0,
      0.0065609622744669215,
      5487.0,
      0.489362,
@@ -20388,16 +23268,20 @@
      11429.0,
      0.017555266579973992,
      6152.0,
+     41.0,
      0.009187155481669438,
      11429.0,
+     41.0,
      0.014629388816644993,
      6152.0,
      0.007962201417446847,
      11429.0,
      0.01235370611183355,
      6152.0,
+     46.0,
      0.01049960626476507,
      11429.0,
+     42.0,
      0.015767230169050715,
      6152.0,
      0.009449645638288564,
@@ -20406,8 +23290,10 @@
      6152.0,
      0.517241,
      0.333333,
+     44.0,
      0.00927465220054248,
      11429.0,
+     38.0,
      0.013491547464239272,
      6152.0,
      0.50237,
@@ -20455,16 +23341,20 @@
      11575.0,
      0.014396822770147278,
      6043.0,
+     16.0,
      0.0016414686825053995,
      11575.0,
+     34.0,
      0.01009432401125269,
      6043.0,
      0.0016414686825053995,
      11575.0,
      0.008439516796293232,
      6043.0,
+     22.0,
      0.002591792656587473,
      11575.0,
+     34.0,
      0.010259804732748635,
      6043.0,
      0.0026781857451403887,
@@ -20473,8 +23363,10 @@
      6043.0,
      1.0,
      0.090909,
+     22.0,
      0.002591792656587473,
      11575.0,
+     31.0,
      0.008604997517789177,
      6043.0,
      0.612245,
@@ -20522,16 +23414,20 @@
      10922.0,
      0.009260940621027784,
      5507.0,
+     39.0,
      0.0062259659403039735,
      10922.0,
+     21.0,
      0.006900308698020701,
      5507.0,
      0.004944149423182567,
      10922.0,
      0.005629199201016888,
      5507.0,
+     42.0,
      0.006958432521516206,
      10922.0,
+     21.0,
      0.007445069911022335,
      5507.0,
      0.0058597326496978575,
@@ -20540,8 +23436,10 @@
      5507.0,
      0.363636,
      0.3,
+     38.0,
      0.005676616004394799,
      10922.0,
+     19.0,
      0.006173960414018522,
      5507.0,
      0.476923,
@@ -20589,16 +23487,20 @@
      6464.0,
      0.008807985907222548,
      3406.0,
+     16.0,
      0.0032487623762376236,
      6464.0,
+     20.0,
      0.007633587786259542,
      3406.0,
      0.0024752475247524753,
      6464.0,
      0.005871990604815032,
      3406.0,
+     16.0,
      0.0037128712871287127,
      6464.0,
+     20.0,
      0.007927187316500293,
      3406.0,
      0.003094059405940594,
@@ -20607,8 +23509,10 @@
      3406.0,
      0.375,
      0.142857,
+     14.0,
      0.0029393564356435644,
      6464.0,
+     15.0,
      0.006165590135055784,
      3406.0,
      0.475,
@@ -20656,16 +23560,20 @@
      7473.0,
      0.004156275976724855,
      3609.0,
+     17.0,
      0.003345376689415228,
      7473.0,
+     11.0,
      0.0038791909116098642,
      3609.0,
      0.002141041081225746,
      7473.0,
      0.0036021058464948737,
      3609.0,
+     19.0,
      0.003880636959721665,
      7473.0,
+     13.0,
      0.004433361041839845,
      3609.0,
      0.0028101164191087916,
@@ -20674,8 +23582,10 @@
      3609.0,
      0.307692,
      0.666667,
+     16.0,
      0.0026763013515321826,
      7473.0,
+     13.0,
      0.004156275976724855,
      3609.0,
      0.444444,
@@ -20723,16 +23633,20 @@
      10009.0,
      0.00990916597853014,
      4844.0,
+     24.0,
      0.004695773803576781,
      10009.0,
+     25.0,
      0.008257638315441783,
      4844.0,
      0.002897392346887801,
      10009.0,
      0.006606110652353427,
      4844.0,
+     30.0,
      0.006194425017484264,
      10009.0,
+     28.0,
      0.009289843104872006,
      4844.0,
      0.004695773803576781,
@@ -20741,8 +23655,10 @@
      4844.0,
      0.454545,
      0.384615,
+     25.0,
      0.004396043560795284,
      10009.0,
+     27.0,
      0.00763831544178365,
      4844.0,
      0.483516,
@@ -20790,16 +23706,20 @@
      10106.0,
      0.008210180623973728,
      3654.0,
+     32.0,
      0.005442311498119929,
      10106.0,
+     13.0,
      0.005199781061850027,
      3654.0,
      0.003958044725905403,
      10106.0,
      0.0038314176245210726,
      3654.0,
+     37.0,
      0.0065307737977439145,
      10106.0,
+     15.0,
      0.005747126436781609,
      3654.0,
      0.005046507025529388,
@@ -20808,8 +23728,10 @@
      3654.0,
      0.423077,
      0.285714,
+     36.0,
      0.005046507025529388,
      10106.0,
+     13.0,
      0.004378762999452655,
      3654.0,
      0.481132,
@@ -20857,16 +23779,20 @@
      10719.0,
      0.009998182148700236,
      5501.0,
+     33.0,
      0.005877413937867338,
      10719.0,
+     30.0,
      0.008362115978912925,
      5501.0,
      0.004104860528034332,
      10719.0,
      0.007271405199054717,
      5501.0,
+     35.0,
      0.007276798208788134,
      10719.0,
+     32.0,
      0.0096346118887475,
      5501.0,
      0.00559753708368318,
@@ -20875,8 +23801,10 @@
      5501.0,
      0.441176,
      0.538462,
+     32.0,
      0.005504244798955126,
      10719.0,
+     30.0,
      0.008543901108889293,
      5501.0,
      0.483607,
@@ -20924,16 +23852,20 @@
      10586.0,
      0.015788350757414124,
      4687.0,
+     44.0,
      0.009540903079539014,
      10586.0,
+     34.0,
      0.014508214209515681,
      4687.0,
      0.005573398828641602,
      10586.0,
      0.008534243652656284,
      4687.0,
+     47.0,
      0.010863404496504818,
      10586.0,
+     34.0,
      0.015148282483464903,
      4687.0,
      0.007179293406385793,
@@ -20942,8 +23874,10 @@
      4687.0,
      0.25,
      0.096774,
+     42.0,
      0.006895900245607406,
      10586.0,
+     25.0,
      0.009174311926605505,
      4687.0,
      0.41954,
@@ -20991,16 +23925,20 @@
      9462.0,
      0.010985915492957746,
      3550.0,
+     32.0,
      0.00538998097653773,
      9462.0,
+     22.0,
      0.010422535211267606,
      3550.0,
      0.003910378355527372,
      9462.0,
      0.008169014084507042,
      3550.0,
+     33.0,
      0.006869583597548087,
      9462.0,
+     23.0,
      0.011267605633802818,
      3550.0,
      0.00538998097653773,
@@ -21009,8 +23947,10 @@
      3550.0,
      0.5,
      0.272727,
+     28.0,
      0.00538998097653773,
      9462.0,
+     22.0,
      0.009014084507042254,
      3550.0,
      0.5,
@@ -21058,16 +23998,20 @@
      5557.0,
      0.007023230686115613,
      1851.0,
+     19.0,
      0.004858736728450603,
      5557.0,
+     10.0,
      0.007023230686115613,
      1851.0,
      0.0034191110311319055,
      5557.0,
      0.005402485143165856,
      1851.0,
+     20.0,
      0.005938456001439625,
      5557.0,
+     10.0,
      0.007023230686115613,
      1851.0,
      0.004498830304120929,
@@ -21076,8 +24020,10 @@
      1851.0,
      0.428571,
      0.0,
+     14.0,
      0.004498830304120929,
      5557.0,
+     8.0,
      0.005402485143165856,
      1851.0,
      0.480769,
@@ -21125,16 +24071,20 @@
      6174.0,
      0.0103359173126615,
      1548.0,
+     19.0,
      0.005021056041464205,
      6174.0,
+     14.0,
      0.009689922480620155,
      1548.0,
      0.0030774214447683835,
      6174.0,
      0.007751937984496124,
      1548.0,
+     21.0,
      0.007450599287333981,
      6174.0,
+     16.0,
      0.010981912144702842,
      1548.0,
      0.00550696469063816,
@@ -21143,8 +24093,10 @@
      1548.0,
      0.555556,
      0.4,
+     18.0,
      0.00550696469063816,
      6174.0,
+     14.0,
      0.00904392764857881,
      1548.0,
      0.523077,
@@ -21192,16 +24144,20 @@
      9768.0,
      0.012379227053140096,
      3312.0,
+     32.0,
      0.006552006552006552,
      9768.0,
+     20.0,
      0.010869565217391304,
      3312.0,
      0.005323505323505323,
      9768.0,
      0.006944444444444444,
      3312.0,
+     49.0,
      0.010544635544635545,
      9768.0,
+     20.0,
      0.01177536231884058,
      3312.0,
      0.009418509418509418,
@@ -21210,8 +24166,10 @@
      3312.0,
      0.764706,
      0.1875,
+     49.0,
      0.009316134316134317,
      9768.0,
+     18.0,
      0.00785024154589372,
      3312.0,
      0.587097,
@@ -21259,16 +24217,20 @@
      10576.0,
      0.013980263157894737,
      3648.0,
+     25.0,
      0.00510590015128593,
      10576.0,
+     24.0,
      0.011787280701754386,
      3648.0,
      0.00340393343419062,
      10576.0,
      0.006578947368421052,
      3648.0,
+     29.0,
      0.006429652042360061,
      10576.0,
+     26.0,
      0.01343201754385965,
      3648.0,
      0.004727685325264751,
@@ -21277,8 +24239,10 @@
      3648.0,
      0.4375,
      0.24,
+     27.0,
      0.004727685325264751,
      10576.0,
+     20.0,
      0.008223684210526315,
      3648.0,
      0.480769,
@@ -21326,16 +24290,20 @@
      10853.0,
      0.023746701846965697,
      3790.0,
+     36.0,
      0.008569059246291349,
      10853.0,
+     30.0,
      0.020052770448548814,
      3790.0,
      0.006357689118216161,
      10853.0,
      0.012137203166226913,
      3790.0,
+     36.0,
      0.00930618262231641,
      10853.0,
+     33.0,
      0.020844327176781002,
      3790.0,
      0.007186952916244356,
@@ -21344,8 +24312,10 @@
      3790.0,
      0.25,
      0.090909,
+     30.0,
      0.007094812494241223,
      10853.0,
+     30.0,
      0.012928759894459104,
      3790.0,
      0.452941,
@@ -21393,16 +24363,20 @@
      10738.0,
      0.029658792650918635,
      3810.0,
+     53.0,
      0.01303780964797914,
      10738.0,
+     45.0,
      0.027559055118110236,
      3810.0,
      0.010057738871298193,
      10738.0,
      0.02204724409448819,
      3810.0,
+     55.0,
      0.015272862730489849,
      10738.0,
+     45.0,
      0.027821522309711286,
      3810.0,
      0.012479046377351461,
@@ -21411,8 +24385,10 @@
      3810.0,
      0.428571,
      0.045455,
+     51.0,
      0.012292791953808902,
      10738.0,
+     43.0,
      0.02230971128608924,
      3810.0,
      0.485294,
@@ -21460,16 +24436,20 @@
      9720.0,
      0.01643059490084986,
      3530.0,
+     46.0,
      0.01059670781893004,
      9720.0,
+     31.0,
      0.015580736543909348,
      3530.0,
      0.006069958847736625,
      9720.0,
      0.010481586402266289,
      3530.0,
+     50.0,
      0.01286008230452675,
      9720.0,
+     33.0,
      0.018413597733711047,
      3530.0,
      0.008436213991769548,
@@ -21478,8 +24458,10 @@
      3530.0,
      0.333333,
      0.357143,
+     42.0,
      0.008333333333333333,
      9720.0,
+     25.0,
      0.013314447592067988,
      3530.0,
      0.440217,
@@ -21527,16 +24509,20 @@
      5532.0,
      0.007684426229508197,
      1952.0,
+     14.0,
      0.0041576283441793205,
      5532.0,
+     6.0,
      0.00665983606557377,
      1952.0,
      0.0025307302964569776,
      5532.0,
      0.0056352459016393444,
      1952.0,
+     21.0,
      0.00596529284164859,
      5532.0,
+     6.0,
      0.00665983606557377,
      1952.0,
      0.004338394793926247,
@@ -21545,8 +24531,10 @@
      1952.0,
      0.526316,
      0.0,
+     17.0,
      0.004338394793926247,
      5532.0,
+     5.0,
      0.0056352459016393444,
      1952.0,
      0.510638,
@@ -21594,16 +24582,20 @@
      6127.0,
      0.012162162162162163,
      1480.0,
+     18.0,
      0.005875632446548066,
      6127.0,
+     17.0,
      0.012162162162162163,
      1480.0,
      0.002937816223274033,
      6127.0,
      0.010810810810810811,
      1480.0,
+     21.0,
      0.007997388607801534,
      6127.0,
+     18.0,
      0.01418918918918919,
      1480.0,
      0.005059572384527501,
@@ -21612,8 +24604,10 @@
      1480.0,
      0.419355,
      0.6,
+     15.0,
      0.005059572384527501,
      6127.0,
+     17.0,
      0.012837837837837839,
      1480.0,
      0.462687,
@@ -21661,16 +24655,20 @@
      8711.0,
      0.01839464882943144,
      2990.0,
+     55.0,
      0.01297210423602342,
      8711.0,
+     26.0,
      0.017725752508361205,
      2990.0,
      0.008839398461715072,
      8711.0,
      0.012040133779264214,
      2990.0,
+     56.0,
      0.015842038801515326,
      8711.0,
+     31.0,
      0.023076923076923078,
      2990.0,
      0.012053725175066008,
@@ -21679,8 +24677,10 @@
      2990.0,
      0.409836,
      0.484848,
+     53.0,
      0.01170933302720698,
      8711.0,
+     27.0,
      0.017391304347826087,
      2990.0,
      0.474419,
@@ -21728,16 +24728,20 @@
      9889.0,
      0.01762694027887398,
      3801.0,
+     39.0,
      0.008292041662453231,
      9889.0,
+     37.0,
      0.017100762957116548,
      3801.0,
      0.005966225098594398,
      9889.0,
      0.01578531965272297,
      3801.0,
+     45.0,
      0.011325715441399535,
      9889.0,
+     39.0,
      0.018679294922388845,
      3801.0,
      0.009303266255435332,
@@ -21746,8 +24750,10 @@
      3801.0,
      0.566038,
      0.545455,
+     43.0,
      0.008999898877540703,
      9889.0,
+     37.0,
      0.017363851617995266,
      3801.0,
      0.520468,
@@ -21795,16 +24801,20 @@
      11113.0,
      0.014635750698898208,
      6081.0,
+     37.0,
      0.007108791505444074,
      11113.0,
+     39.0,
      0.012169051142904128,
      6081.0,
      0.005759020966435706,
      11113.0,
      0.008057885216247328,
      6081.0,
+     52.0,
      0.010888149014667507,
      11113.0,
+     44.0,
      0.01397796415063312,
      6081.0,
      0.010168271393863042,
@@ -21813,8 +24823,10 @@
      6081.0,
      0.736842,
      0.305556,
+     50.0,
      0.009538378475659137,
      11113.0,
+     40.0,
      0.00986679822397632,
      6081.0,
      0.572973,
@@ -21862,16 +24874,20 @@
      11102.0,
      0.01722120046814914,
      5981.0,
+     40.0,
      0.007566204287515763,
      11102.0,
+     40.0,
      0.015214847015549239,
      5981.0,
      0.006845613402990452,
      11102.0,
      0.013877278047149307,
      5981.0,
+     54.0,
      0.012069897315798956,
      11102.0,
+     43.0,
      0.01822437719444909,
      5981.0,
      0.011529454152404972,
@@ -21880,8 +24896,10 @@
      5981.0,
      0.862069,
      0.692308,
+     50.0,
      0.011349306431273645,
      11102.0,
+     40.0,
      0.016886808226049155,
      5981.0,
      0.6,
@@ -21929,16 +24947,20 @@
      10049.0,
      0.015884608362242102,
      5477.0,
+     36.0,
      0.007264404418350085,
      10049.0,
+     46.0,
      0.014971699835676465,
      5477.0,
      0.006368792914717882,
      10049.0,
      0.012780719371918934,
      5477.0,
+     50.0,
      0.01094636282217136,
      10049.0,
+     50.0,
      0.01862333394193902,
      5477.0,
      0.010050751318539159,
@@ -21947,8 +24969,10 @@
      5477.0,
      0.804348,
      0.625,
+     49.0,
      0.010050751318539159,
      10049.0,
+     48.0,
      0.016432353478181488,
      5477.0,
      0.58046,
@@ -21996,16 +25020,20 @@
      6046.0,
      0.010347376201034738,
      2706.0,
+     24.0,
      0.004961958319550115,
      6046.0,
+     17.0,
      0.008869179600886918,
      2706.0,
      0.004796559708898445,
      6046.0,
      0.007021433850702144,
      2706.0,
+     29.0,
      0.005954349983460139,
      6046.0,
+     18.0,
      0.009238728750923873,
      2706.0,
      0.005788951372808469,
@@ -22014,8 +25042,10 @@
      2706.0,
      0.857143,
      0.166667,
+     29.0,
      0.005788951372808469,
      6046.0,
+     16.0,
      0.007390983000739098,
      2706.0,
      0.538462,
@@ -22063,16 +25093,20 @@
      6002.0,
      0.014810045074050225,
      1553.0,
+     22.0,
      0.005164945018327224,
      6002.0,
+     18.0,
      0.014166130070830651,
      1553.0,
      0.004665111629456847,
      6002.0,
      0.012234385061171926,
      1553.0,
+     25.0,
      0.0061646117960679776,
      6002.0,
+     18.0,
      0.014166130070830651,
      1553.0,
      0.005998000666444518,
@@ -22081,8 +25115,10 @@
      1553.0,
      0.666667,
      0.0,
+     23.0,
      0.005664778407197601,
      6002.0,
+     15.0,
      0.012234385061171926,
      1553.0,
      0.523077,
@@ -22130,16 +25166,20 @@
      9631.0,
      0.022773722627737226,
      3425.0,
+     36.0,
      0.00550306302564635,
      9631.0,
+     39.0,
      0.02218978102189781,
      3425.0,
      0.0041532551136953585,
      9631.0,
      0.017226277372262774,
      3425.0,
+     39.0,
      0.007787353338178798,
      9631.0,
+     44.0,
      0.026277372262773723,
      3425.0,
      0.006437545426227806,
@@ -22148,8 +25188,10 @@
      3425.0,
      0.628571,
      0.451613,
+     30.0,
      0.006437545426227806,
      9631.0,
+     37.0,
      0.021313868613138685,
      3425.0,
      0.53913,
@@ -22197,16 +25239,20 @@
      9932.0,
      0.01592266135911288,
      3517.0,
+     38.0,
      0.006141763995167137,
      9932.0,
+     30.0,
      0.014500995166334945,
      3517.0,
      0.004933548127265405,
      9932.0,
      0.013363662212112597,
      3517.0,
+     50.0,
      0.008759565042287556,
      9932.0,
+     38.0,
      0.023599658800113735,
      3517.0,
      0.0076520338300443014,
@@ -22215,8 +25261,10 @@
      3517.0,
      0.684211,
      0.888889,
+     47.0,
      0.007551349174385823,
      9932.0,
+     36.0,
      0.022462325845891383,
      3517.0,
      0.551471,
@@ -22264,16 +25312,20 @@
      10601.0,
      0.023925906869050682,
      3887.0,
+     45.0,
      0.008584095840015092,
      10601.0,
+     45.0,
      0.022896835605865706,
      3887.0,
      0.007074804263748703,
      10601.0,
      0.01980962181631078,
      3887.0,
+     54.0,
      0.011697009716064521,
      10601.0,
+     51.0,
      0.02907126318497556,
      3887.0,
      0.01037637958683143,
@@ -22282,8 +25334,10 @@
      3887.0,
      0.673469,
      0.666667,
+     50.0,
      0.010187718139798132,
      10601.0,
+     42.0,
      0.025984049395420632,
      3887.0,
      0.542714,
@@ -22331,16 +25385,20 @@
      10929.0,
      0.020087561164048418,
      3883.0,
+     29.0,
      0.0038429865495470767,
      10929.0,
+     36.0,
      0.0169971671388102,
      3883.0,
      0.0025619910330313845,
      10929.0,
      0.01390677311357198,
      3883.0,
+     36.0,
      0.005581480464818373,
      10929.0,
+     43.0,
      0.025753283543651816,
      3883.0,
      0.0043919846280538015,
@@ -22349,8 +25407,10 @@
      3883.0,
      0.575758,
      0.73913,
+     31.0,
      0.0043004849483026806,
      10929.0,
+     38.0,
      0.0226628895184136,
      3883.0,
      0.52809,
@@ -22398,16 +25458,20 @@
      10144.0,
      0.02188121625461779,
      3519.0,
+     42.0,
      0.007689274447949527,
      10144.0,
+     37.0,
      0.017334470019892016,
      3519.0,
      0.0065063091482649845,
      10144.0,
      0.013924410343847685,
      3519.0,
+     48.0,
      0.009266561514195583,
      10144.0,
+     47.0,
      0.0247229326513214,
      3519.0,
      0.008280757097791799,
@@ -22416,8 +25480,10 @@
      3519.0,
      0.571429,
      0.684211,
+     45.0,
      0.008083596214511041,
      10144.0,
+     43.0,
      0.021312872975277068,
      3519.0,
      0.5125,
@@ -22465,16 +25531,20 @@
      6006.0,
      0.008521303258145364,
      1995.0,
+     12.0,
      0.0031635031635031635,
      6006.0,
+     12.0,
      0.007017543859649123,
      1995.0,
      0.002997002997002997,
      6006.0,
      0.004511278195488722,
      1995.0,
+     20.0,
      0.004828504828504829,
      6006.0,
+     17.0,
      0.015037593984962405,
      1995.0,
      0.004828504828504829,
@@ -22483,8 +25553,10 @@
      1995.0,
      0.909091,
      0.761905,
+     19.0,
      0.004662004662004662,
      6006.0,
+     13.0,
      0.012531328320802004,
      1995.0,
      0.595745,
@@ -22532,16 +25604,20 @@
      6532.0,
      0.011650485436893204,
      1545.0,
+     24.0,
      0.0052051439069197795,
      6532.0,
+     13.0,
      0.011003236245954692,
      1545.0,
      0.004592774035517453,
      6532.0,
      0.010355987055016181,
      1545.0,
+     28.0,
      0.006889161053276179,
      6532.0,
+     17.0,
      0.018122977346278317,
      1545.0,
      0.006276791181873852,
@@ -22550,8 +25626,10 @@
      1545.0,
      0.733333,
      0.916667,
+     26.0,
      0.006276791181873852,
      6532.0,
+     16.0,
      0.017475728155339806,
      1545.0,
      0.546667,
@@ -22599,16 +25677,20 @@
      9754.0,
      0.02090378112511528,
      3253.0,
+     33.0,
      0.006868976830018454,
      9754.0,
+     49.0,
      0.019674146941284967,
      3253.0,
      0.004613491900758663,
      9754.0,
      0.0178296956655395,
      3253.0,
+     44.0,
      0.009329505843756407,
      9754.0,
+     52.0,
      0.027359360590224407,
      3253.0,
      0.007381587041213861,
@@ -22617,8 +25699,10 @@
      3253.0,
      0.521739,
      0.806452,
+     41.0,
      0.007074020914496617,
      9754.0,
+     47.0,
      0.02551490931447894,
      3253.0,
      0.507353,
@@ -22666,16 +25750,20 @@
      10047.0,
      0.02745995423340961,
      3933.0,
+     50.0,
      0.011844331641285956,
      10047.0,
+     42.0,
      0.02593440122044241,
      3933.0,
      0.009754155469294317,
      10047.0,
      0.023900330536486145,
      3933.0,
+     56.0,
      0.01363591121727879,
      10047.0,
+     47.0,
      0.03407068395626748,
      3933.0,
      0.011645267243953419,
@@ -22684,8 +25772,10 @@
      3933.0,
      0.461538,
      0.8,
+     52.0,
      0.01154573504528715,
      10047.0,
+     44.0,
      0.032036613272311214,
      3933.0,
      0.493617,
@@ -22733,16 +25823,20 @@
      11011.0,
      0.02077957354339264,
      7363.0,
+     51.0,
      0.012169648533284897,
      11011.0,
+     58.0,
      0.01996468830639685,
      7363.0,
      0.009535918626827717,
      11011.0,
      0.01643351894608176,
      7363.0,
+     58.0,
      0.014894196712378531,
      11011.0,
+     63.0,
      0.023495857666711938,
      7363.0,
      0.012260466805921352,
@@ -22751,8 +25845,10 @@
      7363.0,
      0.508475,
      0.5,
+     50.0,
      0.012260466805921352,
      11011.0,
+     56.0,
      0.01996468830639685,
      7363.0,
      0.501859,
@@ -22800,16 +25896,20 @@
      11269.0,
      0.016306563391765186,
      7359.0,
+     42.0,
      0.007986511669180938,
      11269.0,
+     47.0,
      0.015491235222176927,
      7359.0,
      0.006122992279705386,
      11269.0,
      0.01222992254382389,
      7359.0,
+     55.0,
      0.012245984559410773,
      11269.0,
+     50.0,
      0.018073107759206414,
      7359.0,
      0.01055994320702813,
@@ -22818,8 +25918,10 @@
      7359.0,
      0.695652,
      0.44186,
+     51.0,
      0.01038246516993522,
      11269.0,
+     46.0,
      0.014811795080853377,
      7359.0,
      0.565217,
@@ -22867,16 +25969,20 @@
      10514.0,
      0.02020716590253014,
      5889.0,
+     50.0,
      0.009511128019783146,
      10514.0,
+     59.0,
      0.02003735778570216,
      5889.0,
      0.007989347536617843,
      10514.0,
      0.01545253863134658,
      5889.0,
+     55.0,
      0.012554688986113753,
      10514.0,
+     63.0,
      0.021905247070809986,
      5889.0,
      0.011223131063344112,
@@ -22885,8 +25991,10 @@
      5889.0,
      0.666667,
      0.289474,
+     51.0,
      0.01103290850294845,
      10514.0,
+     60.0,
      0.017320427916454408,
      5889.0,
      0.537037,
@@ -22934,16 +26042,20 @@
      6238.0,
      0.02046943231441048,
      3664.0,
+     28.0,
      0.0068932350112215456,
      6238.0,
+     29.0,
      0.02019650655021834,
      3664.0,
      0.005931388265469702,
      6238.0,
      0.018558951965065504,
      3664.0,
+     35.0,
      0.009297851875601153,
      6238.0,
+     33.0,
      0.021834061135371178,
      3664.0,
      0.008656620711766592,
@@ -22952,8 +26064,10 @@
      3664.0,
      0.714286,
      0.5,
+     33.0,
      0.00833600512984931,
      6238.0,
+     29.0,
      0.02019650655021834,
      3664.0,
      0.547368,
@@ -23001,16 +26115,20 @@
      6902.0,
      0.018821351434742364,
      3241.0,
+     27.0,
      0.009562445667922342,
      6902.0,
+     33.0,
      0.018821351434742364,
      3241.0,
      0.008548246884960881,
      6902.0,
      0.01635297747608763,
      3241.0,
+     34.0,
      0.012460156476383656,
      6902.0,
+     35.0,
      0.020364085158901573,
      3241.0,
      0.011445957693422196,
@@ -23019,8 +26137,10 @@
      3241.0,
      0.740741,
      0.384615,
+     32.0,
      0.011445957693422196,
      6902.0,
+     35.0,
      0.017895711200246838,
      3241.0,
      0.544828,
@@ -23068,16 +26188,20 @@
      10419.0,
      0.021432305279665446,
      5739.0,
+     54.0,
      0.011421441597082254,
      10419.0,
+     53.0,
      0.021258058895277925,
      5739.0,
      0.009789807083213361,
      10419.0,
      0.018295870360690015,
      5739.0,
+     58.0,
      0.014588732124004224,
      10419.0,
+     55.0,
      0.02300052273915316,
      5739.0,
      0.01295709761013533,
@@ -23086,8 +26210,10 @@
      5739.0,
      0.66,
      0.37037,
+     57.0,
      0.01295709761013533,
      10419.0,
+     48.0,
      0.020038334204565255,
      5739.0,
      0.531496,
@@ -23135,16 +26261,20 @@
      13151.0,
      0.034100198528553075,
      8563.0,
+     68.0,
      0.018477682305528098,
      13151.0,
+     87.0,
      0.03386663552493285,
      8563.0,
      0.01672876587331762,
      13151.0,
      0.030830316477869907,
      8563.0,
+     74.0,
      0.02273591361873622,
      13151.0,
+     91.0,
      0.037953988088286816,
      8563.0,
      0.02113907687628317,
@@ -23153,8 +26283,10 @@
      8563.0,
      0.708861,
      0.57377,
+     72.0,
      0.02098699718652574,
      13151.0,
+     87.0,
      0.03491766904122387,
      8563.0,
      0.531792,
@@ -23202,16 +26334,20 @@
      12540.0,
      0.048503611971104234,
      8721.0,
+     86.0,
      0.03835725677830941,
      12540.0,
+     95.0,
      0.048159614723082216,
      8721.0,
      0.031180223285486443,
      12540.0,
      0.03990368077055383,
      8721.0,
+     94.0,
      0.05382775119617225,
      12540.0,
+     101.0,
      0.06513014562550166,
      8721.0,
      0.04681020733652313,
@@ -23220,8 +26356,10 @@
      8721.0,
      0.683099,
      0.672727,
+     92.0,
      0.04665071770334928,
      12540.0,
+     98.0,
      0.05687421167297328,
      8721.0,
      0.54878,
@@ -23765,6 +26903,27 @@
    },
    "coverage": 1.0
   },
+  "news_mediacloud/paxton_race/national/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
   "news_mediacloud/paxton_race/national/ratio": {
    "coverage_days": 65,
    "window_days": 65,
@@ -23821,6 +26980,27 @@
      "present": 63
     },
     "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
+  "news_mediacloud/paxton_race/texas_local/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
     "explicit_zero_days": []
    },
    "coverage": 1.0
@@ -24005,6 +27185,27 @@
    },
    "coverage": 1.0
   },
+  "news_mediacloud/race_either/national/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
   "news_mediacloud/race_either/national/ratio": {
    "coverage_days": 65,
    "window_days": 65,
@@ -24061,6 +27262,27 @@
      "present": 63
     },
     "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
+  "news_mediacloud/race_either/texas_local/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
     "explicit_zero_days": []
    },
    "coverage": 1.0
@@ -24289,6 +27511,27 @@
    },
    "coverage": 1.0
   },
+  "news_mediacloud/talarico_race/national/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
   "news_mediacloud/talarico_race/national/ratio": {
    "coverage_days": 65,
    "window_days": 65,
@@ -24345,6 +27588,27 @@
      "present": 63
     },
     "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "explicit_zero_days": []
+   },
+   "coverage": 1.0
+  },
+  "news_mediacloud/talarico_race/texas_local/breadth": {
+   "coverage_days": 65,
+   "window_days": 65,
+   "missing_days": [],
+   "longest_gap": 0,
+   "near_zero": [],
+   "status": "ok",
+   "reasons": [],
+   "extra": {
+    "analysis_phase": {
+     "start": "2026-09-01",
+     "end": "2026-11-02",
+     "days": 63,
+     "present": 63
+    },
+    "gate": "docs/mediacloud-search-criteria.md section 7: at least 95% of the analysis-phase days present; near-zero stretches of 2 or more days; explicit zeros are real zeros, missing dates are missing",
+    "days_where_source_sum_differs_from_count": [],
     "explicit_zero_days": []
    },
    "coverage": 1.0
