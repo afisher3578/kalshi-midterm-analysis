@@ -1,12 +1,13 @@
-// The "News (Media Cloud)" view of a race: status line, datapoint tiles, five charts, the ten largest days, the
+// The "News (Media Cloud)" view of a race: status line, datapoint tiles, six charts, the ten largest days, the
 // method drawer and downloads. Numbers come from the race JSON (or, with ?demo=1 on the local server, the synthetic
 // fixture) and, for precision and headlines, from the local audit file. The math is in news.ts.
 import { format, utcFormat } from "d3";
 import { attentionChart, dailyBarsChart, dayCenter, emptyChart, type Frame, hbarChart, type HourPoint, keptDomain,
   linesChart, priceChart, SERIES_COLORS } from "./charts";
-import { analysisWindow, type AuditData, codedPhase, countTile, DEFAULT_COLLECTIONS, dailyRatio, dailyShare,
-  hasMcData, headlinesByDay, type McBlock, mcColumns, meanOver, meanShare, newsCsv, newsMetrics, precision,
-  PRECISION_RULE, seriesName, SHARE_RULE, topDays, valuesOn } from "./news";
+import { analysisWindow, type AuditData, BREADTH_RULE, breadthTile, codedPhase, countTile, DEFAULT_COLLECTIONS,
+  dailyRatio, dailyShare, hasMcData, headlinesByDay, type McBlock, mcColumns, meanShare, newsCsv, newsMetrics,
+  PER_SOURCE_QUERIES, precision, PRECISION_RULE, seriesName, SHARE_RULE, sourceRows, topDays, topSources,
+  valuesOn } from "./news";
 import { el, esc, raceTitle } from "./race";
 import type { Num, Quality, RaceData, Table } from "./types";
 import { DAY_MS, excludedSpans, PRICE, utcMs, VOLUME } from "./transforms";
@@ -43,7 +44,7 @@ export function limitationLines(d: RaceData, m: NewsModel): string[] {
     `Checked on ${api} (2026-11-12): article_title: searches (headline_either) and language:en inside q work as drafted; count-over-time returns ratio and total_count for every day and returns days with zero matches explicitly, so a missing day means something went wrong.`,
     "Search endpoints allow 2 requests a minute (search/api-params) and every Media Cloud request is paced (30 s by default). Whether the other endpoints share that limit is not confirmed.",
     "publish_date is a date with no time or timezone (Media Cloud Story Guide), so Media Cloud days are the extracted publish date, not UTC days. Whether that extraction is accurate is not confirmed.",
-    "Not built yet: per-source counts (distinct sources per day and top sources). The API offers them (search/count-by-source-over-interval and search/sources); a follow-up card builds them.",
+    "Distinct sources per day (breadth) counts the sources with at least one matching story that day (search/count-by-source-over-interval). A syndicated story on several domains counts once per domain, so breadth is partly a count of reprint sites. Top sources (search/sources) cover the analysis phase and list each source's story count only.",
     `Syndicated copy is not collapsed: Media Cloud counts every reprint as a story and so does this page${dup ? `; ${dup}` : ""}.`,
     ...(b ? [b.frozen_on ? `The queries are frozen: version ${b.version}, status ${b.status}, frozen on ${b.frozen_on}.`
       : `The queries are not frozen: version ${b.version}, status ${b.status}. They can still change before they are frozen.`] : []),
@@ -255,8 +256,7 @@ export class NewsView {
       } else {
         const t = countTile(m.daily, either, win);
         const sh = meanShare(m.daily, c, win);
-        const ds = seriesName("race_either", c, "distinct_sources");
-        const dsm = m.daily.columns.includes(ds) ? meanOver(m.daily, ds, win) : null;
+        const dsm = breadthTile(m.daily, c, win);
         const n = `n=${t.presentDays} of ${t.windowDays} days`;
         body = `<div class="tiles">
           ${tile("Total matching stories", t.total === null ? "no values" : fmtInt(t.total), `race_either, ${n}`, `total-${c}`)}
@@ -266,8 +266,9 @@ export class NewsView {
             t.missingDates.length ? ` (${t.missingDates.slice(0, 6).join(", ")}${t.missingDates.length > 6 ? ", ..." : ""})` : ""}`, `zero-${c}`)}
           ${tile("Average Talarico share", sh.mean === null ? "undefined" : fmtPct(sh.mean),
             `mean of the daily share over the n=${sh.n} days where it is defined; ${sh.undefinedDays} day(s) undefined; from the ${sh.from}`, `share-${c}`)}
-          ${tile("Distinct sources per day", dsm?.mean != null ? fmt1(dsm.mean) : "not available yet",
-            dsm?.mean != null ? `mean over n=${dsm.n} days with a value` : "no per-source daily counts in the data (see the notes)", `sources-${c}`)}
+          ${tile("Distinct sources per day", dsm?.mean != null ? fmt1(dsm.mean) : "not in the data",
+            dsm?.mean != null ? `race_either, mean over n=${dsm.n} of ${dsm.windowDays} days with a value; a syndicated story counts once per domain`
+              : "no breadth series in the data (this pull did not request per-source counts)", `sources-${c}`)}
         </div>`;
       }
       return `<section class="tilegroup" aria-labelledby="${hId}"><h4 id="${hId}">${esc(name)}</h4>${this.banner()}${body}</section>`;
@@ -399,32 +400,63 @@ export class NewsView {
         emptyChart(frame, empty, ["Chart 4: empty", empty]), ""));
     }
 
-    // Chart 5: top sources
-    const ts = m.block?.top_sources ?? {};
-    const tsColls = Object.keys(ts).filter((c) => ts[c]?.sources?.length);
+    // Chart 5: top sources over the analysis phase, race_either as bars, every query as a table
+    const b = m.block;
+    const tsColls = collectionsOf(m).filter((c) => topSources(b, "race_either", c));
+    const anyTop = PER_SOURCE_QUERIES.some((q) => collectionsOf(m).some((c) => topSources(b, q, c)));
     const c5 = el("figure", { class: "panel", id: "mc-chart5", "aria-labelledby": "mc-chart5-cap" });
     c5.append(el("figcaption", { id: "mc-chart5-cap" }, `<span class="ptitle">Chart 5. Top sources over the analysis window</span>
-      ${this.banner()}<span class="summary">${tsColls.length ? esc(tsColls.map((c) => `${c}: ${ts[c].sources.slice(0, 3)
-        .map((s) => `${s.source} ${fmtInt(s.count)}`).join(", ")}`).join("; ")) : "Empty: no per-source counts in the data yet."}</span>`));
-    if (tsColls.length) {
-      for (const c of tsColls) {
-        const t = ts[c];
-        c5.append(el("p", { class: "subtitle" }, `${esc(c)}: ${esc(t.query)} stories per source, ${esc(t.start)} to ${esc(t.end)}${t.note ? ` (${esc(t.note)})` : ""}`));
-        const rows = [...t.sources].sort((a, b) => b.count - a.count).map((s) => ({ label: s.source, count: s.count }));
-        c5.append(hbarChart(Math.min(this.width, 900), rows, { label: "Stories", aria: [`Chart 5: top sources, ${c}`,
-          `Horizontal bar chart. ${rows.map((r) => `${r.label} ${r.count}`).join("; ")}.`] }));
-        c5.append(el("details", { class: "mc-values" }, `<summary>${esc(c)}: the values as a table</summary>
-          <div class="table-scroll" role="region" aria-label="Top sources table, ${esc(c)}" tabindex="0">
-          <table class="mc-small"><thead><tr><th scope="col">Source</th><th scope="col">Stories</th></tr></thead><tbody>${rows.map((r) =>
-            `<tr><th scope="row">${esc(r.label)}</th><td>${fmtInt(r.count)}</td></tr>`).join("")}</tbody></table></div>`));
+      ${this.banner()}<span class="summary">${tsColls.length ? esc(tsColls.map((c) => `${c} race_either: ${sourceRows(topSources(b, "race_either", c)!, 3)
+        .map((r) => `${r.label} ${fmtInt(r.count)}`).join(", ")}`).join("; ")) : "Empty: no top sources in the data."}</span>`));
+    const table = (id: string, label: string, rows: { label: string; count: number }[]) =>
+      `<div class="table-scroll" role="region" aria-label="${esc(label)}" tabindex="0" id="${esc(id)}">
+      <table class="mc-small"><thead><tr><th scope="col">Rank</th><th scope="col">Source</th><th scope="col">Stories</th></tr></thead><tbody>${rows.map((r, k) =>
+        `<tr><td>${k + 1}</td><th scope="row">${esc(r.label)}</th><td>${fmtInt(r.count)}</td></tr>`).join("")}</tbody></table></div>`;
+    for (const c of tsColls) {
+      const t = topSources(b, "race_either", c)!;
+      const all = sourceRows(t), bars = sourceRows(t, 15);
+      c5.append(el("p", { class: "subtitle" }, `${esc(c)}: race_either stories per source, ${esc(t.start)} to ${esc(t.end)}; the
+        ${bars.length} largest of ${all.length} sources${t.note ? ` (${esc(t.note)})` : ""}`));
+      c5.append(hbarChart(Math.min(this.width, 900), bars, { label: "Stories", aria: [`Chart 5: top sources, race_either, ${c}`,
+        `Horizontal bar chart of the ${bars.length} largest sources. ${bars.map((r) => `${r.label} ${r.count}`).join("; ")}.`] }));
+      c5.append(el("details", { class: "mc-values", "data-top": `race_either-${c}` }, `<summary>${esc(c)}: race_either, all ${all.length} sources as a table</summary>
+        ${table(`mc-top-race_either-${c}`, `Top sources table, race_either, ${c}`, all)}`));
+    }
+    const others = PER_SOURCE_QUERIES.filter((q) => q !== "race_either")
+      .flatMap((q) => collectionsOf(m).map((c) => ({ q, c, t: topSources(b, q, c) })))
+      .filter((x) => x.t);
+    if (others.length) {
+      c5.append(el("p", { class: "subtitle" }, "Each candidate query on its own (tables):"));
+      for (const { q, c, t } of others) {
+        const all = sourceRows(t!);
+        c5.append(el("details", { class: "mc-values", "data-top": `${q}-${c}` }, `<summary>${esc(c)}: ${esc(q)}, ${all.length} sources,
+          ${esc(t!.start)} to ${esc(t!.end)}</summary>${table(`mc-top-${q}-${c}`, `Top sources table, ${q}, ${c}`, all)}`));
       }
-    } else {
-      c5.append(el("div", { class: "empty-box", role: "img", "aria-label": "Chart 5: empty, no per-source counts in the data" },
-        `<p>No per-source counts in the data yet. The API offers them (search/count-by-source-over-interval and
-        search/sources) but the pipeline does not request them yet; a follow-up card builds them. Expected shape: <code>queries.news_mediacloud.mediacloud.top_sources.&lt;collection&gt;</code> =
-        <code>{query, start, end, sources: [{source, count}]}</code>.</p>`));
+    }
+    if (!anyTop) {
+      c5.append(el("div", { class: "empty-box", role: "img", "aria-label": "Chart 5: empty, no top sources in the data" },
+        `<p>No top sources in the data. A Media Cloud pull writes them (search/sources over the analysis phase) at
+        <code>queries.news_mediacloud.mediacloud.top_sources.&lt;query&gt;.&lt;collection&gt;</code>.</p>`));
     }
     root.append(c5);
+
+    // Chart 6: breadth, distinct sources per day for race_either, by collection
+    const bColls = colls.filter((c) => hasSeries(m.daily, seriesName("race_either", c, "breadth")));
+    if (bColls.length) {
+      const lines = bColls.map((c) => ({ label: `${c} race_either`, points: pts(valuesOn(m.daily, seriesName("race_either", c, "breadth"), dates)) }));
+      const text = lines.map((l, k) => {
+        const v = l.points.map((p) => p.v);
+        return `${k + 1} = ${l.label}: mean ${fmt1(sum(v) / Math.max(1, nOf(v)))} sources a day over ${nOf(v)} days`;
+      }).join("; ");
+      root.append(fig("mc-chart6", "Chart 6. Distinct sources per day matching race_either, by collection", this.banner(),
+        `${esc(text)}. ${marks}`, linesChart(frame, lines, { label: "Sources per day",
+          aria: ["Chart 6: race_either distinct sources per day by collection", `Line chart. ${text}. ${marks}`] }),
+        legend(lines.map((l) => l.label)) + `<p class="meta">Breadth = ${esc(BREADTH_RULE)}.</p>`));
+    } else {
+      const none = "No breadth series in the data";
+      root.append(fig("mc-chart6", "Chart 6. Distinct sources per day matching race_either, by collection", this.banner(),
+        `Empty: ${none}.`, emptyChart(frame, none, ["Chart 6: empty", none]), ""));
+    }
   }
 
   chart3(root: HTMLElement, frame: Frame, dates: string[], main: string | undefined, empty: string) {
@@ -562,6 +594,11 @@ export class NewsView {
         ${Object.entries(q.collections).map(([ck, c]) => `${esc(ck)} (id ${c.collection_id ?? "none"}): ${esc(c.status)}`).join("; ")}</span></li>`).join("")}</ul>
       <h4>Derived series (per collection and day)</h4><ul>${Object.entries(b.derived ?? {}).map(([n, x]) => `<li><code>${esc(derivedText(n, x))}</code></li>`).join("")}
         <li>A zero denominator or a missing input gives no value (never 0); the reason is in <code>derived_nulls</code>.</li></ul>
+      <h4>Per-source series</h4><p>For ${esc((b.per_source_queries ?? PER_SOURCE_QUERIES).join(", "))} and each configured
+        collection: <code>news_mediacloud/&lt;query&gt;/&lt;collection&gt;/breadth</code> = ${esc(BREADTH_RULE)}, from
+        <code>${esc(b.endpoints?.breadth ?? "search/count-by-source-over-interval")}</code> over the race window; top sources from
+        <code>${esc(b.endpoints?.top_sources ?? "search/sources")}</code> over ${esc((b.top_sources_window ?? analysisWindow(b)).join(" to "))}
+        (source and story count only). Counts come from <code>${esc(b.endpoints?.count ?? "search/count-over-time")}</code>.</p>
       <h4>Zero and missing</h4><p>A date the API returns with count 0 is a real zero. The live API returns zero days
         explicitly, so a date it leaves out means something went wrong: it is missing and is not counted as 0. The tiles count them separately.</p>
       <h4>Exclusions log</h4>${log(b.exclusions_log)}

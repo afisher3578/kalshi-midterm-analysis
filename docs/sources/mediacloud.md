@@ -27,19 +27,41 @@ criteria are in docs/mediacloud-search-criteria.md; the implementation notes are
   `{"params": {"api-python-client": "5.1.0", "query-rate": "2/m"}}`, so search endpoints allow 2 requests a minute.
 - `/api/version` is open without a key (200, checked in M2). On 2026-11-12: version 3.2.3, GIT_REV
   cf92de2e2dbee502990ea9c22c0fb680ee0f77ed.
-- Exist but not used yet (a follow-up card builds breadth and top sources):
-  - `GET .../search/count-by-source-over-interval` with `interval=day`: returns
-    `{"source-interval-attention": [...]}`, one row per source per day including zeros, with `media_name`,
-    `interval`, `bucket` (date), `matching_stories`, `total_stories`, `ratio`. For talarico_race national, Aug 1 to
-    24: 249 sources x 24 days = 5976 rows; the per-day sum of `matching_stories` equals the count-over-time count.
-    So breadth (distinct sources per day) is computable.
-  - `GET .../search/sources`: top sources, `{"sources": [{"source": "townhall.com", "count": 42}, ...]}` (67
-    sources for talarico_race national, Aug 1 to 24).
+- `GET https://search.mediacloud.org/api/search/count-by-source-over-interval`: the count-over-time params plus
+  `interval=day`. Returns `{"source-interval-attention": [...]}`, one row per source per day including zeros, with
+  `media_name`, `interval`, `bucket` (date), `matching_stories`, `total_stories`, `ratio`. For talarico_race
+  national, Aug 1 to 24: 249 sources x 24 days = 5976 rows; the per-day sum of `matching_stories` equals the
+  count-over-time count. One request per per-source query and collection over the race window (breadth).
+- `GET https://search.mediacloud.org/api/search/sources`: `q`, `start`, `end`, `platform`, `cs` (no interval).
+  Returns `{"sources": [{"source": "townhall.com", "count": 42}, ...]}` (67 sources for talarico_race national,
+  Aug 1 to 24). One request per per-source query and collection over the analysis phase (top sources).
 
 ## Two connector paths
 - With `config/queries/<race_id>.mediacloud.yaml` (Texas Senate only, for now): the query config path. Series
-  `news_mediacloud/<query>/<collection>` (daily count), `.../ratio`, `.../total_count`, and the derived shares and
-  ratios `news_mediacloud/<derived>/<collection>`. See docs/mc1-notes.md.
+  `news_mediacloud/<query>/<collection>` (daily count), `.../ratio`, `.../total_count`, `.../breadth` (for the
+  per-source queries), and the derived shares and ratios `news_mediacloud/<derived>/<collection>`. See
+  docs/mc1-notes.md.
+
+## Breadth and top sources
+- Which queries: `per_source_queries` in the query config. Without that key the default is talarico_race,
+  paxton_race and race_either (`DEFAULT_PER_SOURCE` in raceattn/mcqueries.py). The Texas file does not set the
+  key, so it uses the default (setting it would change the config hash).
+- Breadth, `news_mediacloud/<query>/<collection>/breadth`: the number of distinct sources (`media_name`) with
+  `matching_stories` > 0 that day, from one count-by-source-over-interval request over the race window (the same
+  dates as the count series). A day in the response where no source matches is an explicit 0. A day the response
+  leaves out is missing (null), the same zero and missing rule as the counts. A syndicated story that runs on
+  several domains counts once for each domain, so breadth is partly a count of reprint sites (heavy in
+  texas_local, see the duplicate rate below). Breadth is a context series: in the daily table and quality checked
+  with the same gate as the counts (95% of analysis days present, near-zero stretches of 2 or more days), not
+  attention in the lag and event metrics. The quality block also lists any day where the per-day sum of
+  `matching_stories` differs from the count-over-time count (`days_where_source_sum_differs_from_count`).
+- Top sources: one search/sources request over the analysis phase (`phases.analysis`), stored at
+  `queries.news_mediacloud.mediacloud.top_sources.<query>.<collection>` =
+  `{query, collection, start, end, sources: [{source, count}]}`, the full list returned, largest count first (ties
+  by name). Only the source domain and its story count are kept: no story text, titles or URLs.
+- The endpoints used are recorded in `queries.news_mediacloud.mediacloud.endpoints` (`count`, `breadth`,
+  `top_sources`), every rendered request with its endpoint and hash is in `queries.news_mediacloud.queries`, and
+  each query and collection entry carries `breadth_request_hash` and `top_sources_request_hash`.
 - Without that file (the other five races): the M2 path, unchanged: one request for the race config's
   `news_query` over the US national collection, series `news_mediacloud/story_count`.
 
@@ -49,6 +71,9 @@ criteria are in docs/mediacloud-search-criteria.md; the implementation notes are
   returns zero days explicitly, so a missing date means something went wrong.
 - Days are the `publish_date` as Media Cloud extracted it (usually the publisher's local date), not UTC days.
 - `stories[]`: `id`, `publish_date`, `media_name` (else the URL's domain), `title`, `url`. Nothing else is written.
+- `source-interval-attention[]`: `media_name`, `bucket` (first 10 characters), `matching_stories`. Only the count
+  of matching sources per day is written, plus the per-day sum for the check above.
+- `sources[]`: `source`, `count`. Nothing else is written.
 
 ## Request handling
 - Every response is cached under `data/raw/news_mediacloud*/` (git-ignored) and reused unless `--refresh`.
@@ -62,8 +87,12 @@ criteria are in docs/mediacloud-search-criteria.md; the implementation notes are
 
 ## Limits
 - FAQ (https://www.mediacloud.org/documentation/faqs): "The default quota is 4000 API requests per week" and
-  "Certain API endpoints are rate-limited to 2 requests per minute". The Texas config makes 16 count requests per
-  run (7 queries plus the `any_either` support query, times two configured collections), about 8 minutes at 30 s. An audit is up to `--max-pages` (default 20) story-list pages per core query and collection.
+  "Certain API endpoints are rate-limited to 2 requests per minute". The Texas config makes 28 requests per run:
+  16 count requests (7 queries plus the `any_either` support query, times two configured collections) and 12
+  per-source requests (3 per-source queries x 2 collections x 2 endpoints). That is about 14 minutes at 30 s. A
+  rerun is served from the cache (0 requests) unless `--refresh`. With the 4,000-a-week quota, that is about 140
+  uncached runs a week, less any audits. An audit is up to `--max-pages` (default 20) story-list pages per core
+  query and collection.
 
 ## Terms
 - https://www.mediacloud.org/legal/media-cloud-terms-of-use: "'Platform Outputs' include aggregated data and/or
@@ -77,6 +106,10 @@ Offline (tests/test_mediacloud.py, tests/test_dotenv.py, fake HTTP with syntheti
 - The query file loads and validates; every query string, the compositions and the hashes are checked by tests.
 - Request params, the Authorization header, caching, `--refresh`, pacing, the 401/403/429 stop, zero vs missing
   dates, the derived math, the audit CSV, precision, agreement and the `.env` key handling.
+- Breadth and top sources: parsing count-by-source-over-interval (zero rows, a missing day, several sources on one
+  day, a source with 0 matching), the breadth series and its quality gate, the search/sources parse and sort, the
+  12 extra requests and cache hits on rerun, the stop on 401/403/429 for both endpoints, and that no story field
+  reaches the output.
 
 Live, 2026-11-12 (raw responses in git-ignored data/raw/mc3_probe/):
 - API version 3.2.3. Search query rate 2/m (`search/api-params`); no rate-limit headers.
@@ -99,8 +132,8 @@ Live, 2026-11-12 (raw responses in git-ignored data/raw/mc3_probe/):
   (https://www.mediacloud.org/documentation/story-guide) says publish date "does not include time because few
   published articles do, and it is impossible to accurately determine the timezone indicated at scale". Days are
   the extracted publish date, not UTC days. `indexed_date` is UTC but is ingest time, not publish time.
-- Per-source daily counts (`count-by-source-over-interval`) and top sources (`search/sources`) exist. Neither is
-  built yet.
+- Per-source daily counts (`count-by-source-over-interval`) and top sources (`search/sources`) exist. Both are now
+  built (offline tests only; the first live pull with them is still to run).
 
 ## Unverified
 - The `story-list` default sort order and pagination beyond one page (never needed so far; it matters when the

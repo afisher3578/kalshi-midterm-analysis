@@ -50,6 +50,9 @@ derived:
   talarico_share: {kind: share, numerator: talarico_race, other: paxton_race}
   talarico_exclusive_share: {kind: exclusive_share, numerator: talarico_race, other: paxton_race, both: race_both}
   core_vs_broad: {kind: ratio, numerator: race_either, denominator: any_either}
+# Per-source requests (breadth over the race window, top sources over the analysis phase): an optional
+# `per_source_queries: [...]` key picks the queries. It is not set here, so the default applies: talarico_race,
+# paxton_race, race_either (raceattn/mcqueries.py DEFAULT_PER_SOURCE). Adding the key changes the config hash.
 exclusions_log: []        # each added exclusion: term, date, the false matches seen
 changes_log: []           # after the freeze: date, what changed, why, new version
 # Findings from the live API before the freeze (no query or logic change). Not read by the validator.

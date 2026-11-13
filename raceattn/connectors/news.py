@@ -161,7 +161,12 @@ class MediaCloudConnector(DailyCountConnector):
         news_mediacloud/<query>/<collection>/total_count  all stories in the collection that day
       and per derived entry in the config (shares and ratios, section 4):
         news_mediacloud/<derived>/<collection>
-      Ratio, total_count, derived series and derived-support queries are context series: shown and quality
+      For each query in per_source_queries (default talarico_race, paxton_race, race_either) and collection, two
+      more requests: count-by-source-over-interval over the race window gives
+        news_mediacloud/<query>/<collection>/breadth   distinct sources with matching_stories > 0 that day
+      and search/sources over the analysis phase gives the top sources (source and count only), kept in the query
+      summary under mediacloud.top_sources.<query>.<collection>.
+      Ratio, total_count, breadth, derived series and derived-support queries are context series: shown and quality
       checked, not used as attention in the lag and event metrics. A collection with a null id is skipped and
       reported as not configured. A date the API returns with count 0 is 0; a date it leaves out is missing.
     - Without the file: the old single request for news_query over the US national collection, unchanged.
@@ -188,6 +193,8 @@ class MediaCloudConnector(DailyCountConnector):
         self.http = PacedHttp(self.http, pace_seconds, **({"sleep": sleep} if sleep else {}))
         self.context_series: set[str] = set()
         self.derived_nulls: dict[str, dict[str, str]] = {}
+        self.top_sources: dict[str, dict[str, Any]] = {}
+        self.breadth_checks: dict[str, list[str]] = {}
         self._cfg: dict[str, Any] = {}
         self._active = None  # the query config of the last config-path fetch (quality() has no race argument)
 
@@ -234,6 +241,24 @@ class MediaCloudConnector(DailyCountConnector):
                     "platform": cfg.platform, "cs": str(c.id)}, label="%s/%s" % (name, c.key))))
         return out
 
+    def _per_source_requests(self, cfg, window):
+        """(query name, collection, kind, RenderedQuery) for every per-source query and configured collection: kind
+        "breadth" is count-by-source-over-interval over the race window, "top_sources" is search/sources over the
+        analysis phase."""
+        from raceattn.mediacloud import SOURCE_INTERVAL_URL, SOURCES_URL
+
+        a0, a1 = cfg.phase("analysis")
+        out = []
+        for name in cfg.per_source_queries:
+            for c in cfg.configured_collections:
+                base = {"q": cfg.queries[name], "platform": cfg.platform, "cs": str(c.id)}
+                out.append((name, c, "breadth", RenderedQuery(SOURCE_INTERVAL_URL, dict(
+                    base, start=window.start.isoformat(), end=window.end.isoformat(), interval="day"),
+                    label="%s/%s/breadth" % (name, c.key))))
+                out.append((name, c, "top_sources", RenderedQuery(SOURCES_URL, dict(
+                    base, start=a0.isoformat(), end=a1.isoformat()), label="%s/%s/top_sources" % (name, c.key))))
+        return out
+
     @staticmethod
     def count_series(name, ckey, kind=None):
         return "news_mediacloud/%s/%s%s" % (name, ckey, "/" + kind if kind else "")
@@ -242,7 +267,8 @@ class MediaCloudConnector(DailyCountConnector):
         cfg = self.query_config(race)
         if cfg is None:
             return self._render_news_query(race, window)
-        return [q for _, _, q in self._requests(cfg, window)]
+        return ([q for _, _, q in self._requests(cfg, window)]
+                + [q for _, _, _, q in self._per_source_requests(cfg, window)])
 
     def series_query_hashes(self, race, window):
         cfg = self.query_config(race)
@@ -253,16 +279,23 @@ class MediaCloudConnector(DailyCountConnector):
             by_query[(name, c.key)] = q.query_hash
             for kind in (None, "ratio", "total_count"):
                 out[self.count_series(name, c.key, kind)] = q.query_hash
+        for name, c, kind, q in self._per_source_requests(cfg, window):
+            if kind == "breadth":
+                out[self.count_series(name, c.key, "breadth")] = q.query_hash
         for d in cfg.derived:
             for c in cfg.configured_collections:
                 out[self.count_series(d.name, c.key)] = combine_hashes([by_query[(r, c.key)] for r in d.refs.values()])
         return out
 
     def query_summary(self, race, window):
+        from raceattn.mediacloud import SOURCE_INTERVAL_URL, SOURCES_URL
+
         cfg = self.query_config(race)
         if cfg is None:
             return super().query_summary(race, window)
         s = Connector.query_summary(self, race, window)
+        per_source = {(n, c.key, k): q for n, c, k, q in self._per_source_requests(cfg, window)}
+        a0, a1 = cfg.phase("analysis")
         s["key_handling"] = "key sent in the Authorization header at request time only; not in these params, the hash or the cache"
         per: dict[str, Any] = {}
         hashes = s["series_query_hash"]
@@ -278,17 +311,29 @@ class MediaCloudConnector(DailyCountConnector):
                               series={"count": self.count_series(name, c.key),
                                       "ratio": self.count_series(name, c.key, "ratio"),
                                       "total_count": self.count_series(name, c.key, "total_count")})
+                    if (name, c.key, "breadth") in per_source:
+                        ce["series"]["breadth"] = self.count_series(name, c.key, "breadth")
+                        ce["breadth_request_hash"] = per_source[(name, c.key, "breadth")].query_hash
+                        ce["top_sources_request_hash"] = per_source[(name, c.key, "top_sources")].query_hash
                 else:
                     ce.update(status="not configured", note="no collection id in the query config; no request "
                               "made and no series (not a zero)")
                 entry["collections"][c.key] = ce
             per[name] = entry
         s["mediacloud"] = dict(cfg.summary(), queries=per, derived_nulls=self.derived_nulls,
+                               endpoints={"count": self.base_url, "breadth": SOURCE_INTERVAL_URL,
+                                          "top_sources": SOURCES_URL},
+                               top_sources=self.top_sources,
+                               top_sources_window=[a0.isoformat(), a1.isoformat()],
+                               breadth_checks=self.breadth_checks,
                                series_design="news_mediacloud/<query>/<collection> is the daily story count; "
                                "/ratio and /total_count are Media Cloud's normalized ratio and the collection's "
-                               "total stories that day; news_mediacloud/<derived>/<collection> are the derived "
-                               "shares and ratios. Only counts of non-support queries enter the lag and event "
-                               "metrics.")
+                               "total stories that day; /breadth is the number of distinct sources with at least one "
+                               "matching story that day (count-by-source-over-interval; syndicated copies on several "
+                               "domains each count as a source); news_mediacloud/<derived>/<collection> are the "
+                               "derived shares and ratios. top_sources.<query>.<collection> lists stories per "
+                               "source over the analysis phase (search/sources; source and count only). Only counts "
+                               "of non-support queries enter the lag and event metrics.")
         return s
 
     def fetch(self, race, window):
@@ -351,6 +396,40 @@ class MediaCloudConnector(DailyCountConnector):
                         rows.append(Row(race.race_id, self.id, s, _day(d), "day", round(v, 6), "share", hashes[s],
                                         fetched_at))
                 self.derived_nulls[s] = nulls
+        rows += self._fetch_per_source(cfg, race, window, headers, counts, dayset)
+        return rows
+
+    def _fetch_per_source(self, cfg, race, window, headers, counts, dayset):
+        """Breadth rows and top sources for the per-source queries. Only source names and counts are kept."""
+        from raceattn.mediacloud import parse_source_interval, parse_top_sources
+
+        rows: list[Row] = []
+        self.top_sources = {}
+        self.breadth_checks = {}
+        for name, c, kind, q in self._per_source_requests(cfg, window):
+            if kind == "breadth":
+                rec = self.cached_get(race, window, q, q.query_hash, "count_by_source", headers=headers)
+                s = self.count_series(name, c.key, "breadth")
+                self.expected_series.append(s)
+                self.context_series.add(s)
+                per = parse_source_interval(rec["body"])
+                off = []
+                for day, v in per.items():
+                    d = dt.date.fromisoformat(day)
+                    if d not in dayset:
+                        continue
+                    rows.append(Row(race.race_id, self.id, s, _day(d), "day", float(v["breadth"]), "sources",
+                                    q.query_hash, rec["fetched_at"]))
+                    count = counts.get((name, c.key), {}).get(d)
+                    if count is not None and count != v["matching"]:
+                        off.append(day)
+                # the per-day sum of matching_stories should equal the count-over-time count
+                self.breadth_checks[s] = off
+            else:
+                rec = self.cached_get(race, window, q, q.query_hash, "sources", headers=headers)
+                self.top_sources.setdefault(name, {})[c.key] = {
+                    "query": name, "collection": c.key, "start": q.params["start"], "end": q.params["end"],
+                    "sources": parse_top_sources(rec["body"])}
         return rows
 
     def quality(self, rows, window):
@@ -377,6 +456,8 @@ class MediaCloudConnector(DailyCountConnector):
             if adays and present / len(adays) < 0.95:
                 q.status = worst(q.status, "degraded")
                 q.reasons.append("analysis phase coverage %d/%d days is under 95%%" % (present, len(adays)))
+            if s in self.breadth_checks:
+                q.extra["days_where_source_sum_differs_from_count"] = self.breadth_checks[s]
             if derived:
                 q.extra["null_days"] = self.derived_nulls[s]
             else:

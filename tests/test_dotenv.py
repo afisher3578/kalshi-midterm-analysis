@@ -63,6 +63,12 @@ def test_dotenv_key_never_leaks(tmp_path, monkeypatch, capsys):
             return Resp(200, {"count_over_time": {"counts": [
                 {"date": "2026-09-%02d 00:00:00" % d, "count": 5, "total_count": 100, "ratio": 0.05, "note": echo}
                 for d in range(1, 31)]}})
+        if url == mc.SOURCE_INTERVAL_URL:
+            return Resp(200, {"source-interval-attention": [
+                {"media_name": "synthetic.example " + echo, "interval": "day", "bucket": "2026-09-%02d" % d,
+                 "matching_stories": 5, "total_stories": 100, "ratio": 0.05} for d in range(1, 31)]})
+        if url == mc.SOURCES_URL:
+            return Resp(200, {"sources": [{"source": "synthetic.example " + echo, "count": 5}]})
         if url == mc.COLLECTIONS_URL:
             return Resp(200, {"count": 1, "next": None, "results": [{"id": 1, "name": "Synthetic " + echo,
                                                                      "source_count": 2}]})
@@ -88,7 +94,7 @@ def test_dotenv_key_never_leaks(tmp_path, monkeypatch, capsys):
                        str(work / "raw_err"), "--out-dir", str(work / "out_err"), "--mediacloud-pace", "0"]))
     assert codes == [0, 0, 0, 0, 2, 2]
     sent = [r for s in sessions for r in s.requests]
-    assert len(sent) == 16 + 1 + 4 + 1 + 1 and all(r["headers"]["Authorization"] == "Token " + secret for r in sent)
+    assert len(sent) == 16 + 12 + 1 + 4 + 1 + 1 and all(r["headers"]["Authorization"] == "Token " + secret for r in sent)
     cap = capsys.readouterr()
     assert "HTTP 401" in cap.err and "loaded from .env: MEDIACLOUD_API_KEY (values not shown)" in cap.err
     assert secret not in cap.out and secret not in cap.err

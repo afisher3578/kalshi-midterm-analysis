@@ -69,7 +69,12 @@ Derived series (computed by the tool):
 
 - Store the raw daily story count and Media Cloud's normalized ratio (matching stories divided by all stories in the collection that day) with the total count, so a change in how many stories Media Cloud ingests does not look like a change in attention.
 - Breadth: distinct sources per day, if the API gives per-source counts over time. If not, skip it and say so.
-- Top sources over the analysis window (a bar chart for the dashboard), if the API supports it.
+  Built: `news_mediacloud/<query>/<collection>/breadth` from search/count-by-source-over-interval (sources with at
+  least one matching story that day), for the queries in `per_source_queries` (talarico_race, paxton_race,
+  race_either). See docs/sources/mediacloud.md.
+- Top sources over the analysis window (a bar chart for the dashboard), if the API supports it. Built: search/sources
+  over the analysis phase, stored at `queries.news_mediacloud.mediacloud.top_sources.<query>.<collection>` (source
+  and story count only); Chart 5 of the news view.
 - Syndication: Media Cloud may or may not collapse wire copy. Estimate the duplicate rate in the audit sample (same normalized title on several domains) and report it. Do not dedupe silently.
 
 ## 6. Validation (what the audit sample is for)
@@ -135,7 +140,7 @@ Resolved on 2026-11-12 against the live API (API version 3.2.3; details in docs/
   the field to every term in the group. `language:en` inside the query is accepted and filters. No query syntax
   changes are needed; the queries stay as drafted.
 - Per-source daily counts: yes (count-by-source-over-interval with interval=day, one row per source per day,
-  zeros included), so breadth is computable. Top sources: yes (search/sources). Neither is built yet.
+  zeros included), so breadth is computable. Top sources: yes (search/sources). Both are built (section 5).
 - Normalized ratio: yes, count-over-time gives count, total_count and ratio for every day, and returns zero days
   explicitly.
 - Publish-date timezone: there is none. publish_date is a date with no time and no timezone (Media Cloud Story

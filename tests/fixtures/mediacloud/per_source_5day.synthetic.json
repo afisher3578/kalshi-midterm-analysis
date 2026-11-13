@@ -1,0 +1,433 @@
+{
+ "_fixture": "synthetic",
+ "_synthetic": true,
+ "_note": "SYNTHETIC test data, not Media Cloud output. Made up by hand for the per-source requests: count_by_source has one row per source per day with zero rows included, a day with no matching source (2026-10-02), a missing day (talarico_race on 2026-10-04), several sources on one day, a source with 0 matching on a day and a day outside the window (2026-09-30). The per-day sums of matching_stories equal the counts in count_over_time_5day.synthetic.json. Shapes as seen on the live API 3.2.3 on 2026-11-12.",
+ "count_by_source": {
+  "talarico_race": {
+   "source-interval-attention": [
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-09-30",
+     "matching_stories": 999,
+     "total_stories": 1000,
+     "ratio": 0.999
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 6,
+     "total_stories": 1000,
+     "ratio": 0.006
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 4,
+     "total_stories": 1000,
+     "ratio": 0.004
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 6,
+     "total_stories": 1000,
+     "ratio": 0.006
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 1,
+     "total_stories": 1000,
+     "ratio": 0.001
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 1,
+     "total_stories": 1000,
+     "ratio": 0.001
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 2,
+     "total_stories": 1000,
+     "ratio": 0.002
+    }
+   ]
+  },
+  "paxton_race": {
+   "source-interval-attention": [
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-09-30",
+     "matching_stories": 999,
+     "total_stories": 1000,
+     "ratio": 0.999
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 10,
+     "total_stories": 1000,
+     "ratio": 0.01
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 10,
+     "total_stories": 1000,
+     "ratio": 0.01
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 10,
+     "total_stories": 1000,
+     "ratio": 0.01
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 2,
+     "total_stories": 1000,
+     "ratio": 0.002
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 8,
+     "total_stories": 1000,
+     "ratio": 0.008
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 6,
+     "total_stories": 1000,
+     "ratio": 0.006
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 6,
+     "total_stories": 1000,
+     "ratio": 0.006
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    }
+   ]
+  },
+  "race_either": {
+   "source-interval-attention": [
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-09-30",
+     "matching_stories": 999,
+     "total_stories": 1000,
+     "ratio": 0.999
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 15,
+     "total_stories": 1000,
+     "ratio": 0.015
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 10,
+     "total_stories": 1000,
+     "ratio": 0.01
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-01",
+     "matching_stories": 10,
+     "total_stories": 1000,
+     "ratio": 0.01
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-02",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 5,
+     "total_stories": 1000,
+     "ratio": 0.005
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-03",
+     "matching_stories": 2,
+     "total_stories": 1000,
+     "ratio": 0.002
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 9,
+     "total_stories": 1000,
+     "ratio": 0.009
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-04",
+     "matching_stories": 0,
+     "total_stories": 1000,
+     "ratio": 0.0
+    },
+    {
+     "media_name": "synthetic-a.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 6,
+     "total_stories": 1000,
+     "ratio": 0.006
+    },
+    {
+     "media_name": "synthetic-b.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 4,
+     "total_stories": 1000,
+     "ratio": 0.004
+    },
+    {
+     "media_name": "synthetic-c.example",
+     "interval": "day",
+     "bucket": "2026-10-05",
+     "matching_stories": 4,
+     "total_stories": 1000,
+     "ratio": 0.004
+    }
+   ]
+  }
+ },
+ "sources": {
+  "talarico_race": {
+   "sources": [
+    {
+     "source": "synthetic-b.example",
+     "count": 5
+    },
+    {
+     "source": "synthetic-a.example",
+     "count": 13
+    },
+    {
+     "source": "synthetic-c.example",
+     "count": 2
+    }
+   ]
+  },
+  "paxton_race": {
+   "sources": [
+    {
+     "source": "synthetic-c.example",
+     "count": 12
+    },
+    {
+     "source": "synthetic-a.example",
+     "count": 24
+    },
+    {
+     "source": "synthetic-b.example",
+     "count": 16
+    }
+   ]
+  },
+  "race_either": {
+   "sources": [
+    {
+     "source": "synthetic-c.example",
+     "count": 16
+    },
+    {
+     "source": "synthetic-b.example",
+     "count": 14
+    },
+    {
+     "source": "synthetic-a.example",
+     "count": 35
+    },
+    {
+     "source": "synthetic-d.example",
+     "count": 14
+    }
+   ]
+  }
+ }
+}

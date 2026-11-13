@@ -24,6 +24,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 QUERIES_DIR = os.path.join(ROOT, "config", "queries")
 STATUSES = ("draft", "tuned", "frozen")
 PHASES = ("tuning", "baseline", "analysis", "election")
+# Queries that get per-source requests (breadth and top sources) when the file has no `per_source_queries` key.
+DEFAULT_PER_SOURCE = ("talarico_race", "paxton_race", "race_either")
 DERIVED_KINDS = {"share": ("numerator", "other"), "exclusive_share": ("numerator", "other", "both"),
                  "ratio": ("numerator", "denominator")}
 NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -139,6 +141,7 @@ class QueryConfig:
     derived_support: tuple[str, ...]
     derived: tuple[Derived, ...]
     audit: dict[str, Any]
+    per_source_queries: tuple[str, ...]
     exclusions_log: tuple[Any, ...]
     changes_log: tuple[Any, ...]
     config_sha256: str
@@ -176,6 +179,7 @@ class QueryConfig:
                                         "status": "configured" if c.configured else "not configured"}
                                 for c in self.collections},
                 "derived_support": list(self.derived_support),
+                "per_source_queries": list(self.per_source_queries),
                 "derived": {d.name: dict(d.refs, kind=d.kind) for d in self.derived},
                 "exclusions_log": list(self.exclusions_log), "changes_log": list(self.changes_log)}
 
@@ -346,6 +350,16 @@ def parse(data: Any, path: str | None = None) -> QueryConfig:
     n = audit.get("per_query_per_collection", 100)
     if not isinstance(n, int) or n < 1:
         errs.append("audit.per_query_per_collection must be a positive whole number")
+    if "per_source_queries" in data:
+        per_source = data["per_source_queries"] or []
+        if not isinstance(per_source, list):
+            errs.append("per_source_queries must be a list of query names")
+            per_source = []
+        for q in per_source:
+            if q not in queries:
+                errs.append("per_source_queries lists unknown query %s" % q)
+    else:
+        per_source = [q for q in DEFAULT_PER_SOURCE if q in queries]
     for k in ("exclusions_log", "changes_log"):
         if not isinstance(data.get(k) or [], list):
             errs.append("%s must be a list" % k)
@@ -361,5 +375,6 @@ def parse(data: Any, path: str | None = None) -> QueryConfig:
                        api_version=data.get("api_version"), timezone_note=data.get("timezone_note"),
                        collections=tuple(colls), phases=phases, queries=queries, compositions=dict(comps),
                        derived_support=support, derived=tuple(derived), audit=audit,
+                       per_source_queries=tuple(str(q) for q in per_source),
                        exclusions_log=tuple(data.get("exclusions_log") or ()),
                        changes_log=tuple(data.get("changes_log") or ()), config_sha256=config_hash(data), path=path)

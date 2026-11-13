@@ -1,7 +1,7 @@
 // Media Cloud news view: pure functions (no DOM), unit tested in tests/news.test.ts.
 // Series names follow raceattn/connectors/news.py: news_mediacloud/<query>/<collection> (daily story count),
-// .../ratio, .../total_count, news_mediacloud/<derived>/<collection>, and the shapes not built yet:
-// news_mediacloud/<query>/<collection>/distinct_sources and queries.news_mediacloud.mediacloud.top_sources.
+// .../ratio, .../total_count, .../breadth (distinct sources per day), news_mediacloud/<derived>/<collection>, and the
+// top sources at queries.news_mediacloud.mediacloud.top_sources.<query>.<collection>.
 import type { Num, Table } from "./types";
 
 export const MC = "news_mediacloud";
@@ -14,8 +14,8 @@ export interface McCollection { name: string | null; id: number | null; source_c
 export interface McQuery { query: string; query_sha256: string; role: string;
   collections: Record<string, { collection_id: number | null; collection_name: string | null; status: string;
     request_hash?: string; note?: string }> }
-export interface TopSources { query: string; start: string; end: string; sources: { source: string; count: number }[];
-  note?: string }
+export interface TopSources { query: string; collection?: string; start: string; end: string;
+  sources: { source: string; count: number }[]; note?: string }
 export interface McBlock {
   path?: string; version: number; status: string; frozen_on?: string | null; config_sha256: string; language?: string;
   platform?: string; api_version?: string | null; timezone_note?: string | null;
@@ -26,8 +26,16 @@ export interface McBlock {
   exclusions_log?: unknown[]; changes_log?: unknown[];
   queries?: Record<string, McQuery>;
   derived_nulls?: Record<string, Record<string, string>>;
-  top_sources?: Record<string, TopSources>;
+  top_sources?: Record<string, Record<string, TopSources>>;  // query -> collection -> top sources
+  top_sources_window?: [string, string];
+  per_source_queries?: string[];
+  endpoints?: Record<string, string>;
 }
+
+/** Queries with breadth and top sources (the pipeline default, raceattn/mcqueries.py DEFAULT_PER_SOURCE), race_either first. */
+export const PER_SOURCE_QUERIES = ["race_either", "talarico_race", "paxton_race"];
+export const BREADTH_RULE = "distinct sources with at least one matching story that day (search/count-by-source-over-interval); "
+  + "syndicated copies on several domains each count as a source";
 export interface AuditRow { query: string; collection: string; story_id: string; publish_date: string; source: string;
   title: string; url: string; relevant: string }
 export interface AuditData { available: boolean; _note?: string;
@@ -158,6 +166,26 @@ export function meanOver(t: Table, name: string, [start, end]: [string, string])
   return { mean: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, n: vals.length, windowDays: days.length };
 }
 
+/** Mean breadth (distinct sources per day) of one query and collection over the window, or null when the table has
+ * no breadth column for it. Missing days are left out, not counted as 0. */
+export function breadthTile(t: Table, collection: string, window: [string, string], query = "race_either"): MeanTile | null {
+  const name = seriesName(query, collection, "breadth");
+  return t.columns.includes(name) ? meanOver(t, name, window) : null;
+}
+
+/** The top sources entry for one query and collection, or null when the block has none (or an empty list). */
+export function topSources(block: McBlock | null | undefined, query: string, collection: string): TopSources | null {
+  const e = block?.top_sources?.[query]?.[collection];
+  return e && Array.isArray(e.sources) && e.sources.length ? e : null;
+}
+
+/** Sources largest first (ties by name), at most k when k is given. */
+export function sourceRows(e: TopSources, k?: number): { label: string; count: number }[] {
+  const rows = [...e.sources].sort((a, b) => b.count - a.count || a.source.localeCompare(b.source))
+    .map((s) => ({ label: s.source, count: s.count }));
+  return k === undefined ? rows : rows.slice(0, k);
+}
+
 /** The k largest days of a series in [start, end], largest first; ties go to the earlier date. */
 export function topDays(t: Table, name: string, [start, end]: [string, string], k = 10): { date: string; count: number }[] {
   const m = dailyMap(t, name);
@@ -247,7 +275,7 @@ export function newsCsv(t: Table, columns: string[]): string {
 export interface NewsMetrics {
   demo: boolean;
   window: [string, string];
-  collections: Record<string, { total_stories: CountTile; share: ShareTile; distinct_sources: MeanTile | null }>;
+  collections: Record<string, { total_stories: CountTile; share: ShareTile; breadth: MeanTile | null }>;
   precision: { phase: string; path: string; rows: PrecisionRow[] } | null;
   definitions: Record<string, string>;
 }
@@ -259,9 +287,8 @@ export function newsMetrics(t: Table, collections: string[], window: [string, st
   return {
     demo, window,
     collections: Object.fromEntries(collections.map((c) => {
-      const ds = seriesName("race_either", c, "distinct_sources");
       return [c, { total_stories: countTile(t, seriesName("race_either", c), window), share: meanShare(t, c, window),
-        distinct_sources: t.columns.includes(ds) ? meanOver(t, ds, window) : null }];
+        breadth: breadthTile(t, c, window) }];
     })),
     precision: coded ? { phase: coded.phase, path: coded.path, rows: precision(coded.rows) } : null,
     definitions: {
@@ -271,7 +298,7 @@ export function newsMetrics(t: Table, collections: string[], window: [string, st
       zero_days: "days the API returned with count 0 (real zeros)",
       missing_days: "window days with no value at all (not counted as 0)",
       talarico_share: SHARE_RULE,
-      distinct_sources: "mean of news_mediacloud/race_either/<collection>/distinct_sources over the days with a value",
+      breadth: `mean of news_mediacloud/race_either/<collection>/breadth over the days with a value; breadth = ${BREADTH_RULE}`,
       precision: PRECISION_RULE,
     },
   };

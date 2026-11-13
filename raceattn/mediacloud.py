@@ -13,6 +13,11 @@ against the live API (version 3.2.3) on 2026-11-12, see docs/sources/mediacloud.
 - GET search/story-list       q, start, end, platform, cs, page_size, pagination_token -> stories, pagination_token;
                               page_size=1000 accepted (one page was enough so far, later pages and the sort order
                               are not checked)
+- GET search/count-by-source-over-interval  q, start, end, platform, cs, interval=day -> source-interval-attention
+                              [media_name, interval, bucket (date), matching_stories, total_stories, ratio]; one row
+                              per source per day, zero rows included; the per-day sum of matching_stories equals the
+                              count-over-time count
+- GET search/sources          q, start, end, platform, cs -> sources[source, count]
 - GET sources/collections/    name, platform, limit, offset -> count, next, results[id, name, source_count, ...]
 publish_date is a date with no time or timezone, so days are the publish date as Media Cloud extracted it.
 
@@ -45,6 +50,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://search.mediacloud.org/api/"
 COUNT_URL = BASE + "search/count-over-time"
 STORY_LIST_URL = BASE + "search/story-list"
+SOURCE_INTERVAL_URL = BASE + "search/count-by-source-over-interval"
+SOURCES_URL = BASE + "search/sources"
 COLLECTIONS_URL = BASE + "sources/collections/"
 ENV_KEY = "MEDIACLOUD_API_KEY"
 DEFAULT_PACE = 30.0
@@ -141,6 +148,38 @@ class Client:
     def request_line(self) -> str:
         return ("Media Cloud: %d HTTP request(s) made, %d served from the cache (paced %.0f s apart)"
                 % (self.requests, self.cache_hits, self.http.pace_seconds))
+
+
+# -- per-source responses (breadth and top sources)
+
+def parse_source_interval(body: Any) -> dict[str, dict[str, Any]]:
+    """search/count-by-source-over-interval -> {day: {"breadth": sources with matching_stories > 0, "matching": the sum
+    of matching_stories}}. A day in the response with no matching source is an explicit 0; a day the response leaves
+    out is not in the result (missing). Only the source name and the counts are read."""
+    rows = (body or {}).get("source-interval-attention")
+    if not isinstance(rows, list):
+        raise FetchError("Media Cloud count-by-source-over-interval response has no `source-interval-attention` list")
+    srcs: dict[str, set] = {}
+    matching: dict[str, float] = {}
+    for r in rows:
+        day = str(r.get("bucket") or "")[:10]
+        if not day:
+            raise FetchError("Media Cloud count-by-source-over-interval row has no `bucket`")
+        srcs.setdefault(day, set())
+        n = r.get("matching_stories") or 0
+        matching[day] = matching.get(day, 0.0) + float(n)
+        if n > 0:
+            srcs[day].add(r.get("media_name"))
+    return {d: {"breadth": len(srcs[d]), "matching": matching[d]} for d in sorted(srcs)}
+
+
+def parse_top_sources(body: Any) -> list[dict[str, Any]]:
+    """search/sources -> [{source, count}], largest count first, then by source name. Other fields are dropped."""
+    rows = (body or {}).get("sources")
+    if not isinstance(rows, list):
+        raise FetchError("Media Cloud search/sources response has no `sources` list")
+    out = [{"source": str(r.get("source")), "count": int(r.get("count") or 0)} for r in rows]
+    return sorted(out, key=lambda r: (-r["count"], r["source"]))
 
 
 # -- collections lookup

@@ -106,6 +106,15 @@ const liveTotal = Object.fromEntries(liveColls.map((c) => [c, inAnalysis(`news_m
 const livePeak = inAnalysis("news_mediacloud/race_either/national").reduce((b, x) => (x[1] > b[1] ? x : b));
 const talaricoAll = colOf("news_mediacloud/talarico_race/national").reduce((s, [, v]) => s + (v ?? 0), 0);
 const fmtInt = (n) => n.toLocaleString("en-US");
+// breadth and top sources: checked against the JSON when the last pull has them, else the empty states
+const breadthMean = Object.fromEntries(liveColls.map((c) => {
+  const name = `news_mediacloud/race_either/${c}/breadth`;
+  if (!daily.columns.includes(name)) return [c, null];
+  const v = inAnalysis(name).map(([, x]) => x);
+  return [c, v.length ? { mean: v.reduce((a, b) => a + b, 0) / v.length, n: v.length } : null];
+}));
+const liveTop = tx.queries.news_mediacloud.mediacloud.top_sources ?? {};
+const liveTopColls = liveColls.filter((c) => liveTop.race_either?.[c]?.sources?.length);
 
 // the empty state is checked on a race with no Media Cloud query config
 const EMPTY_RACE = "fl-senate-2026";
@@ -145,7 +154,9 @@ for (const width of [1280, 390]) {
     check(`${width}: total stories (race_either, ${c}, analysis phase)`, t, fmtInt(liveTotal[c]),
       `series.daily news_mediacloud/race_either/${c}, sum ${an0}..${an1}`, Number(t.replace(/,/g, "")) === liveTotal[c] && liveTotal[c] > 0);
     const src = norm(await page.locator(`[data-k="sources-${c}"]`).innerText());
-    check(`${width}: distinct sources tile (${c}) says not available, not 0`, src, "not available yet", "no per-source series", src === "not available yet");
+    const bm = breadthMean[c];
+    check(`${width}: distinct sources tile (${c})`, src, bm ? bm.mean.toFixed(1) : "not in the data",
+      `series.daily news_mediacloud/race_either/${c}/breadth, mean ${an0}..${an1}`, bm ? Number(src.replace(/,/g, "")) === Number(bm.mean.toFixed(1)) : src === "not in the data");
   }
   const peakOnPage = norm(await page.locator('[data-k="peak-national"]').innerText());
   const peakDate = norm(await page.locator('[data-k="peak-date-national"]').innerText());
@@ -156,14 +167,24 @@ for (const width of [1280, 390]) {
     "series.daily news_mediacloud/talarico_race/national, sum over every day", c2.includes(`talarico_race total ${fmtInt(talaricoAll)}`));
   const c5 = norm(await page.locator("#mc-chart5-cap").innerText());
   const c5svg = await page.locator("#mc-chart5 svg").count();
-  check(`${width}: Chart 5 top sources says not available (empty panel, no bars)`, c5.slice(0, 120), "Empty: no per-source counts", "n/a",
-    c5.includes("Empty: no per-source counts in the data yet") && c5svg === 0 && (await page.locator("#mc-chart5 .empty-box").count()) === 1);
+  if (liveTopColls.length) {
+    const first = liveTopColls.map((c) => [...liveTop.race_either[c].sources].sort((a, b) => b.count - a.count)[0]);
+    check(`${width}: Chart 5 top sources bars per collection (race_either)`, c5.slice(0, 160), first.map((x) => `${x.source} ${fmtInt(x.count)}`).join("; "),
+      "queries.news_mediacloud.mediacloud.top_sources.race_either.<collection>", c5svg === liveTopColls.length
+        && first.every((x) => c5.includes(`${x.source} ${fmtInt(x.count)}`)) && (await page.locator("#mc-chart5 .empty-box").count()) === 0);
+  } else {
+    check(`${width}: Chart 5 top sources empty panel (no bars) before a pull with top sources`, c5.slice(0, 120), "Empty: no top sources in the data", "n/a",
+      c5.includes("Empty: no top sources in the data") && c5svg === 0 && (await page.locator("#mc-chart5 .empty-box").count()) === 1);
+  }
   const c3 = norm(await page.locator("#mc-chart3-cap").innerText());
   check(`${width}: Chart 3 Kalshi price is real data (first and last hourly close, cents)`, c3, `first ${firstPrice}, last ${lastPrice}`,
     "series.hourly.rows[*][1] (kalshi/price_close)", c3.includes(`first ${firstPrice} cents`) && c3.includes(`last ${lastPrice} cents`));
-  check(`${width}: Chart 5 empty state says the API offers per-source counts, not built yet`, norm(await page.locator("#mc-chart5 .empty-box").innerText()).slice(0, 160),
-    "count-by-source-over-interval ... follow-up card", "n/a", await page.locator("#mc-chart5 .empty-box").innerText().then((t) =>
-      t.includes("search/count-by-source-over-interval") && t.includes("follow-up card") && !t.includes("not known")));
+  if (!liveTopColls.length) {
+    const box = norm(await page.locator("#mc-chart5 .empty-box").innerText());
+    check(`${width}: Chart 5 empty state names where top sources come from, no stale follow-up note`, box.slice(0, 160),
+      "search/sources ... top_sources.<query>.<collection>", "n/a", box.includes("search/sources")
+        && box.includes("top_sources.<query>.<collection>") && !/follow-up|not built/i.test(box));
+  }
   // Media Cloud days are publish dates with no timezone: the timezone_note from the race JSON, never "All dates are UTC"
   const tzNote = tx.queries.news_mediacloud.mediacloud.timezone_note;
   const dates = norm(await page.locator("#mc-dates").innerText());
@@ -185,12 +206,13 @@ for (const width of [1280, 390]) {
   const limText = lim.join(" | ");
   const stale = lim.filter((l) => /not confirmed/i.test(l) && /34412234|38381323|article_title|language:en|total_count|zero matches|texas/i.test(l));
   check(`${width}: Limitations state the checked facts and keep the open items`, `${lim.length} lines, ${stale.length} stale`,
-    "collection ids and names from the query config; open: publish_date accuracy, per-source counts, syndication, not frozen, audit not coded, licensing",
+    "collection ids and names from the query config; open: publish_date accuracy, breadth and syndication, not frozen, audit not coded, licensing",
     "query-config.json news_mediacloud.mediacloud (collections, version, status, frozen_on, api_version), race JSON licensing",
     stale.length === 0 && !/Not confirmed until a keyed run|has no id until/.test(limText)
       && liveColls.every((c) => limText.includes(`${c} is ${mcConf.collections[c].id} "${mcConf.collections[c].name}", ${mcConf.collections[c].source_count} sources`))
       && limText.includes(`Media Cloud API ${mcConf.api_version}`) && limText.includes("article_title: searches (headline_either) and language:en inside q work as drafted")
-      && limText.includes("Whether that extraction is accurate is not confirmed") && limText.includes("a follow-up card builds them")
+      && limText.includes("Whether that extraction is accurate is not confirmed") && !/follow-up card|Not built yet/.test(limText)
+      && limText.includes("A syndicated story on several domains counts once per domain")
       && limText.includes("Syndicated copy is not collapsed") && limText.includes("22.5%")
       && limText.includes(`The queries are not frozen: version ${mcConf.version}, status ${mcConf.status}`) && mcConf.frozen_on === null
       && limText.includes("tuning audit is not coded") && tx.licensing.confirmed === false && limText.includes("licensing.confirmed is false"));
@@ -237,7 +259,7 @@ for (const width of [1280, 390]) {
     svg: !!f.querySelector("svg"), box: !!f.querySelector(".empty-box") })));
   const newsCharts = charts.filter((c) => c.id !== "mc-chart3");
   check(`${width}: every news chart is a labeled empty panel`, JSON.stringify(newsCharts.map((c) => [c.id, norm(c.text).slice(0, 70)])),
-    "mc-chart1, 2, 4, 5 say Empty", "n/a", newsCharts.length === 4 && newsCharts.every((c) => /Empty/.test(c.text) && (c.svg || c.box)));
+    "mc-chart1, 2, 4, 5, 6 say Empty", "n/a", newsCharts.length === 5 && newsCharts.every((c) => /Empty/.test(c.text) && (c.svg || c.box)));
   const c3 = norm(await page.locator("#mc-chart3-cap").innerText());
   check(`${width}: ${EMPTY_RACE} Chart 3 Kalshi price is real data (first and last hourly close, cents)`, c3, `first ${emptyFirst}, last ${emptyLast}`,
     `${EMPTY_RACE} series.hourly.rows[*][1]`, c3.includes(`first ${emptyFirst} cents`) && c3.includes(`last ${emptyLast} cents`));
@@ -292,8 +314,30 @@ for (const width of [1280, 390]) {
   check(`${width}: Chart 3 news panel labeled demo, Kalshi still real`, c3, `first ${firstPrice}, last ${lastPrice}; news panel banner`,
     "series.hourly (kalshi/price_close)", c3news === 1 && c3.includes(`first ${firstPrice} cents`) && c3.includes("DEMO"));
   const svgs = await page.$$eval("#mc-charts > figure", (fs) => fs.map((f) => `${f.id}:${f.querySelectorAll("svg").length}`));
-  check(`${width}: demo draws every chart (5 figures, top sources bars)`, svgs.join(" "), "chart1..5 with svg", "n/a",
-    svgs.length === 5 && svgs.every((s) => !s.endsWith(":0")));
+  check(`${width}: demo draws every chart (6 figures, top sources bars, breadth lines)`, svgs.join(" "), "chart1..6 with svg", "n/a",
+    svgs.length === 6 && svgs.every((s) => !s.endsWith(":0")));
+  // demo breadth tile and Chart 5 against the fixture
+  const bcol = col("news_mediacloud/race_either/national/breadth").map(([, v]) => v).filter((v) => v !== null);
+  const bmean = bcol.reduce((a, b) => a + b, 0) / bcol.length;
+  const bOnPage = norm(await page.locator('[data-k="sources-national"]').innerText());
+  check(`${width}: demo distinct sources tile (race_either, national)`, bOnPage, bmean.toFixed(1),
+    "fixture series.daily news_mediacloud/race_either/national/breadth, mean over days with a value", Number(bOnPage) === Number(bmean.toFixed(1)));
+  const fts = fx.queries.news_mediacloud.mediacloud.top_sources;
+  const c5bars = await page.locator("#mc-chart5 svg").count();
+  const c5tables = await page.$$eval("#mc-chart5 details[data-top]", (ds) => ds.map((d) => [d.dataset.top, d.querySelectorAll("tbody tr").length]));
+  const want = ["race_either", "talarico_race", "paxton_race"].flatMap((q) => Object.keys(fts[q]).map((c) => [`${q}-${c}`, fts[q][c].sources.length]));
+  check(`${width}: demo Chart 5: race_either bars per collection (at most 15), a full table for every query and collection`,
+    `${c5bars} charts; ${JSON.stringify(c5tables)}`, `2 charts; ${JSON.stringify(want)}`, "fixture top_sources.<query>.<collection>",
+    c5bars === 2 && JSON.stringify(c5tables) === JSON.stringify(want)
+      && (await page.$$eval("#mc-chart5 svg", (ss) => ss.every((x) => x.querySelectorAll("rect").length <= 15))));
+  const bi = fx.series.daily.columns.indexOf("news_mediacloud/race_either/national/breadth");
+  const ball = fx.series.daily.rows.map((r) => r[bi]).filter((v) => v !== null);
+  const ballMean = (ball.reduce((a, b) => a + b, 0) / ball.length).toFixed(1);
+  const c6 = norm(await page.locator("#mc-chart6-cap").innerText());
+  check(`${width}: demo Chart 6 breadth lines for both collections (race window)`, c6.slice(0, 160),
+    `national race_either: mean ${ballMean} sources a day over ${ball.length} days`, "fixture series.daily .../breadth, every day",
+    c6.includes(`national race_either: mean ${ballMean} sources a day over ${ball.length} days`) && c6.includes("texas_local race_either: mean")
+      && (await page.locator("#mc-chart6 .serieslist li").count()) === 2);
   const links = await page.$$eval("#mc-top-table td.heads a", (as) => as.map((a) => ({ href: a.href, rel: a.rel, t: a.textContent })));
   check(`${width}: headlines table: synthetic, example.invalid, rel noopener noreferrer, local only`, `${links.length} links; ${links[0]?.href}`,
     "links to example.invalid", "fixture local.audit", links.length >= 10 && links.every((l) => l.href.startsWith("https://example.invalid/")

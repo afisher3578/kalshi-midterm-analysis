@@ -64,16 +64,23 @@ def queries_dir(tmp_path, race_id="tx-mc-5day", edit=None):
     return str(d)
 
 
-def count_route(cfg, body_for=None, status=200):
+def count_route(cfg, body_for=None, status=200, per_source_for=None, per_source_status=200):
+    """Fake Media Cloud: count-over-time, count-by-source-over-interval and search/sources, all SYNTHETIC."""
     by_q = {q: name for name, q in cfg.queries.items()}
     data = fx("count_over_time_5day.synthetic.json")["by_query"]
+    ps = fx("per_source_5day.synthetic.json")
 
     def route(method, url, params, headers, body):
-        assert url == mc.COUNT_URL
-        if status != 200:
-            return Resp(status, {"detail": "synthetic error"})
         name = by_q[params["q"]]
-        return Resp(200, body_for(name) if body_for else data[name])
+        if url == mc.COUNT_URL:
+            if status != 200:
+                return Resp(status, {"detail": "synthetic error"})
+            return Resp(200, body_for(name) if body_for else data[name])
+        assert url in (mc.SOURCE_INTERVAL_URL, mc.SOURCES_URL), url
+        if per_source_status != 200:
+            return Resp(per_source_status, {"detail": "synthetic error"})
+        kind = "count_by_source" if url == mc.SOURCE_INTERVAL_URL else "sources"
+        return Resp(200, per_source_for(kind, name, params) if per_source_for else ps[kind][name])
 
     return route
 
@@ -166,7 +173,7 @@ def test_connector_series_zero_vs_missing_and_derived(tmp_path):
     cfg = c.query_config(race)
     sess.route = count_route(cfg)
     rows = c.fetch(race, race.window)
-    assert len(sess.requests) == 16  # 8 queries x 2 configured collections
+    assert len(sess.requests) == 28  # 8 queries x 2 collections, plus 3 per-source queries x 2 collections x 2
     assert {r["params"]["cs"] for r in sess.requests} == {"34412234", "38381323"}
     assert all(r["headers"] == {"Authorization": "Token " + KEY} for r in sess.requests)
     vals = {}
@@ -239,6 +246,175 @@ def test_fallback_without_query_file_is_the_old_request(tmp_path):
     assert c.context_series == set()
 
 
+# -- per-source requests: breadth and top sources
+
+def test_parse_source_interval_zeros_missing_and_several_sources():
+    ps = fx("per_source_5day.synthetic.json")["count_by_source"]
+    t = mc.parse_source_interval(ps["talarico_race"])
+    assert {d: v["breadth"] for d, v in t.items()} == {"2026-09-30": 1, "2026-10-01": 2, "2026-10-02": 0,
+                                                       "2026-10-03": 1, "2026-10-05": 3}
+    assert "2026-10-04" not in t  # a day the response leaves out is missing, not 0
+    assert t["2026-10-01"]["matching"] == 10  # a: 6, b: 4, c: 0 (c has 0 matching that day and is not counted)
+    assert mc.parse_source_interval({"source-interval-attention": []}) == {}
+    # the same source twice on one day counts once; a bucket with a time is cut to the date
+    rows = [{"media_name": "x.example", "bucket": "2026-10-01 00:00:00", "matching_stories": 2},
+            {"media_name": "x.example", "bucket": "2026-10-01", "matching_stories": 1}]
+    assert mc.parse_source_interval({"source-interval-attention": rows}) == {"2026-10-01": {"breadth": 1, "matching": 3}}
+    with pytest.raises(FetchError, match="source-interval-attention"):
+        mc.parse_source_interval({"counts": []})
+
+
+def test_parse_top_sources_sorted_and_only_source_and_count():
+    body = {"sources": [{"source": "b.example", "count": 3, "title": "SYNTHETIC story title"},
+                        {"source": "a.example", "count": 3}, {"source": "c.example", "count": 9}]}
+    assert mc.parse_top_sources(body) == [{"source": "c.example", "count": 9}, {"source": "a.example", "count": 3},
+                                          {"source": "b.example", "count": 3}]
+    assert mc.parse_top_sources({"sources": []}) == []
+    with pytest.raises(FetchError, match="sources"):
+        mc.parse_top_sources({})
+
+
+def test_breadth_series_and_top_sources(tmp_path):
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None)
+    cfg = c.query_config(race)
+    assert cfg.per_source_queries == ("talarico_race", "paxton_race", "race_either")
+    sess.route = count_route(cfg)
+    rows = c.fetch(race, race.window)
+    per_source = [r for r in sess.requests if r["url"] != mc.COUNT_URL]
+    assert len(per_source) == 12  # 3 queries x 2 collections x 2 endpoints
+    assert all(r["headers"] == {"Authorization": "Token " + KEY} for r in per_source)
+    sbs = [r for r in per_source if r["url"] == mc.SOURCE_INTERVAL_URL]
+    src = [r for r in per_source if r["url"] == mc.SOURCES_URL]
+    assert len(sbs) == len(src) == 6
+    assert {by_name(cfg, r["params"]["q"]) for r in sbs} == {"talarico_race", "paxton_race", "race_either"}
+    assert all(r["params"]["start"] == "2026-10-01" and r["params"]["end"] == "2026-10-05"
+               and r["params"]["interval"] == "day" and r["params"]["platform"] == "onlinenews-mediacloud" for r in sbs)
+    # top sources use the analysis phase of the query config, not the race window
+    assert all(r["params"]["start"] == "2026-09-01" and r["params"]["end"] == "2026-11-02"
+               and "interval" not in r["params"] for r in src)
+
+    vals = {}
+    for r in rows:
+        vals.setdefault(r.series, {})[r.ts_utc.date().isoformat()] = r.value
+    tb = vals["news_mediacloud/talarico_race/national/breadth"]
+    assert tb == {"2026-10-01": 2, "2026-10-02": 0, "2026-10-03": 1, "2026-10-05": 3}  # 10-04 missing, 09-30 out
+    assert vals["news_mediacloud/race_either/texas_local/breadth"] == {"2026-10-01": 3, "2026-10-02": 0,
+                                                                       "2026-10-03": 2, "2026-10-04": 1, "2026-10-05": 3}
+    assert not any(s.endswith("/breadth") and "race_both" in s for s in vals)
+    assert {r.unit for r in rows if r.series.endswith("/breadth")} == {"sources"}
+    assert "news_mediacloud/race_either/national/breadth" in c.context_series
+
+    q = c.quality(rows, race.window)
+    b = q["news_mediacloud/talarico_race/national/breadth"]
+    assert b.missing_days == ["2026-10-04"] and b.extra["explicit_zero_days"] == ["2026-10-02"]
+    assert b.status == "degraded" and any("analysis phase coverage 4/5" in r for r in b.reasons)
+    assert b.extra["days_where_source_sum_differs_from_count"] == []
+
+    s = c.query_summary(race, race.window)
+    m = s["mediacloud"]
+    top = m["top_sources"]["race_either"]["national"]
+    assert top == {"query": "race_either", "collection": "national", "start": "2026-09-01", "end": "2026-11-02",
+                   "sources": [{"source": "synthetic-a.example", "count": 35},
+                               {"source": "synthetic-c.example", "count": 16},
+                               {"source": "synthetic-b.example", "count": 14},
+                               {"source": "synthetic-d.example", "count": 14}]}
+    assert set(m["top_sources"]) == {"talarico_race", "paxton_race", "race_either"}
+    assert set(m["top_sources"]["paxton_race"]) == {"national", "texas_local"}
+    assert m["per_source_queries"] == ["talarico_race", "paxton_race", "race_either"]
+    assert m["endpoints"]["breadth"] == mc.SOURCE_INTERVAL_URL and m["endpoints"]["top_sources"] == mc.SOURCES_URL
+    nat = m["queries"]["race_either"]["collections"]["national"]
+    assert nat["series"]["breadth"] == "news_mediacloud/race_either/national/breadth"
+    assert nat["breadth_request_hash"] == s["series_query_hash"]["news_mediacloud/race_either/national/breadth"]
+    assert nat["top_sources_request_hash"] and "breadth" not in m["queries"]["race_both"]["collections"]["national"]["series"]
+    assert len(s["queries"]) == 28 and c.estimate_cost(race).requests == 28
+    assert KEY not in json.dumps(s)
+
+
+def by_name(cfg, q):
+    return {v: k for k, v in cfg.queries.items()}[q]
+
+
+def test_breadth_flags_days_where_the_source_sum_differs(tmp_path):
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None)
+    cfg = c.query_config(race)
+    ps = fx("per_source_5day.synthetic.json")
+
+    def per_source(kind, name, params):
+        body = json.loads(json.dumps(ps[kind][name]))
+        if kind == "count_by_source" and name == "race_either":
+            body["source-interval-attention"].append({"media_name": "extra.example", "bucket": "2026-10-03",
+                                                      "matching_stories": 1})
+        return body
+    sess.route = count_route(cfg, per_source_for=per_source)
+    rows = c.fetch(race, race.window)
+    q = c.quality(rows, race.window)
+    assert q["news_mediacloud/race_either/national/breadth"].extra["days_where_source_sum_differs_from_count"] == [
+        "2026-10-03"]
+
+
+def test_per_source_queries_config_value(tmp_path):
+    cfg = mcqueries.load(TX_QUERIES)
+    assert cfg.per_source_queries == ("talarico_race", "paxton_race", "race_either")
+    data = mcqueries.yaml.safe_load(open(TX_QUERIES, encoding="utf-8"))
+    assert "per_source_queries" not in data and cfg.per_source_queries == mcqueries.DEFAULT_PER_SOURCE  # the default
+    data["per_source_queries"] = ["race_either"]
+    assert mcqueries.parse(data).per_source_queries == ("race_either",)
+    data["per_source_queries"] = []
+    assert mcqueries.parse(data).per_source_queries == ()
+    data["per_source_queries"] = ["nope"]
+    with pytest.raises(mcqueries.QueryConfigError, match="per_source_queries lists unknown query nope"):
+        mcqueries.parse(data)
+
+    qdir = queries_dir(tmp_path, edit=lambda t: t.replace("exclusions_log: []", "per_source_queries: [race_either]\nexclusions_log: []"))
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None, qdir=qdir)
+    sess.route = count_route(c.query_config(race))
+    c.fetch(race, race.window)
+    assert len(sess.requests) == 16 + 4
+    assert set(c.top_sources) == {"race_either"}
+
+
+@pytest.mark.parametrize("status", [401, 403, 429])
+def test_per_source_requests_stop_on_401_403_429(tmp_path, status):
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None)
+    c.http.inner.max_retries = 4
+    sess.route = count_route(c.query_config(race), per_source_status=status)
+    with pytest.raises(mc.MediaCloudStop) as e:
+        c.fetch(race, race.window)
+    assert e.value.status == status and ("HTTP %d" % status) in str(e.value) and "Stopping" in str(e.value)
+    assert len(sess.requests) == 17  # the 16 counts, then the first per-source request, no retry
+    assert sess.requests[-1]["url"] == mc.SOURCE_INTERVAL_URL
+    assert KEY not in str(e.value)
+
+
+def test_no_story_text_in_the_output(tmp_path):
+    """Per-source responses with extra SYNTHETIC story fields: none of them reaches the rows or the summary."""
+    race = load_race(RACE5)
+    c, sess = connector(tmp_path, None)
+    cfg = c.query_config(race)
+    ps = fx("per_source_5day.synthetic.json")
+    marks = {"title": "SYNTHETIC-TITLE-MARK", "url": "https://example.invalid/SYNTHETIC-URL-MARK",
+             "text": "SYNTHETIC-TEXT-MARK"}
+
+    def per_source(kind, name, params):
+        body = json.loads(json.dumps(ps[kind][name]))
+        for r in body["source-interval-attention" if kind == "count_by_source" else "sources"]:
+            r.update(marks)
+        return body
+    sess.route = count_route(cfg, per_source_for=per_source)
+    rows = c.fetch(race, race.window)
+    out = json.dumps([r.to_dict() for r in rows]) + json.dumps(c.query_summary(race, race.window))
+    out += json.dumps({k: v.to_dict() if hasattr(v, "to_dict") else str(v) for k, v in c.quality(rows, race.window).items()})
+    for v in marks.values():
+        assert v not in out
+    for top in c.top_sources.values():
+        for t in top.values():
+            assert all(set(x) == {"source", "count"} for x in t["sources"])
+
+
 # -- request handling
 
 @pytest.mark.parametrize("status", [401, 403, 429])
@@ -260,14 +436,15 @@ def test_cache_hit_no_refetch_and_refresh(tmp_path):
     cfg = c.query_config(race)
     sess.route = count_route(cfg)
     rows1 = c.fetch(race, race.window)
-    assert len(sess.requests) == 16 and c.http.requests == 16
+    assert len(sess.requests) == 28 and c.http.requests == 28
     c2, sess2 = connector(tmp_path, count_route(cfg))
     rows2 = c2.fetch(race, race.window)
-    assert len(sess2.requests) == 0 and c2.cache_hits == 16 and c2.http.requests == 0
+    assert len(sess2.requests) == 0 and c2.cache_hits == 28 and c2.http.requests == 0
     assert [r.value for r in rows1] == [r.value for r in rows2]
+    assert c2.top_sources == c.top_sources and c2.top_sources["race_either"]["national"]["sources"]
     c3, sess3 = connector(tmp_path, count_route(cfg), refresh=True)
     c3.fetch(race, race.window)
-    assert len(sess3.requests) == 16 and c3.cache_hits == 0
+    assert len(sess3.requests) == 28 and c3.cache_hits == 0
     blob = "".join(open(os.path.join(d, f)).read() for d, _, fs in os.walk(tmp_path / "raw") for f in fs)
     assert KEY not in blob and "Authorization" not in blob
 
@@ -307,6 +484,25 @@ def synthetic_full_window(cfg, days):
     return body
 
 
+def synthetic_per_source_full_window(cfg, days):
+    """SYNTHETIC per-source bodies for the 65-day Texas window, consistent with synthetic_full_window."""
+    count = synthetic_full_window(cfg, days)
+
+    def body(kind, name, params):
+        if kind == "sources":
+            return {"sources": [{"source": "synthetic-b.example", "count": 7},
+                                {"source": "synthetic-a.example", "count": 40}]}
+        rows = []
+        for e in count(name)["count_over_time"]["counts"]:
+            n = e["count"]
+            for src, v in (("synthetic-a.example", n - n // 3), ("synthetic-b.example", n // 3),
+                           ("synthetic-c.example", 0)):
+                rows.append({"media_name": src, "interval": "day", "bucket": e["date"][:10], "matching_stories": v,
+                             "total_stories": 500, "ratio": v / 500})
+        return {"source-interval-attention": rows}
+    return body
+
+
 def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     import shutil
 
@@ -318,7 +514,8 @@ def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     shutil.copytree(FIXTURE_RAW, raw)
     qdir = os.path.dirname(TX_QUERIES)
     cfg = mcqueries.find("tx-senate-2026", qdir)
-    http, sess = fake_http(count_route(cfg, synthetic_full_window(cfg, race.window.days())))
+    http, sess = fake_http(count_route(cfg, synthetic_full_window(cfg, race.window.days()),
+                                      per_source_for=synthetic_per_source_full_window(cfg, race.window.days())))
     from raceattn.settings import load_settings
 
     settings = load_settings()
@@ -326,8 +523,8 @@ def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     logs = []
     res = run(race, ["kalshi", "wikipedia", "news_mediacloud"], raw_dir=str(raw), out_dir=str(tmp_path / "out"),
               http=http, log=logs.append, settings=settings, env={"MEDIACLOUD_API_KEY": KEY})
-    assert len(sess.requests) == 16
-    assert any("news_mediacloud: 16 HTTP request(s) made, 0 cache hit(s)" in l for l in logs)
+    assert len(sess.requests) == 28
+    assert any("news_mediacloud: 28 HTTP request(s) made, 0 cache hit(s)" in l for l in logs)
     assert not any("not configured" in l for l in logs)
     counts = ["news_mediacloud/%s/national" % n for n in cfg.queries if n != "any_either"]
     daily = res["metrics"]["daily"]
@@ -344,6 +541,22 @@ def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     assert res["queries"]["news_mediacloud"]["mediacloud"]["config_sha256"] == cfg.config_sha256
     att = index_metrics(res)["attention"]
     assert "news_mediacloud/talarico_race/national" in att and "news_mediacloud/talarico_share/national" not in att
+    # breadth: a context column in the daily table, quality checked, not in the metrics
+    for q_ in ("talarico_race", "paxton_race", "race_either"):
+        for c_ in ("national", "texas_local"):
+            b = "news_mediacloud/%s/%s/breadth" % (q_, c_)
+            assert b in cols and res["series"]["meta"][b]["role"] == "context" and b not in daily and b not in att
+            assert res["series"]["meta"][b]["unit"] == "sources" and res["quality"][b]["status"] == "ok"
+            assert res["quality"][b]["extra"]["days_where_source_sum_differs_from_count"] == []
+    assert "news_mediacloud/race_both/national/breadth" not in cols
+    m = res["queries"]["news_mediacloud"]["mediacloud"]
+    assert m["endpoints"] == {"count": mc.COUNT_URL, "breadth": mc.SOURCE_INTERVAL_URL, "top_sources": mc.SOURCES_URL}
+    top = m["top_sources"]["race_either"]["texas_local"]
+    assert top["query"] == "race_either" and top["collection"] == "texas_local"
+    assert [top["start"], top["end"]] == ["2026-09-01", "2026-11-02"] == m["top_sources_window"]
+    assert top["sources"][0] == {"source": "synthetic-a.example", "count": 40}
+    rendered = {q_["endpoint"] for q_ in res["queries"]["news_mediacloud"]["queries"]}
+    assert rendered == {mc.COUNT_URL, mc.SOURCE_INTERVAL_URL, mc.SOURCES_URL}
     # golden numbers unaffected by the extra series
     cell = daily["wikipedia/pageviews_total"]["outcomes"]["volume_surprise"]["1"]
     assert cell["rho"] == pytest.approx(0.2786, abs=1e-4) and cell["n"] == 55
@@ -487,7 +700,7 @@ def test_collection_without_id_is_skipped_and_listed(tmp_path):
     assert [(k.key, k.id) for k in cfg.collections] == [("national", 34412234), ("texas_local", None)]
     sess.route = count_route(cfg)
     rows = c.fetch(race, race.window)
-    assert len(sess.requests) == 8 and {r["params"]["cs"] for r in sess.requests} == {"34412234"}
+    assert len(sess.requests) == 8 + 6 and {r["params"]["cs"] for r in sess.requests} == {"34412234"}
     assert not any("texas_local" in r.series for r in rows)
     assert any("collection texas_local not configured (no id in tx-mc-5day.mediacloud.yaml); skipped, not counted "
                "as zero" in l for l in logs)

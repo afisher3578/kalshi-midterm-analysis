@@ -2,9 +2,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { RaceData, Table } from "../src/types";
-import { analysisWindow, type AuditRow, codedPhase, countTile, dailyRatio, dailyShare, hasMcData, headlinesByDay,
-  meanOver, meanShare, mcColumns, newsCsv, newsMetrics, precision, seriesName, topDays, valuesOn, wilson,
-  windowDays } from "../src/news";
+import { analysisWindow, type AuditRow, breadthTile, codedPhase, countTile, dailyRatio, dailyShare, hasMcData,
+  headlinesByDay, type McBlock, meanOver, meanShare, mcColumns, newsCsv, newsMetrics, PER_SOURCE_QUERIES, precision,
+  seriesName, sourceRows, topDays, topSources, valuesOn, wilson, windowDays } from "../src/news";
 
 const tx: RaceData = JSON.parse(readFileSync(resolve(import.meta.dirname, "../../data/processed/tx-senate-2026.json"), "utf-8"));
 
@@ -82,6 +82,54 @@ describe("Media Cloud tiles", () => {
   });
 });
 
+describe("breadth tile and top sources (Chart 5)", () => {
+  // breadth for race_either national: an explicit 0 on 09-03, null on 09-04, 09-06 absent from the table (missing)
+  const bt: Table = { columns: ["date", N("race_either", "breadth"), N("talarico_race", "breadth")],
+    rows: [["2026-09-01", 4, 2], ["2026-09-02", 6, 3], ["2026-09-03", 0, 0], ["2026-09-04", null, null], ["2026-09-05", 2, 1]] };
+  it("mean distinct sources per day over the days with a value, zeros counted, missing left out", () => {
+    const t = breadthTile(bt, "national", WIN)!;
+    expect(t.mean).toBe(3);
+    expect(t.n).toBe(4);
+    expect(t.windowDays).toBe(6);
+    expect(breadthTile(bt, "national", WIN, "talarico_race")!.mean).toBe(1.5);
+  });
+  it("no breadth column gives null (not available), never 0; the old distinct_sources name is not read", () => {
+    expect(breadthTile(table, "national", WIN)).toBeNull();
+    const old: Table = { columns: ["date", N("race_either", "distinct_sources")], rows: [["2026-09-01", 5]] };
+    expect(breadthTile(old, "national", WIN)).toBeNull();
+    expect(newsMetrics(bt, ["national"], WIN, null, false).collections.national.breadth!.mean).toBe(3);
+  });
+  const block = { version: 1, status: "draft", config_sha256: "x", phases: {}, collections: {},
+    top_sources: {
+      race_either: {
+        national: { query: "race_either", collection: "national", start: "2026-09-01", end: "2026-11-02",
+          sources: Array.from({ length: 20 }, (_, k) => ({ source: `s${String(k).padStart(2, "0")}.example`, count: k === 3 ? 19 : k })) },
+        texas_local: { query: "race_either", collection: "texas_local", start: "2026-09-01", end: "2026-11-02", sources: [] },
+      },
+      talarico_race: { national: { query: "talarico_race", start: "2026-09-01", end: "2026-11-02",
+        sources: [{ source: "b.example", count: 2 }, { source: "a.example", count: 2 }, { source: "c.example", count: 5 }] } },
+    } } as McBlock;
+  it("reads top_sources.<query>.<collection>; an empty list or a missing entry is null", () => {
+    expect(topSources(block, "race_either", "national")!.sources).toHaveLength(20);
+    expect(topSources(block, "race_either", "texas_local")).toBeNull();
+    expect(topSources(block, "paxton_race", "national")).toBeNull();
+    expect(topSources(null, "race_either", "national")).toBeNull();
+    // the old per-collection shape is not mistaken for the new one
+    const old = { ...block, top_sources: { national: { query: "race_either", start: "a", end: "b", sources: [{ source: "x", count: 1 }] } } } as unknown as McBlock;
+    expect(topSources(old, "race_either", "national")).toBeNull();
+  });
+  it("bars: largest first, ties by name, top 15; the table lists every source", () => {
+    const e = topSources(block, "race_either", "national")!;
+    const bars = sourceRows(e, 15);
+    expect(bars).toHaveLength(15);
+    expect(bars[0]).toEqual({ label: "s03.example", count: 19 });
+    expect(bars[1]).toEqual({ label: "s19.example", count: 19 });
+    expect(sourceRows(e)).toHaveLength(20);
+    expect(sourceRows(topSources(block, "talarico_race", "national")!).map((r) => r.label)).toEqual(["c.example", "a.example", "b.example"]);
+    expect(PER_SOURCE_QUERIES[0]).toBe("race_either");
+  });
+});
+
 describe("precision and Wilson match raceattn (Python) on a small case", () => {
   const row = (query: string, collection: string, relevant: string, i: number): AuditRow => ({ query, collection,
     story_id: `${query}-${i}`, publish_date: "2026-10-01T10:00:00", source: "s", title: `t${i}`, url: `https://example.invalid/${query}/${collection}/${i}`, relevant });
@@ -147,7 +195,8 @@ describe("downloads", () => {
     expect(m.collections.national.share.n).toBe(3);
     expect(m.collections.texas_local.total_stories.total).toBeNull();
     expect(m.precision).toBeNull();
-    expect(Object.keys(m.definitions)).toEqual(expect.arrayContaining(["total_stories", "talarico_share", "precision", "missing_days"]));
+    expect(Object.keys(m.definitions)).toEqual(expect.arrayContaining(["total_stories", "talarico_share", "precision", "missing_days", "breadth"]));
+    expect(m.collections.national.breadth).toBeNull();
   });
 });
 

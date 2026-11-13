@@ -162,11 +162,13 @@ def audit_rows(race_id: str, audit_dir: str = AUDIT_DIR) -> dict[str, Any]:
 
 # -------------------------------------------------------------------------------------------------- demo
 
+PER_SOURCE_DEMO = ("talarico_race", "paxton_race", "race_either")
+
+
 def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | None, seed: int = 1) -> dict[str, Any]:
     """A synthetic Media Cloud block for one race, in the shape the pipeline writes (series.daily columns
-    news_mediacloud/<query>/<collection>[/ratio|/total_count], derived series, queries.news_mediacloud), plus the
-    shapes not built yet (distinct sources per day, top sources) and a coded audit sample with synthetic headlines
-    on example.invalid. Deterministic: random.Random(seed), no clock. Every name says it is demo data."""
+    news_mediacloud/<query>/<collection>[/ratio|/total_count|/breadth], derived series, queries.news_mediacloud
+    with top_sources.<query>.<collection>), and a coded audit sample with synthetic headlines on example.invalid. Deterministic: random.Random(seed), no clock. Every name says it is demo data."""
     rng = random.Random(seed)
     w = race["window"]
     d0, d1 = dt.date.fromisoformat(w["start"]), dt.date.fromisoformat(w["end"])
@@ -191,7 +193,8 @@ def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | Non
                 cols["news_mediacloud/%s/%s%s" % (q, ck, kind)] = []
         for dname in ("talarico_share", "talarico_exclusive_share", "core_vs_broad"):
             cols["news_mediacloud/%s/%s" % (dname, ck)] = []
-        cols["news_mediacloud/race_either/%s/distinct_sources" % ck] = []
+        for q in PER_SOURCE_DEMO:
+            cols["news_mediacloud/%s/%s/breadth" % (q, ck)] = []
         for i, d in enumerate(days):
             if d == c["missing"]:
                 for name in cols:
@@ -225,24 +228,27 @@ def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | Non
             cols["news_mediacloud/talarico_exclusive_share/%s" % ck].append(round(oa / (oa + ob), 6) if oa + ob else None)
             cols["news_mediacloud/core_vs_broad/%s" % ck].append(
                 round(vals["race_either"] / vals["any_either"], 6) if vals["any_either"] else None)
-            cols["news_mediacloud/race_either/%s/distinct_sources" % ck].append(
-                min(vals["race_either"], round(vals["race_either"] * rng.uniform(0.45, 0.7))))
+            for q in PER_SOURCE_DEMO:
+                cols["news_mediacloud/%s/%s/breadth" % (q, ck)].append(
+                    min(vals[q], round(vals[q] * rng.uniform(0.45, 0.7))))
     columns = ["date"] + list(cols)
     rows = [[d.isoformat()] + [cols[c][i] for c in cols] for i, d in enumerate(days)]
 
     a0, a1 = (mc_block.get("phases") or {}).get("analysis") or ["2026-09-01", "2026-11-02"]
-    top_sources = {}
-    for ck in colls:
-        either = cols["news_mediacloud/race_either/%s" % ck]
-        total = sum(v for d, v in zip(days, either) if v is not None and a0 <= d.isoformat() <= a1)
-        share, left, out = 0.16, total, []
-        for k in range(10):
-            n = min(left, round(total * share * rng.uniform(0.85, 1.0)))
-            out.append({"source": "demo-outlet-%s-%02d.example.invalid" % (ck.replace("_", "-"), k + 1), "count": n})
-            left -= n
-            share *= 0.8
-        top_sources[ck] = {"query": "race_either", "start": a0, "end": a1, "sources": out,
-                           "note": "synthetic outlet names on example.invalid"}
+    top_sources: dict[str, dict[str, Any]] = {}
+    for q in PER_SOURCE_DEMO:
+        for ck in colls:
+            counts = cols["news_mediacloud/%s/%s" % (q, ck)]
+            total = sum(v for d, v in zip(days, counts) if v is not None and a0 <= d.isoformat() <= a1)
+            share, left, out = 0.12, total, []
+            for k in range(20):
+                n = min(left, round(total * share * rng.uniform(0.85, 1.0)))
+                out.append({"source": "demo-outlet-%s-%02d.example.invalid" % (ck.replace("_", "-"), k + 1), "count": n})
+                left -= n
+                share *= 0.85
+            out.sort(key=lambda r: (-r["count"], r["source"]))
+            top_sources.setdefault(q, {})[ck] = {"query": q, "collection": ck, "start": a0, "end": a1, "sources": out,
+                                                 "note": "synthetic outlet names on example.invalid"}
 
     audit = []
     for q in ("talarico_race", "paxton_race"):

@@ -173,8 +173,13 @@ def test_demo_fixture_is_labeled_deterministic_and_has_no_processed_path():
     for c in ("national", "texas_local"):
         for q in ("race_either", "talarico_race", "paxton_race", "any_either"):
             assert "news_mediacloud/%s/%s" % (q, c) in cols
-        assert "news_mediacloud/race_either/%s/distinct_sources" % c in cols
-        assert a["queries"]["news_mediacloud"]["mediacloud"]["top_sources"][c]["sources"]
+        for q in ("talarico_race", "paxton_race", "race_either"):
+            assert "news_mediacloud/%s/%s/breadth" % (q, c) in cols
+            top = a["queries"]["news_mediacloud"]["mediacloud"]["top_sources"][q][c]
+            assert top["query"] == q and top["collection"] == c and top["sources"]
+            assert all(set(x) == {"source", "count"} for x in top["sources"])
+            assert [x["count"] for x in top["sources"]] == sorted((x["count"] for x in top["sources"]), reverse=True)
+        assert not any(x.endswith("/distinct_sources") for x in cols)
     rows = a["local"]["audit"]["phases"]["analysis"]["rows"]
     assert rows and all(r["url"].startswith("https://example.invalid/") and "DEMO" in r["title"] for r in rows)
     i = cols.index("news_mediacloud/race_either/national")
