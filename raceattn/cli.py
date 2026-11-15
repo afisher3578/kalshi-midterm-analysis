@@ -32,6 +32,9 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--mediacloud-pace", type=float, default=None, metavar="SECONDS",
                    help="seconds between Media Cloud requests (default: connectors.news_mediacloud.pace_seconds in "
                         "config/project.yaml, 30)")
+    r.add_argument("--display", action=argparse.BooleanOptionalAction, default=None,
+                   help="build series.display_daily for the race's display_window (default: on when the race config "
+                        "sets display_window). Pulls only display dates no cached window covers")
     v = sub.add_parser("validate", help="validate a race config and print a summary")
     v.add_argument("--race", required=True)
     e = sub.add_parser("events", help="draft config/events/<race>.csv from the race's Wikipedia page")
@@ -140,7 +143,7 @@ def cmd_run_all(args) -> int:
         t0 = time.time()
         try:
             run(race, sources, raw_dir=args.raw_dir, out_dir=args.out_dir, refresh=args.refresh, yes=args.yes,
-                max_spend=args.max_spend, settings=run_settings(args))
+                max_spend=args.max_spend, settings=run_settings(args), display=args.display)
             print("wrote %s/%s.json (%.0f s)" % (args.out_dir, race.race_id, time.time() - t0))
         except (PipelineError, FetchError) as e:
             failed[race.race_id] = str(e)
@@ -315,7 +318,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         sources = [s.strip() for s in args.sources.split(",") if s.strip()] if args.sources else None
         run(race, sources, raw_dir=args.raw_dir, out_dir=args.out_dir, refresh=args.refresh, yes=args.yes,
-            max_spend=args.max_spend, settings=run_settings(args))
+            max_spend=args.max_spend, settings=run_settings(args), display=args.display)
         print("wrote %s/%s.json and index.json" % (args.out_dir, race.race_id))
         return 0
     except (ConfigError, PipelineError, FetchError, ValueError, FileExistsError) as e:

@@ -108,6 +108,15 @@ race, run it without `--sources`, or with every source you want to keep.
 not in git, so a fresh clone fetches everything once. The Texas Bluesky walk is about 2,000 requests and 22
 minutes the first time; later runs read the cache.
 
+Display window. A race config can set `display_window: {start, end}` (UTC dates, inclusive; default election
+day minus 90 days to the day after election day). It has to contain `window`. When the config sets it, `run`
+also writes `series.display_daily`: one row per date (Aug 5 to Nov 4 for the current races) with the Kalshi
+close and volume, the Wikipedia total and, for Texas, the Media Cloud count per query and collection, plus
+coverage and missing days per column. It is for charts only. The metrics, quality and `series.daily` still use
+`window`. Days inside `window` reuse the analysis values. Days outside it are read from any cached window in
+`data/raw` first, and only dates no cache covers are pulled. Pass `--no-display` to skip it, or `--display` to
+build it from the default window when the config does not set one.
+
 Media Cloud pull for Texas, once the key is in `.env`:
 
 ```

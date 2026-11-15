@@ -28,7 +28,7 @@ def result(tmp_path_factory):
     try:
         out = tmp_path_factory.mktemp("processed")
         res = run(load_race("tx-senate-2026"), ["kalshi", "wikipedia"], raw_dir=FIXTURE_RAW, out_dir=str(out),
-                  log=lambda *_: None)
+                  log=lambda *_: None, display=False)
         res["_out"] = str(out)
         yield res
     finally:

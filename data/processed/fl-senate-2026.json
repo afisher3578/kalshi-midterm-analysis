@@ -1,8 +1,8 @@
 {
- "project": "race-attention",
+ "project": "kalshi-midterm-analysis",
  "version": "0.1.0",
  "schema_version": 2,
- "generated_at": "2026-11-11T08:22:36Z",
+ "generated_at": "2026-11-15T23:03:51Z",
  "race": {
   "race_id": "fl-senate-2026",
   "state": "FL",
@@ -35,7 +35,12 @@
   "subreddits": [],
   "news_query": "(\"Ashley Moody\" OR \"Angie Nixon\") AND Senate",
   "polling_density": null,
-  "status": "confirmed"
+  "status": "confirmed",
+  "display_window": {
+   "start": "2026-08-05",
+   "end": "2026-11-04",
+   "source": "race config"
+  }
  },
  "window": {
   "start": "2026-09-01",
@@ -58,20 +63,9 @@
   "kalshi",
   "kalshi_trades",
   "wikipedia",
-  "x",
-  "news_mediacloud",
-  "news_guardian",
-  "news_nyt",
-  "news_manual",
   "bluesky"
  ],
- "skipped": {
-  "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-  "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-  "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-  "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-  "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/fl-senate-2026.csv"
- },
+ "skipped": {},
  "polling": {
   "polling_density": 29,
   "source": "config/events/fl-senate-2026.meta.json",
@@ -17657,6 +17651,650 @@
     ]
    ],
    "note": "Kalshi daily: volume = sum of hourly candles by UTC date of end_period_ts, close = last close of the day. Hourly attention and trade series are summed by UTC date of the bucket start (null if any hour is missing); small_trade_share is small trades / all trades for the day. Attention values are never interpolated."
+  },
+  "display_daily": {
+   "window": {
+    "start": "2026-08-05",
+    "end": "2026-11-04",
+    "days": 92,
+    "inclusive": true,
+    "timezone": "UTC",
+    "source": "race config"
+   },
+   "analysis_window": {
+    "start": "2026-09-01",
+    "end": "2026-11-04"
+   },
+   "columns": [
+    "date",
+    "kalshi_price_close",
+    "kalshi_volume",
+    "wikipedia_pageviews_total"
+   ],
+   "rows": [
+    {
+     "date": "2026-08-05",
+     "kalshi_price_close": 0.13,
+     "kalshi_volume": 55.45,
+     "wikipedia_pageviews_total": 6240.0
+    },
+    {
+     "date": "2026-08-06",
+     "kalshi_price_close": 0.13,
+     "kalshi_volume": 0.0,
+     "wikipedia_pageviews_total": 5798.0
+    },
+    {
+     "date": "2026-08-07",
+     "kalshi_price_close": 0.14,
+     "kalshi_volume": 17.26,
+     "wikipedia_pageviews_total": 6035.0
+    },
+    {
+     "date": "2026-08-08",
+     "kalshi_price_close": 0.13,
+     "kalshi_volume": 1562.74,
+     "wikipedia_pageviews_total": 6262.0
+    },
+    {
+     "date": "2026-08-09",
+     "kalshi_price_close": 0.13,
+     "kalshi_volume": 38.8,
+     "wikipedia_pageviews_total": 5751.0
+    },
+    {
+     "date": "2026-08-10",
+     "kalshi_price_close": 0.13,
+     "kalshi_volume": 103.39999999999999,
+     "wikipedia_pageviews_total": 6056.0
+    },
+    {
+     "date": "2026-08-11",
+     "kalshi_price_close": 0.16,
+     "kalshi_volume": 1626.6599999999999,
+     "wikipedia_pageviews_total": 6100.0
+    },
+    {
+     "date": "2026-08-12",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 1144.2,
+     "wikipedia_pageviews_total": 6939.0
+    },
+    {
+     "date": "2026-08-13",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 69.21000000000001,
+     "wikipedia_pageviews_total": 5659.0
+    },
+    {
+     "date": "2026-08-14",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 93.99000000000001,
+     "wikipedia_pageviews_total": 5490.0
+    },
+    {
+     "date": "2026-08-15",
+     "kalshi_price_close": 0.18,
+     "kalshi_volume": 533.15,
+     "wikipedia_pageviews_total": 6152.0
+    },
+    {
+     "date": "2026-08-16",
+     "kalshi_price_close": 0.19,
+     "kalshi_volume": 2000.0,
+     "wikipedia_pageviews_total": 5685.0
+    },
+    {
+     "date": "2026-08-17",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 131.18,
+     "wikipedia_pageviews_total": 7950.0
+    },
+    {
+     "date": "2026-08-18",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 286.61,
+     "wikipedia_pageviews_total": 27157.0
+    },
+    {
+     "date": "2026-08-19",
+     "kalshi_price_close": 0.08,
+     "kalshi_volume": 25122.589999999997,
+     "wikipedia_pageviews_total": 192529.0
+    },
+    {
+     "date": "2026-08-20",
+     "kalshi_price_close": 0.065,
+     "kalshi_volume": 18137.970000000005,
+     "wikipedia_pageviews_total": 55949.0
+    },
+    {
+     "date": "2026-08-21",
+     "kalshi_price_close": 0.072,
+     "kalshi_volume": 15264.839999999998,
+     "wikipedia_pageviews_total": 24306.0
+    },
+    {
+     "date": "2026-08-22",
+     "kalshi_price_close": 0.08,
+     "kalshi_volume": 30453.639999999996,
+     "wikipedia_pageviews_total": 20752.0
+    },
+    {
+     "date": "2026-08-23",
+     "kalshi_price_close": 0.08,
+     "kalshi_volume": 17224.970000000005,
+     "wikipedia_pageviews_total": 14040.0
+    },
+    {
+     "date": "2026-08-24",
+     "kalshi_price_close": 0.076,
+     "kalshi_volume": 10511.650000000001,
+     "wikipedia_pageviews_total": 10990.0
+    },
+    {
+     "date": "2026-08-25",
+     "kalshi_price_close": 0.093,
+     "kalshi_volume": 9445.77,
+     "wikipedia_pageviews_total": 8466.0
+    },
+    {
+     "date": "2026-08-26",
+     "kalshi_price_close": 0.083,
+     "kalshi_volume": 13774.56,
+     "wikipedia_pageviews_total": 7576.0
+    },
+    {
+     "date": "2026-08-27",
+     "kalshi_price_close": 0.085,
+     "kalshi_volume": 7410.720000000001,
+     "wikipedia_pageviews_total": 6577.0
+    },
+    {
+     "date": "2026-08-28",
+     "kalshi_price_close": 0.08,
+     "kalshi_volume": 16425.329999999994,
+     "wikipedia_pageviews_total": 8379.0
+    },
+    {
+     "date": "2026-08-29",
+     "kalshi_price_close": 0.075,
+     "kalshi_volume": 11262.059999999998,
+     "wikipedia_pageviews_total": 5350.0
+    },
+    {
+     "date": "2026-08-30",
+     "kalshi_price_close": 0.074,
+     "kalshi_volume": 5477.030000000002,
+     "wikipedia_pageviews_total": 6334.0
+    },
+    {
+     "date": "2026-08-31",
+     "kalshi_price_close": 0.092,
+     "kalshi_volume": 3475.13,
+     "wikipedia_pageviews_total": 9607.0
+    },
+    {
+     "date": "2026-09-01",
+     "kalshi_price_close": 0.087,
+     "kalshi_volume": 6183.64,
+     "wikipedia_pageviews_total": 8744.0
+    },
+    {
+     "date": "2026-09-02",
+     "kalshi_price_close": 0.092,
+     "kalshi_volume": 16233.599999999999,
+     "wikipedia_pageviews_total": 6571.0
+    },
+    {
+     "date": "2026-09-03",
+     "kalshi_price_close": 0.088,
+     "kalshi_volume": 9208.97,
+     "wikipedia_pageviews_total": 6130.0
+    },
+    {
+     "date": "2026-09-04",
+     "kalshi_price_close": 0.084,
+     "kalshi_volume": 2022.9600000000005,
+     "wikipedia_pageviews_total": 5080.0
+    },
+    {
+     "date": "2026-09-05",
+     "kalshi_price_close": 0.09,
+     "kalshi_volume": 3824.87,
+     "wikipedia_pageviews_total": 3776.0
+    },
+    {
+     "date": "2026-09-06",
+     "kalshi_price_close": 0.09,
+     "kalshi_volume": 1884.4499999999998,
+     "wikipedia_pageviews_total": 4170.0
+    },
+    {
+     "date": "2026-09-07",
+     "kalshi_price_close": 0.09,
+     "kalshi_volume": 14295.470000000001,
+     "wikipedia_pageviews_total": 4178.0
+    },
+    {
+     "date": "2026-09-08",
+     "kalshi_price_close": 0.088,
+     "kalshi_volume": 1633.61,
+     "wikipedia_pageviews_total": 4277.0
+    },
+    {
+     "date": "2026-09-09",
+     "kalshi_price_close": 0.083,
+     "kalshi_volume": 808.5400000000001,
+     "wikipedia_pageviews_total": 3780.0
+    },
+    {
+     "date": "2026-09-10",
+     "kalshi_price_close": 0.09,
+     "kalshi_volume": 11482.66,
+     "wikipedia_pageviews_total": 5570.0
+    },
+    {
+     "date": "2026-09-11",
+     "kalshi_price_close": 0.089,
+     "kalshi_volume": 12349.3,
+     "wikipedia_pageviews_total": 5764.0
+    },
+    {
+     "date": "2026-09-12",
+     "kalshi_price_close": 0.089,
+     "kalshi_volume": 8536.280000000002,
+     "wikipedia_pageviews_total": 4681.0
+    },
+    {
+     "date": "2026-09-13",
+     "kalshi_price_close": 0.089,
+     "kalshi_volume": 2875.49,
+     "wikipedia_pageviews_total": 4832.0
+    },
+    {
+     "date": "2026-09-14",
+     "kalshi_price_close": 0.097,
+     "kalshi_volume": 38492.97000000001,
+     "wikipedia_pageviews_total": 4760.0
+    },
+    {
+     "date": "2026-09-15",
+     "kalshi_price_close": 0.099,
+     "kalshi_volume": 7815.5,
+     "wikipedia_pageviews_total": 5093.0
+    },
+    {
+     "date": "2026-09-16",
+     "kalshi_price_close": 0.095,
+     "kalshi_volume": 7372.589999999999,
+     "wikipedia_pageviews_total": 4970.0
+    },
+    {
+     "date": "2026-09-17",
+     "kalshi_price_close": 0.099,
+     "kalshi_volume": 7860.15,
+     "wikipedia_pageviews_total": 4557.0
+    },
+    {
+     "date": "2026-09-18",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 12384.619999999999,
+     "wikipedia_pageviews_total": 8051.0
+    },
+    {
+     "date": "2026-09-19",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 15987.74,
+     "wikipedia_pageviews_total": 7183.0
+    },
+    {
+     "date": "2026-09-20",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 5587.8,
+     "wikipedia_pageviews_total": 6290.0
+    },
+    {
+     "date": "2026-09-21",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 7968.19,
+     "wikipedia_pageviews_total": 6854.0
+    },
+    {
+     "date": "2026-09-22",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 36414.81999999999,
+     "wikipedia_pageviews_total": 6952.0
+    },
+    {
+     "date": "2026-09-23",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 23123.71,
+     "wikipedia_pageviews_total": 6826.0
+    },
+    {
+     "date": "2026-09-24",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 12402.82,
+     "wikipedia_pageviews_total": 6290.0
+    },
+    {
+     "date": "2026-09-25",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 12445.140000000001,
+     "wikipedia_pageviews_total": 6020.0
+    },
+    {
+     "date": "2026-09-26",
+     "kalshi_price_close": 0.1,
+     "kalshi_volume": 31409.500000000004,
+     "wikipedia_pageviews_total": 6914.0
+    },
+    {
+     "date": "2026-09-27",
+     "kalshi_price_close": 0.1,
+     "kalshi_volume": 13357.470000000001,
+     "wikipedia_pageviews_total": 7130.0
+    },
+    {
+     "date": "2026-09-28",
+     "kalshi_price_close": 0.1,
+     "kalshi_volume": 9691.789999999999,
+     "wikipedia_pageviews_total": 7596.0
+    },
+    {
+     "date": "2026-09-29",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 13447.37,
+     "wikipedia_pageviews_total": 9693.0
+    },
+    {
+     "date": "2026-09-30",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 30823.019999999997,
+     "wikipedia_pageviews_total": 8642.0
+    },
+    {
+     "date": "2026-10-01",
+     "kalshi_price_close": 0.098,
+     "kalshi_volume": 33230.96,
+     "wikipedia_pageviews_total": 14060.0
+    },
+    {
+     "date": "2026-10-02",
+     "kalshi_price_close": 0.1,
+     "kalshi_volume": 20968.100000000002,
+     "wikipedia_pageviews_total": 17031.0
+    },
+    {
+     "date": "2026-10-03",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 15061.550000000001,
+     "wikipedia_pageviews_total": 14513.0
+    },
+    {
+     "date": "2026-10-04",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 25025.539999999997,
+     "wikipedia_pageviews_total": 12857.0
+    },
+    {
+     "date": "2026-10-05",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 44217.280000000006,
+     "wikipedia_pageviews_total": 11775.0
+    },
+    {
+     "date": "2026-10-06",
+     "kalshi_price_close": 0.099,
+     "kalshi_volume": 44571.86,
+     "wikipedia_pageviews_total": 12585.0
+    },
+    {
+     "date": "2026-10-07",
+     "kalshi_price_close": 0.099,
+     "kalshi_volume": 14044.099999999999,
+     "wikipedia_pageviews_total": 11431.0
+    },
+    {
+     "date": "2026-10-08",
+     "kalshi_price_close": 0.093,
+     "kalshi_volume": 13574.19,
+     "wikipedia_pageviews_total": 10106.0
+    },
+    {
+     "date": "2026-10-09",
+     "kalshi_price_close": 0.092,
+     "kalshi_volume": 17571.8,
+     "wikipedia_pageviews_total": 9225.0
+    },
+    {
+     "date": "2026-10-10",
+     "kalshi_price_close": 0.092,
+     "kalshi_volume": 13642.730000000001,
+     "wikipedia_pageviews_total": 8587.0
+    },
+    {
+     "date": "2026-10-11",
+     "kalshi_price_close": 0.093,
+     "kalshi_volume": 6848.48,
+     "wikipedia_pageviews_total": 8741.0
+    },
+    {
+     "date": "2026-10-12",
+     "kalshi_price_close": 0.093,
+     "kalshi_volume": 6340.64,
+     "wikipedia_pageviews_total": 9027.0
+    },
+    {
+     "date": "2026-10-13",
+     "kalshi_price_close": 0.093,
+     "kalshi_volume": 7629.84,
+     "wikipedia_pageviews_total": 14258.0
+    },
+    {
+     "date": "2026-10-14",
+     "kalshi_price_close": 0.091,
+     "kalshi_volume": 22092.920000000002,
+     "wikipedia_pageviews_total": 10968.0
+    },
+    {
+     "date": "2026-10-15",
+     "kalshi_price_close": 0.09,
+     "kalshi_volume": 10639.809999999998,
+     "wikipedia_pageviews_total": 11539.0
+    },
+    {
+     "date": "2026-10-16",
+     "kalshi_price_close": 0.083,
+     "kalshi_volume": 12790.36,
+     "wikipedia_pageviews_total": 10459.0
+    },
+    {
+     "date": "2026-10-17",
+     "kalshi_price_close": 0.091,
+     "kalshi_volume": 39177.950000000004,
+     "wikipedia_pageviews_total": 8682.0
+    },
+    {
+     "date": "2026-10-18",
+     "kalshi_price_close": 0.091,
+     "kalshi_volume": 22160.930000000004,
+     "wikipedia_pageviews_total": 14729.0
+    },
+    {
+     "date": "2026-10-19",
+     "kalshi_price_close": 0.095,
+     "kalshi_volume": 16467.88,
+     "wikipedia_pageviews_total": 14260.0
+    },
+    {
+     "date": "2026-10-20",
+     "kalshi_price_close": 0.095,
+     "kalshi_volume": 37357.42,
+     "wikipedia_pageviews_total": 12548.0
+    },
+    {
+     "date": "2026-10-21",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 50549.79000000001,
+     "wikipedia_pageviews_total": 11741.0
+    },
+    {
+     "date": "2026-10-22",
+     "kalshi_price_close": 0.098,
+     "kalshi_volume": 107286.73999999999,
+     "wikipedia_pageviews_total": 10633.0
+    },
+    {
+     "date": "2026-10-23",
+     "kalshi_price_close": 0.098,
+     "kalshi_volume": 28466.580000000005,
+     "wikipedia_pageviews_total": 12377.0
+    },
+    {
+     "date": "2026-10-24",
+     "kalshi_price_close": 0.092,
+     "kalshi_volume": 21245.79,
+     "wikipedia_pageviews_total": 15539.0
+    },
+    {
+     "date": "2026-10-25",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 19671.219999999994,
+     "wikipedia_pageviews_total": 12992.0
+    },
+    {
+     "date": "2026-10-26",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 236864.38999999998,
+     "wikipedia_pageviews_total": 16408.0
+    },
+    {
+     "date": "2026-10-27",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 109958.40000000001,
+     "wikipedia_pageviews_total": 26475.0
+    },
+    {
+     "date": "2026-10-28",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 95407.26,
+     "wikipedia_pageviews_total": 28659.0
+    },
+    {
+     "date": "2026-10-29",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 157813.06,
+     "wikipedia_pageviews_total": 15452.0
+    },
+    {
+     "date": "2026-10-30",
+     "kalshi_price_close": 0.11,
+     "kalshi_volume": 133179.41999999998,
+     "wikipedia_pageviews_total": 16063.0
+    },
+    {
+     "date": "2026-10-31",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 159303.97999999998,
+     "wikipedia_pageviews_total": 18436.0
+    },
+    {
+     "date": "2026-11-01",
+     "kalshi_price_close": 0.12,
+     "kalshi_volume": 142406.28,
+     "wikipedia_pageviews_total": 15005.0
+    },
+    {
+     "date": "2026-11-02",
+     "kalshi_price_close": 0.15,
+     "kalshi_volume": 393964.0699999999,
+     "wikipedia_pageviews_total": 24495.0
+    },
+    {
+     "date": "2026-11-03",
+     "kalshi_price_close": 0.096,
+     "kalshi_volume": 1004791.19,
+     "wikipedia_pageviews_total": 40052.0
+    },
+    {
+     "date": "2026-11-04",
+     "kalshi_price_close": 0.001,
+     "kalshi_volume": 3627930.1,
+     "wikipedia_pageviews_total": 203425.0
+    }
+   ],
+   "news": "not run",
+   "coverage": {
+    "kalshi_price_close": {
+     "days_present": 92,
+     "days_total": 92,
+     "missing_days": []
+    },
+    "kalshi_volume": {
+     "days_present": 92,
+     "days_total": 92,
+     "missing_days": []
+    },
+    "wikipedia_pageviews_total": {
+     "days_present": 92,
+     "days_total": 92,
+     "missing_days": []
+    }
+   },
+   "segments": [
+    {
+     "source": "kalshi",
+     "days": {
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "n": 65
+     },
+     "from": "analysis run (series.daily values)"
+    },
+    {
+     "source": "kalshi",
+     "request_window": {
+      "start": "2026-08-05",
+      "end": "2026-08-31"
+     },
+     "days": {
+      "start": "2026-08-05",
+      "end": "2026-08-31",
+      "n": 27
+     },
+     "from": "new segment",
+     "cache_hits": 0,
+     "requests": 2
+    },
+    {
+     "source": "wikipedia",
+     "days": {
+      "start": "2026-09-01",
+      "end": "2026-11-04",
+      "n": 65
+     },
+     "from": "analysis run (series.daily values)"
+    },
+    {
+     "source": "wikipedia",
+     "request_window": {
+      "start": "2026-08-05",
+      "end": "2026-08-31"
+     },
+     "days": {
+      "start": "2026-08-05",
+      "end": "2026-08-31",
+      "n": 27
+     },
+     "from": "new segment",
+     "cache_hits": 0,
+     "requests": 3
+    }
+   ],
+   "requests_made": 5,
+   "note": "Display series for charts only: one row per UTC date of the display window. The metrics, baselines, quality and series.daily use the analysis window and never read this block. Inside the analysis window the values are the series.daily values. Outside it each source is read from the raw cache, and dates no cached window covers are pulled as a new segment (see segments); each segment's daily values use the series.daily definitions on that segment's own pull: Kalshi close = last close of the UTC day by end_period_ts, volume = sum of the day's hourly candles (the first day of a segment has no candle ending at 00:00, the same as the first day of the analysis window); Wikipedia total = sum over the configured pages, null if any page is missing that day; news/<query>/<collection> = Media Cloud count-over-time count (matching stories) for that publish date. Null = no data, never interpolated or zero-filled."
   }
  },
  "quality": {
@@ -19178,6 +19816,7 @@
   }
  },
  "notes": [
+  "series.display_daily covers the display window 2026-08-05..2026-11-04 (92 days) for charts only; the metrics, quality and series.daily use the analysis window 2026-09-01..2026-11-04. Coverage and missing days per column are in series.display_daily.coverage.",
   "LICENSING WARNING: this output contains aggregate counts from bluesky. Whether their terms allow publishing even aggregate counts is not confirmed (see docs/licensing.md). Do not publish until Alex sets licensing_confirmed: true in config/project.yaml."
  ]
 }

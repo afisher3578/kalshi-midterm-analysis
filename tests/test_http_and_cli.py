@@ -111,7 +111,7 @@ def test_cli_run_offline_from_fixtures(tmp_path, capsys):
     from raceattn.cli import main
     from tests.conftest import FIXTURE_RAW
 
-    rc = main(["run", "--race", "tx-senate-2026", "--sources", "kalshi,wikipedia", "--raw-dir", FIXTURE_RAW,
+    rc = main(["run", "--race", "tx-senate-2026", "--sources", "kalshi,wikipedia", "--no-display", "--raw-dir", FIXTURE_RAW,
                "--out-dir", str(tmp_path)])
     assert rc == 0
     assert (tmp_path / "tx-senate-2026.json").exists() and (tmp_path / "index.json").exists()
@@ -170,6 +170,6 @@ def test_index_merges_other_races(tmp_path):
     from tests.conftest import FIXTURE_RAW
 
     run(load_race("tx-senate-2026"), ["kalshi", "wikipedia"], raw_dir=FIXTURE_RAW, out_dir=str(tmp_path),
-        log=lambda *_: None)
+        log=lambda *_: None, display=False)
     idx = json.loads((tmp_path / "index.json").read_text())
     assert set(idx["races"]) == {"zz-other", "tx-senate-2026"}

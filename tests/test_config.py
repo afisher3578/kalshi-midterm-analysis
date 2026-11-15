@@ -34,6 +34,7 @@ def test_tx_config_matches_spec_exactly():
     assert d == {
         "race_id": "tx-senate-2026", "state": "TX", "office": "senate", "election_date": dt.date(2026, 11, 3),
         "window": {"start": dt.date(2026, 9, 1), "end": dt.date(2026, 11, 4)},
+        "display_window": {"start": dt.date(2026, 8, 5), "end": dt.date(2026, 11, 4)},
         "exclude_days": [dt.date(2026, 11, 3), dt.date(2026, 11, 4)],
         "kalshi": {"series": "SENATETX", "event": "SENATETX-26", "followed_market": "SENATETX-26-D"},
         "entities": [{"name": "James Talarico", "aliases": ["Talarico"]}, {"name": "Ken Paxton", "aliases": ["Paxton"]}],

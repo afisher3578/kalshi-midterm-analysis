@@ -5,6 +5,7 @@ state: FL
 office: senate
 election_date: 2026-11-03
 window: {start: 2026-09-01, end: 2026-11-04}   # UTC dates, inclusive
+display_window: {start: 2026-08-05, end: 2026-11-04}   # UTC dates, inclusive; display series only (election_date - 90 days), never the metrics
 exclude_days: [2026-11-03, 2026-11-04]          # election night, left out of the main metrics
 kalshi:
   series: SENATEFLS

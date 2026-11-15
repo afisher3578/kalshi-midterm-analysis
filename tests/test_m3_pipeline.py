@@ -25,7 +25,7 @@ def result(tmp_path_factory):
                                                      "note": "test override"}}
     http, _ = fake_http(route)
     res = run(load_race("tx-senate-2026"), None, raw_dir=str(raw), out_dir=str(out), http=http, log=lambda s: None,
-              env={}, settings=settings)
+              env={}, settings=settings, display=False)
     return res, str(out)
 
 
@@ -98,7 +98,7 @@ def test_run_all_uses_confirmed_configs(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(pl, "HttpClient", lambda: http)
     for k in ("X_BEARER_TOKEN", "MEDIACLOUD_API_KEY", "GUARDIAN_API_KEY", "NYT_API_KEY", "BSKY_HANDLE", "BSKY_APP_PASSWORD"):
         monkeypatch.delenv(k, raising=False)
-    rc = cli.main(["run", "--all", "--sources", "kalshi,wikipedia", "--raw-dir", str(raw), "--out-dir", str(tmp_path / "out")])
+    rc = cli.main(["run", "--all", "--sources", "kalshi,wikipedia", "--no-display", "--raw-dir", str(raw), "--out-dir", str(tmp_path / "out")])
     out = capsys.readouterr().out
     assert rc == 0
     assert "######## tx-senate-2026" in out and "zz-senate" not in out

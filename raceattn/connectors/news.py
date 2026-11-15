@@ -342,6 +342,42 @@ class MediaCloudConnector(DailyCountConnector):
         self.log("   news_mediacloud: %d HTTP request(s) made, %d cache hit(s)" % (self.http.requests, self.cache_hits))
         return rows
 
+    def cache_paths(self, race, window):
+        """Cache file of every count-over-time request for this window (query config path only)."""
+        cfg = self.query_config(race)
+        if cfg is None:
+            return []
+        return [self.cache.path(self.id, race.race_id, window.label, q.query_hash, "count_over_time")
+                for _, _, q in self._requests(cfg, window)]
+
+    def fetch_counts(self, race, window):
+        """Daily story counts only, for the display series: {(query, collection key): {date: count}} for every
+        query and configured collection. Same count-over-time requests and cache entries as fetch(), but no
+        breadth or top-sources requests, and no connector state (quality, derived series) is changed. A date the
+        API leaves out is missing; a count of 0 is a real 0."""
+        cfg = self.query_config(race)
+        if cfg is None:
+            return {}
+        dayset = set(window.days())
+        headers = {"Authorization": "Token " + self.secret("MEDIACLOUD_API_KEY")}
+        out: dict[tuple[str, str], dict[dt.date, float]] = {}
+        for name, c, q in self._requests(cfg, window):
+            rec = self.cached_get(race, window, q, q.query_hash, "count_over_time", headers=headers)
+            entries = (((rec["body"] or {}).get("count_over_time") or {}).get("counts"))
+            if entries is None:
+                raise FetchError("Media Cloud response for %s/%s has no count_over_time.counts" % (name, c.key))
+            per: dict[dt.date, float] = {}
+            for e in entries:
+                d = dt.date.fromisoformat(str(e["date"])[:10])
+                if d not in dayset:
+                    continue
+                if d in per:
+                    raise FetchError("Media Cloud returned %s twice for %s/%s" % (d, name, c.key))
+                if e.get("count") is not None:
+                    per[d] = float(e["count"])
+            out[(name, c.key)] = per
+        return out
+
     def _fetch_config(self, cfg, race, window):
         days = window.days()
         dayset = set(days)

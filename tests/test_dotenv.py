@@ -80,7 +80,7 @@ def test_dotenv_key_never_leaks(tmp_path, monkeypatch, capsys):
 
     sessions = patch_session(monkeypatch, route)
     codes = [
-        main(["run", "--race", "tx-senate-2026", "--sources", "news_mediacloud", "--raw-dir", str(raw),
+        main(["run", "--race", "tx-senate-2026", "--sources", "news_mediacloud", "--no-display", "--raw-dir", str(raw),
               "--out-dir", str(out), "--mediacloud-pace", "0"]),
         main(["mediacloud", "collections", "--state", "TX", "--raw-dir", str(raw), "--pace", "0"]),
         main(["mediacloud", "audit", "--race", "tx-senate-2026", "--phase", "tuning", "--n", "5", "--out", str(audit),
@@ -90,7 +90,7 @@ def test_dotenv_key_never_leaks(tmp_path, monkeypatch, capsys):
     fail["on"] = True
     codes.append(main(["mediacloud", "collections", "--name", "Other", "--raw-dir", str(raw), "--refresh",
                        "--pace", "0"]))
-    codes.append(main(["run", "--race", "tx-senate-2026", "--sources", "news_mediacloud", "--raw-dir",
+    codes.append(main(["run", "--race", "tx-senate-2026", "--sources", "news_mediacloud", "--no-display", "--raw-dir",
                        str(work / "raw_err"), "--out-dir", str(work / "out_err"), "--mediacloud-pace", "0"]))
     assert codes == [0, 0, 0, 0, 2, 2]
     sent = [r for s in sessions for r in s.requests]

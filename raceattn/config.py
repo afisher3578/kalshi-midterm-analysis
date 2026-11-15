@@ -14,6 +14,7 @@ STATUSES = ("confirmed", "needs_review")
 RACES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "races")
 RACE_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 STATE_RE = re.compile(r"^[A-Z]{2}$")
+DISPLAY_DAYS_BEFORE = 90  # default display window: election_date - 90 days to election_date + 1 day
 
 
 class ConfigError(ValueError):
@@ -78,6 +79,9 @@ class Race:
     news_query: str | None = None
     polling_density: int | None = None
     status: str = "confirmed"  # a file without a status (the hand-written Texas config) counts as confirmed
+    # display window: the dates the display series cover (series.display_daily), never used by the metrics
+    display_window: Window | None = None
+    display_window_set: bool = False  # True when the config sets display_window (the display pull runs by default)
     discovery: dict[str, Any] | None = field(default=None, compare=False)
     source_path: str | None = field(default=None, compare=False)
 
@@ -98,6 +102,11 @@ class Race:
             "news_query": self.news_query,
             "polling_density": self.polling_density,
             "status": self.status,
+            "display_window": ({"start": self.display_window.start.isoformat(),
+                                "end": self.display_window.end.isoformat(),
+                                "source": "race config" if self.display_window_set else
+                                "default: election_date - %d days to election_date + 1 day" % DISPLAY_DAYS_BEFORE}
+                               if self.display_window else None),
         }
 
 
@@ -178,6 +187,22 @@ def validate(data: Any, source_path: str | None = None) -> Race:
                               % (where, i, d, window.start, window.end))
         exclude.append(d)
 
+    dw = data.get("display_window")
+    if dw is None:
+        display = Window(election_date - dt.timedelta(days=DISPLAY_DAYS_BEFORE), election_date + dt.timedelta(days=1))
+        dwhere = "%s.display_window (default from election_date)" % where
+    else:
+        if not isinstance(dw, dict) or "start" not in dw or "end" not in dw or set(dw) - {"start", "end"}:
+            raise ConfigError("%s.display_window: expected {start: YYYY-MM-DD, end: YYYY-MM-DD}, got %r" % (where, dw))
+        display = Window(_date(dw["start"], where + ".display_window.start"),
+                         _date(dw["end"], where + ".display_window.end"))
+        dwhere = "%s.display_window" % where
+    if display.start > display.end:
+        raise ConfigError("%s: start %s is after end %s" % (dwhere, display.start, display.end))
+    if display.start > window.start or display.end < window.end:
+        raise ConfigError("%s: %s..%s must contain the analysis window %s..%s (start <= window.start, "
+                          "end >= window.end)" % (dwhere, display.start, display.end, window.start, window.end))
+
     k = data.get("kalshi")
     if k is None:
         raise ConfigError("%s: missing required key 'kalshi'" % where)
@@ -215,7 +240,7 @@ def validate(data: Any, source_path: str | None = None) -> Race:
         raise ConfigError("%s.discovery: expected a mapping of field -> confidence note, got %r" % (where, discovery))
 
     known = {"race_id", "state", "office", "election_date", "window", "exclude_days", "kalshi", "entities",
-             "wikipedia_pages", "subreddits", "news_query", "polling_density", "status", "discovery"}
+             "wikipedia_pages", "subreddits", "news_query", "polling_density", "status", "discovery", "display_window"}
     unknown = sorted(set(data) - known)
     if unknown:
         raise ConfigError("%s: unknown keys %s (typo?)" % (where, ", ".join(unknown)))
@@ -223,7 +248,8 @@ def validate(data: Any, source_path: str | None = None) -> Race:
     return Race(race_id=race_id, state=state, office=office, election_date=election_date, window=window,
                 exclude_days=tuple(sorted(set(exclude))), kalshi=kalshi, entities=tuple(entities),
                 wikipedia_pages=pages, subreddits=subreddits, news_query=news_query, polling_density=pd_,
-                status=status, discovery=discovery, source_path=source_path)
+                status=status, display_window=display, display_window_set=dw is not None, discovery=discovery,
+                source_path=source_path)
 
 
 def resolve_race_path(race: str, races_dir: str = RACES_DIR) -> str:

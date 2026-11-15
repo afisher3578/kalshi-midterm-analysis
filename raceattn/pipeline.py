@@ -210,7 +210,9 @@ def events_overlay(path: str, race: Race) -> dict[str, Any]:
 def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW, out_dir: str = DEFAULT_OUT,
         refresh: bool = False, yes: bool = False, max_spend: float | None = None, http: HttpClient | None = None,
         log: Callable[[str], None] = print, write: bool = True, settings: dict[str, Any] | None = None,
-        env: dict[str, str] | None = None, events_dir: str = EVENTS_DIR) -> dict[str, Any]:
+        env: dict[str, str] | None = None, events_dir: str = EVENTS_DIR, display: bool | None = None
+        ) -> dict[str, Any]:
+    """`display`: build series.display_daily (None = when the race config sets display_window)."""
     settings = settings or load_settings()
     sources = list(sources or settings["default_sources"])
     window = race.window
@@ -340,6 +342,19 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     daily_rows = [[d.isoformat(), d in race.exclude_days] + [cols[c][i] for c in cols] for i, d in enumerate(days)]
 
     notes = []
+    if display is None:
+        display = race.display_window_set
+    display_daily = None
+    if display and race.display_window is not None:
+        from raceattn import display as display_mod
+
+        log("== display window %s..%s" % (race.display_window.start, race.display_window.end))
+        display_daily = display_mod.build(race, connectors, days, cols, refresh=refresh, log=log)
+        notes.append("series.display_daily covers the display window %s..%s (%d days) for charts only; the metrics, "
+                     "quality and series.daily use the analysis window %s..%s. Coverage and missing days per column "
+                     "are in series.display_daily.coverage." % (
+                         race.display_window.start, race.display_window.end, race.display_window.n_days,
+                         window.start, window.end))
     has_kalshi = "kalshi" in [c.id for c in connectors]
     daily_attention = attention_daily + daily_from_hourly
     hourly_attention = [s for s in hourly_other if is_attention(s)]
@@ -425,6 +440,8 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
         "metrics": metrics,
         "notes": notes,
     }
+    if display_daily is not None:
+        result["series"]["display_daily"] = display_daily
     print_tables(result, log)
     if warning:
         log(warning)

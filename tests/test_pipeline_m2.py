@@ -37,7 +37,7 @@ def result(tmp_path_factory):
     http, sess = fake_http(route)
     logs = []
     res = run(load_race("tx-senate-2026"), None, raw_dir=str(raw), out_dir=str(out), http=http, log=logs.append,
-              env={})
+              env={}, display=False)
     return res, logs, str(out), sess
 
 
@@ -111,7 +111,7 @@ def test_cli_default_run_without_keys(tmp_path, monkeypatch, capsys):
     shutil.copytree(FIXTURE_RAW, raw)
     http, _ = fake_http(route)
     monkeypatch.setattr(pl, "HttpClient", lambda: http)
-    rc = cli.main(["run", "--race", "tx-senate-2026", "--raw-dir", str(raw), "--out-dir", str(tmp_path / "out")])
+    rc = cli.main(["run", "--race", "tx-senate-2026", "--no-display", "--raw-dir", str(raw), "--out-dir", str(tmp_path / "out")])
     out = capsys.readouterr().out
     assert rc == 0
     for s in ("x", "news_mediacloud", "news_guardian", "news_nyt", "news_manual"):

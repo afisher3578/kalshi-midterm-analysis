@@ -44,6 +44,11 @@ class WikipediaConnector(Connector):
         out[SERIES_TOTAL] = combine_hashes([q.query_hash for q in qs])
         return out
 
+    def cache_paths(self, race: Race, window: Window) -> list[str]:
+        """Cache file of every page request for this window (used to tell whether a window is fully cached)."""
+        return [self.cache.path(self.id, race.race_id, window.label, q.query_hash, "daily")
+                for q in self.render_queries(race, window)]
+
     def fetch(self, race: Race, window: Window) -> list[Row]:
         hashes = self.series_query_hashes(race, window)
         days = set(window.days())

@@ -58,13 +58,23 @@ class KalshiConnector(Connector):
         h = combine_hashes([q.query_hash for q in self.render_queries(race, window)])
         return {SERIES_PRICE: h, SERIES_VOLUME: h}
 
+    @staticmethod
+    def chunk_name(q: RenderedQuery) -> str:
+        return "chunk_%d_%d" % (q.params["start_ts"], q.params["end_ts"])
+
+    def cache_paths(self, race: Race, window: Window) -> list[str]:
+        """Cache file of every chunk for this window (used to tell whether a window is fully cached)."""
+        qs = self.render_queries(race, window)
+        dir_hash = combine_hashes([q.query_hash for q in qs])
+        return [self.cache.path(self.id, race.race_id, window.label, dir_hash, self.chunk_name(q)) for q in qs]
+
     def fetch_candles(self, race: Race, window: Window) -> tuple[list[dict[str, Any]], list[str]]:
         """Raw candles from every chunk (cached), plus the fetched_at of each chunk."""
         qs = self.render_queries(race, window)
         dir_hash = combine_hashes([q.query_hash for q in qs])
         candles, fetched = [], []
         for q in qs:
-            rec = self.cached_get(race, window, q, dir_hash, "chunk_%d_%d" % (q.params["start_ts"], q.params["end_ts"]))
+            rec = self.cached_get(race, window, q, dir_hash, self.chunk_name(q))
             body = rec["body"]
             if not isinstance(body, dict) or "candlesticks" not in body:
                 raise FetchError("Kalshi %s: response has no 'candlesticks' key" % q.label)

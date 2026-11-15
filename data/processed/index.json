@@ -15,7 +15,7 @@
     "timezone": "UTC"
    },
    "path": "fl-senate-2026.json",
-   "generated_at": "2026-11-11T08:22:36Z",
+   "generated_at": "2026-11-15T23:03:51Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -109,13 +109,7 @@
      "degraded": 1,
      "unusable": 0,
      "unusable_series": {},
-     "skipped_sources": {
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/fl-senate-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -200,7 +194,7 @@
     "timezone": "UTC"
    },
    "path": "ky-senate-2026.json",
-   "generated_at": "2026-11-11T08:22:36Z",
+   "generated_at": "2026-11-15T23:03:54Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -294,13 +288,7 @@
      "degraded": 1,
      "unusable": 0,
      "unusable_series": {},
-     "skipped_sources": {
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/ky-senate-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -385,7 +373,7 @@
     "timezone": "UTC"
    },
    "path": "nc-senate-2026.json",
-   "generated_at": "2026-11-11T08:22:36Z",
+   "generated_at": "2026-11-15T23:04:04Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -460,13 +448,7 @@
        "7 near-zero days (over 10% of the window)"
       ]
      },
-     "skipped_sources": {
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/nc-senate-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -551,7 +533,7 @@
     "timezone": "UTC"
    },
    "path": "oh-senate-2026.json",
-   "generated_at": "2026-11-11T08:22:36Z",
+   "generated_at": "2026-11-15T23:04:06Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -645,13 +627,7 @@
      "degraded": 2,
      "unusable": 0,
      "unusable_series": {},
-     "skipped_sources": {
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/oh-senate-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -736,7 +712,7 @@
     "timezone": "UTC"
    },
    "path": "tx-governor-2026.json",
-   "generated_at": "2026-11-11T08:22:36Z",
+   "generated_at": "2026-11-15T23:03:49Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -828,14 +804,7 @@
      "degraded": 0,
      "unusable": 0,
      "unusable_series": {},
-     "skipped_sources": {
-      "bluesky": "left out by race_overrides in config/project.yaml: left out of the M3 run to bound runtime (the Texas Senate Bluesky walk alone took 22 minutes); run it locally with the command on the card",
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_mediacloud": "missing key: set MEDIACLOUD_API_KEY (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/tx-governor-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -907,7 +876,7 @@
     "timezone": "UTC"
    },
    "path": "tx-senate-2026.json",
-   "generated_at": "2026-11-13T05:09:42Z",
+   "generated_at": "2026-11-15T23:08:27Z",
    "sources": [
     "kalshi",
     "kalshi_trades",
@@ -1062,12 +1031,7 @@
      "degraded": 1,
      "unusable": 0,
      "unusable_series": {},
-     "skipped_sources": {
-      "x": "missing key: set X_BEARER_TOKEN (see .env.example)",
-      "news_guardian": "missing key: set GUARDIAN_API_KEY (see .env.example)",
-      "news_nyt": "missing key: set NYT_API_KEY (see .env.example)",
-      "news_manual": "missing manual CSV: put a `date,count` export at data/raw/news_manual/tx-senate-2026.csv"
-     }
+     "skipped_sources": {}
     },
     "attention": {
      "wikipedia/pageviews_total": {
@@ -1321,5 +1285,5 @@
    }
   }
  },
- "updated_at": "2026-11-13T05:09:42Z"
+ "updated_at": "2026-11-15T23:08:27Z"
 }

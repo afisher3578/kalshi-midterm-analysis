@@ -559,7 +559,7 @@ def test_pipeline_context_series_stay_out_of_metrics(tmp_path):
     settings["connectors"]["news_mediacloud"] = {"pace_seconds": 0, "queries_dir": qdir}
     logs = []
     res = run(race, ["kalshi", "wikipedia", "news_mediacloud"], raw_dir=str(raw), out_dir=str(tmp_path / "out"),
-              http=http, log=logs.append, settings=settings, env={"MEDIACLOUD_API_KEY": KEY})
+              http=http, log=logs.append, settings=settings, env={"MEDIACLOUD_API_KEY": KEY}, display=False)
     assert len(sess.requests) == 28
     assert any("news_mediacloud: 28 HTTP request(s) made, 0 cache hit(s)" in l for l in logs)
     assert not any("not configured" in l for l in logs)
