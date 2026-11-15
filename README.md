@@ -152,23 +152,20 @@ python -m raceattn dashboard --race tx-senate-2026 --demo
 Flags: `--port N` (default 4173; `0` picks a free port), `--no-open` (do not open a browser), `--no-build` (serve
 `web/dist` as it is, skip the Node check and the build), `--demo`. It builds `web/` when `web/dist` is missing or
 older than its inputs, then serves on 127.0.0.1 only and prints the URL:
-`http://127.0.0.1:4173/?race=tx-senate-2026&view=news`. `data/processed` is read on every request, so a new
+`http://127.0.0.1:4173/?race=tx-senate-2026`. `data/processed` is read on every request, so a new
 pipeline run shows without a rebuild. Ctrl+C stops it.
 
-What you see:
-- The US map, with states colored by a selectable metric, and the race section below it.
-- The Overview tab: Kalshi price and volume panels, Wikipedia pageview attention, the other attention sources that
-  ran, lag tables, the event study and quality badges.
-- The News (Media Cloud) tab, which opens first: status, tiles, five charts, the ten largest days, the query drawer
-  and CSV/JSON downloads.
+The page is the US map and, directly below it, one line chart for the selected race (Texas Senate by default).
+The chart draws the Kalshi price of the Democratic-win contract (percent chance, left axis), Kalshi volume
+(contracts per day, right axis) and media attention (Media Cloud national stories per day for the `race_either`
+query, second right axis) from `series.display_daily`. Checkboxes switch each line and its axis on or off (one always
+stays on), "Indexed" puts every line on one 0 to 100 scale, and the date fields or the strip under the chart narrow
+the dates within the 90 days before the election. Point at, tap or arrow-key through the chart to read a day's
+values. Only Texas Senate has news counts so far; for the other races the attention line is off. `--demo` swaps in
+synthetic news counts and labels the chart "Demo data". The race detail views (charts, lag tables, the News view)
+are hidden for now and come back with `SHOW_DETAILS = true` in `web/src/config.ts`.
 
-The News tab's empty state ("No Media Cloud data has been pulled for this race") means no Media Cloud pull has
-run for this race yet, usually because there is no key or no query file. Texas Senate has live data; the other
-races have no Media Cloud query file yet. It is not zero coverage. The card lists what is missing
-and the command to run. That command's `--sources` list is the sources of the last run for this race (from the
-race JSON) plus `news_mediacloud`. So after a quick test run with fewer sources, the suggested command is short
-too. Check it against the full list above before you run it. `--demo` serves synthetic Media Cloud data from
-memory, with a "DEMO DATA, not real" banner on every section. Nothing is written to disk.
+![The dashboard: map and the Texas Senate line chart](docs/screenshots/mc-simple-1280.png)
 
 ## Data sources
 

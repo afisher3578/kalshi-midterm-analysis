@@ -82,3 +82,7 @@ export const SOURCE_LABEL: Record<string, string> = {
 export const GROUP_DEFAULT_SOURCE: Record<string, string> = {
   all: "wikipedia", looking: "wikipedia", talking: "bluesky", reporting: "news_mediacloud",
 };
+
+// The race detail views (race page charts, lag tables, drawers, the News (Media Cloud) view, breakdowns, top
+// sources, quality tables and downloads). Off: the page is the map plus one line chart. Turn on to bring them back.
+export const SHOW_DETAILS = false;

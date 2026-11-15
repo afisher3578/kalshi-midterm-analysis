@@ -1,4 +1,5 @@
 """The local dashboard command (raceattn/dashboard.py): staleness check, missing Node, routing, the demo fixture."""
+import datetime as dt
 import http.client
 import json
 import os
@@ -187,6 +188,34 @@ def test_demo_fixture_is_labeled_deterministic_and_has_no_processed_path():
     assert 0 in vals and None in vals                       # an explicit zero day and a missing day
 
 
+def test_demo_fixture_has_display_daily_on_the_display_window():
+    a = demo()
+    with open(os.path.join(d.PROCESSED, RACE + ".json"), encoding="utf-8") as f:
+        real = json.load(f)["series"]["display_daily"]
+    dd = a["series"]["display_daily"]
+    assert dd["window"]["start"] == real["window"]["start"] and dd["window"]["end"] == real["window"]["end"]
+    assert [r["date"] for r in dd["rows"]] == [r["date"] for r in real["rows"]]
+    assert "news/race_either/national" in dd["columns"] and dd["columns"][0] == "date"
+    assert "DEMO" in dd["note"]
+    # inside the demo's series.daily window the counts are the series.daily counts; before it they are synthetic
+    daily = a["series"]["daily"]
+    i = daily["columns"].index("news_mediacloud/race_either/national")
+    by_day = {r[0]: r[i] for r in daily["rows"]}
+    for r in dd["rows"]:
+        if r["date"] in by_day:
+            assert r["news/race_either/national"] == by_day[r["date"]]
+        else:
+            assert isinstance(r["news/race_either/national"], int) and r["news/race_either/national"] >= 0
+    assert any(r["date"] not in by_day for r in dd["rows"])
+    cov = dd["coverage"]["news/race_either/national"]
+    assert cov["days_total"] == len(dd["rows"]) and cov["days_present"] == len(dd["rows"]) - len(cov["missing_days"])
+
+
+def test_demo_display_window_falls_back_to_the_election_default():
+    race = {"race": {"election_date": "2026-11-03"}, "series": {}}
+    assert d.display_window(race) == (dt.date(2026, 8, 5), dt.date(2026, 11, 4))
+
+
 def test_demo_fixture_derived_match_the_connector_math():
     from raceattn.connectors.news import derive
 
@@ -239,7 +268,7 @@ def test_demo_server_start_in_a_thread_writes_nothing(monkeypatch):
     t.start()
     t.join(30)
     assert not t.is_alive() and got["code"] == 0
-    assert got["url"].endswith("?race=%s&view=news&demo=1" % RACE)
+    assert got["url"].endswith("?race=%s&demo=1" % RACE)
     status, body = got["/local/demo/%s.mediacloud.json" % RACE]
     assert status == 200 and json.loads(body)["_note"] == "DEMO DATA, not real"
     assert got["/data/index.json"][0] == 200

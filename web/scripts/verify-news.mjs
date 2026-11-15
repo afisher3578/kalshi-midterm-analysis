@@ -12,6 +12,13 @@ import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 
+// Gated: these checks cover the race detail views, which are hidden while web/src/config.ts has SHOW_DETAILS = false.
+// They are kept for when the views come back; scripts/verify-dashboard.mjs checks the page shown instead.
+if (!/export const SHOW_DETAILS = true/.test(readFileSync(resolve(import.meta.dirname, "../src/config.ts"), "utf-8"))) {
+  console.log("SKIPPED: SHOW_DETAILS is false in web/src/config.ts, so the race detail views are not on the page");
+  process.exit(0);
+}
+
 const [LIVE, DEMO] = process.argv.slice(2);
 if (!LIVE || !DEMO) {
   console.error("usage: node scripts/verify-news.mjs <live base url> <demo base url> (or npm run verify)");

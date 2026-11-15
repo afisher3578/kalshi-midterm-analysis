@@ -1,9 +1,11 @@
 // `npm run verify`: one command for every render check. Starts the Python dashboard server twice on free ports
-// (real data, and --demo), runs scripts/verify.mjs (map and race page) and scripts/verify-news.mjs (news view, empty
-// state and demo) against them, then stops both servers. Serves the existing web/dist (run `npm run build` first).
+// (real data, and --demo), runs scripts/verify-dashboard.mjs (map plus line chart, demo label) against them, then
+// stops both servers. scripts/verify.mjs (race page) and scripts/verify-news.mjs (news view, empty state and demo)
+// run only when web/src/config.ts has SHOW_DETAILS = true, since those views are hidden otherwise.
+// Serves the existing web/dist (run `npm run build` first).
 // The servers bind 127.0.0.1 only. Usage: npm run verify
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "../..");
@@ -43,10 +45,13 @@ const demo = await startServer(true);
 let code = 1;
 try {
   console.log(`live server ${live.base}, demo server ${demo.base}`);
-  const a = await run("verify.mjs", [live.base]);
-  const b = await run("verify-news.mjs", [live.base, demo.base]);
-  code = a || b;
-  console.log(`verify.mjs exit ${a}, verify-news.mjs exit ${b}`);
+  const details = /export const SHOW_DETAILS = true/.test(readFileSync(resolve(ROOT, "web/src/config.ts"), "utf-8"));
+  const c = await run("verify-dashboard.mjs", [live.base, demo.base]);
+  const a = details ? await run("verify.mjs", [live.base]) : 0;
+  const b = details ? await run("verify-news.mjs", [live.base, demo.base]) : 0;
+  code = a || b || c;
+  console.log(`verify-dashboard.mjs exit ${c}; ${details ? `verify.mjs exit ${a}, verify-news.mjs exit ${b}`
+    : "verify.mjs and verify-news.mjs skipped (SHOW_DETAILS is false: the race detail views are hidden)"}`);
 } finally {
   for (const s of [live, demo]) { s.proc.removeAllListeners("exit"); s.proc.kill("SIGTERM"); }
 }

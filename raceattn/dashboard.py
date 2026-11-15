@@ -267,6 +267,7 @@ def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | Non
                               "relevant": "yes" if r < 0.86 else "no" if r < 0.95 else "unclear"})
 
     names = [c for c in columns if c != "date"]
+    display = demo_display_daily(race, days, cols, queries, list(colls), seed)
     mc_block.update({"status": "demo", "collections": {ck: {"name": c["name"], "id": None, "source_count": None,
                                                               "looked_up_on": None, "status": "demo, synthetic"}
                                                          for ck, c in colls.items()},
@@ -275,6 +276,7 @@ def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | Non
             % seed, "race_id": race_id, "generated_at": "demo fixture, made in memory at server start",
             "window": w, "series": {"daily": {"columns": columns, "rows": rows,
                                               "note": "DEMO DATA, not real: synthetic daily counts"},
+                                    "display_daily": display,
                                     "meta": {n: {"source": "news_mediacloud", "connector": "news_mediacloud",
                                                  "granularity": "day", "unit": "stories", "query_hash": "demo",
                                                  "fetched_at": "demo"} for n in names}},
@@ -283,6 +285,49 @@ def demo_fixture(race_id: str, race: dict[str, Any], qconf: dict[str, Any] | Non
             "local": {"audit": {"_note": "local only, not published; DEMO DATA, not real", "race_id": race_id,
                                 "available": True, "phases": {"analysis": {"path": "demo (in memory)",
                                                                            "rows": audit}}}}}
+
+
+def display_window(race: dict[str, Any]) -> tuple[dt.date, dt.date]:
+    """The race's display window: series.display_daily.window, else race.display_window, else the config default
+    (election_date - 90 days to election_date + 1 day)."""
+    from raceattn.config import DISPLAY_DAYS_BEFORE
+
+    w = ((race.get("series") or {}).get("display_daily") or {}).get("window") or race["race"].get("display_window")
+    if w:
+        return dt.date.fromisoformat(w["start"]), dt.date.fromisoformat(w["end"])
+    e = dt.date.fromisoformat(race["race"]["election_date"])
+    return e - dt.timedelta(DISPLAY_DAYS_BEFORE), e + dt.timedelta(1)
+
+
+def demo_display_daily(race: dict[str, Any], days: list[dt.date], cols: dict[str, list[Any]], queries: list[str],
+                       collections: list[str], seed: int = 1) -> dict[str, Any]:
+    """series.display_daily for the demo: one row per date of the display window with the news/<query>/<collection>
+    columns of the real display block. Dates inside the demo's series.daily window reuse its counts; dates before it
+    get synthetic counts from random.Random(seed + 1), so series.daily stays as it was. DEMO DATA, not real."""
+    rng = random.Random(seed + 1)
+    d0, d1 = display_window(race)
+    ddays = [d0 + dt.timedelta(n) for n in range((d1 - d0).days + 1)]
+    inside = {d: i for i, d in enumerate(days)}
+    names = [(q, ck) for q in queries for ck in collections]
+    rows = []
+    for d in ddays:
+        row: dict[str, Any] = {"date": d.isoformat()}
+        week = 0.65 if d.weekday() >= 5 else 1.0
+        base = round(22 * week * rng.uniform(0.7, 1.3))
+        for q, ck in names:
+            if d in inside:
+                row["news/%s/%s" % (q, ck)] = cols["news_mediacloud/%s/%s" % (q, ck)][inside[d]]
+            else:
+                row["news/%s/%s" % (q, ck)] = max(0, round(base * (1.7 if ck == "texas_local" else 1.0)
+                                                         * rng.uniform(0.8, 1.2)))
+        rows.append(row)
+    columns = ["date"] + ["news/%s/%s" % n for n in names]
+    return {"window": {"start": d0.isoformat(), "end": d1.isoformat(), "days": len(ddays), "inclusive": True,
+                       "timezone": "UTC", "source": "demo fixture"},
+            "columns": columns, "rows": rows, "news": columns[1:],
+            "coverage": {c: {"days_present": sum(r[c] is not None for r in rows), "days_total": len(rows),
+                             "missing_days": [r["date"] for r in rows if r[c] is None]} for c in columns[1:]},
+            "note": "DEMO DATA, not real: synthetic daily counts on the display window"}
 
 
 # -------------------------------------------------------------------------------------------------- server
@@ -420,7 +465,7 @@ def make_server(ctx: Context, port: int, quiet: bool = False) -> ThreadingHTTPSe
 
 
 def page_url(port: int, race_id: str, demo: bool) -> str:
-    return "http://127.0.0.1:%d/?race=%s&view=news%s" % (port, race_id, "&demo=1" if demo else "")
+    return "http://127.0.0.1:%d/?race=%s%s" % (port, race_id, "&demo=1" if demo else "")
 
 
 def run(race_id: str, port: int = 4173, open_browser: bool = True, demo: bool = False, build: bool = True,

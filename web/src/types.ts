@@ -85,6 +85,16 @@ export interface EventSeries {
   spikes?: { n: number; dates: string[]; surprise: number[] };
 }
 
+// series.display_daily (raceattn/display.py): one row per UTC date of the display window, for charts only.
+export interface DisplayDaily {
+  window: { start: string; end: string; days: number; inclusive?: boolean; timezone?: string; source?: string };
+  columns: string[];
+  rows: Record<string, string | number | null>[];
+  news: string[] | string;
+  coverage?: Record<string, { days_present: number; days_total: number; missing_days: string[] }>;
+  note?: string;
+}
+
 export interface RaceData {
   project: string;
   version: string;
@@ -100,7 +110,7 @@ export interface RaceData {
   run_overrides?: { skip?: Record<string, string>; connectors?: Record<string, unknown>; note?: string };
   events_overlay?: { rows: OverlayEvent[]; n: number; n_confirmed: number; note: string; exists: boolean };
   queries: Record<string, QueryLog>;
-  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table; hourly_grid?: Table };
+  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table; hourly_grid?: Table; display_daily?: DisplayDaily };
   quality: Record<string, Quality>;
   metrics: { daily: Record<string, MetricEntry>; hourly: Record<string, MetricEntry>; hourly_note?: string;
     events?: { status?: string; n_confirmed: number; n_needs_review_ignored: number; series: Record<string, EventSeries> } };

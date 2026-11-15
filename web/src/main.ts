@@ -1,11 +1,13 @@
 import "./style.css";
 import { format } from "d3";
-import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, SHOW_FUNDING_DISCLOSURE, SOURCE_LABEL,
-  SOURCE_NOTES, STATES } from "./config";
+import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE,
+  SOURCE_LABEL, SOURCE_NOTES, STATES } from "./config";
+import { chartSeries, coverageCount } from "./display";
+import { type ChartState, LineChart } from "./linechart";
 import { fmtMap, renderMap, type StateCell } from "./map";
-import { loadNewsModel, NewsView } from "./newsview";
+import { loadNewsModel, localServer, NewsView } from "./newsview";
 import { el, esc, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
-import type { IndexData, IndexRace, RaceData } from "./types";
+import type { DisplayDaily, IndexData, IndexRace, RaceData } from "./types";
 import { byOffice, clampRange, densityBand, type DensityBand, mapValue, type MapMetric, PLATFORM_GROUP, raceIdFromSearch,
   type View } from "./transforms";
 
@@ -36,6 +38,10 @@ const raceCache = new Map<string, RaceData>();
 let index: IndexData;
 let view: RaceView | null = null;
 let newsView: NewsView | null = null;
+let chart: LineChart | null = null;
+// the chart's toggles, scale and dates carry over when another race is opened
+const chartState: ChartState = { visible: { price: true, volume: true, news: true }, mode: "own", from: "", to: "" };
+let demoDisplay: { race: string; dd: DisplayDaily } | null | undefined;
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -65,7 +71,7 @@ function readUi(): Ui {
     focus: q.get("focus") ?? "wikipedia/pageviews_total",
     state: /^[A-Z]{2}$/.test(st) ? st : null,
     race: raceParam || null,
-    page: q.get("view") === "news" ? "news" : "race",
+    page: SHOW_DETAILS && q.get("view") === "news" ? "news" : "race",
     demo: q.get("demo") === "1",
   };
 }
@@ -130,7 +136,7 @@ async function main() {
   renderShell(ui);
   drawMap(ui);
   await openRace(ui, false);
-  new ResizeObserver(() => { view?.draw(); newsView?.draw(); }).observe(document.getElementById("race")!);
+  new ResizeObserver(() => { view?.draw(); newsView?.draw(); chart?.draw(); }).observe(document.getElementById("race")!);
   document.body.dataset.ready = "true";
 }
 
@@ -150,8 +156,8 @@ function renderShell(ui: Ui) {
     <p class="kicker">${esc(PROJECT_NAME)}: Kalshi market data next to attention data, on one UTC clock</p>
     <h1>2026 races: market prices and attention</h1>
     <p class="lede">${Object.keys(index.races).length} races with committed data. Pick a state on the map, in the table or
-      in the list. Every number shows its n; anything with fewer than 20 days or pairs reads "insufficient data". The tool
-      reports timing and association, not causation.</p>`);
+      in the list${SHOW_DETAILS ? "" : "; the chart below the map shows that race"}. Every number shows its n; anything with
+      fewer than 20 days or pairs reads "insufficient data". The tool reports timing and association, not causation.</p>`);
   const main = el("main", { class: "wrap", id: "main" });
   const filters = el("form", { class: "filters", id: "filters", "aria-labelledby": "filters-h" }, `
     <h2 id="filters-h" class="filters-h">Filters</h2>
@@ -168,10 +174,10 @@ function renderShell(ui: Ui) {
         opt(k, l, ui.group)).join("")}</select></div>
       <div class="f"><label for="f-source">Source</label><select id="f-source">${opt("all", "All sources in the group", ui.source)}${
         sourcesInIndex().map((s) => opt(s, `${SOURCE_LABEL[s] ?? s} (${PLATFORM_GROUP[s] ?? "other"})`, ui.source)).join("")}</select></div>
-      <div class="f"><label for="f-from">Window from</label><input type="date" id="f-from"></div>
+      ${SHOW_DETAILS ? `<div class="f"><label for="f-from">Window from</label><input type="date" id="f-from"></div>
       <div class="f"><label for="f-to">Window to</label><input type="date" id="f-to"></div>
       <div class="f fcheck"><input type="checkbox" id="f-overlay" ${ui.overlay ? "checked" : ""}><label for="f-overlay">Show
-        information events on the charts</label></div>
+        information events on the charts</label></div>` : ""}
     </div>
     <p class="hint" id="filter-hint"></p>`);
   const mapSec = el("section", { "aria-labelledby": "map-h", id: "mapsec" }, `
@@ -183,8 +189,10 @@ function renderShell(ui: Ui) {
       aria-labelledby="maptable-cap"><thead><tr><th scope="col">State</th><th scope="col">Race</th><th scope="col">Value (n)</th>
       <th scope="col">Polling band</th><th scope="col">Quality (series)</th><th scope="col">Open</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="map-none"></p>`);
-  const raceSec = el("section", { "aria-labelledby": "race-h", id: "racesec" }, `
-    <div id="race-switch"></div><nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`);
+  const raceSec = SHOW_DETAILS ? el("section", { "aria-labelledby": "race-h", id: "racesec" }, `
+    <div id="race-switch"></div><nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`)
+    : el("section", { "aria-labelledby": "chart-h", id: "racesec", class: "chartsec" }, `
+    <div id="race-switch"></div><div id="race"></div>`);
   main.append(filters, mapSec, raceSec);
   app.append(header, main, footer());
   filters.addEventListener("submit", (e) => e.preventDefault());
@@ -211,6 +219,7 @@ function renderShell(ui: Ui) {
     refreshRace(ui);
   });
   on("f-source", (v) => { ui.source = v; drawMap(ui); refreshRace(ui); });
+  if (!SHOW_DETAILS) return;
   on("f-from", (v) => { ui.from = v; refreshRace(ui); });
   on("f-to", (v) => { ui.to = v; refreshRace(ui); });
   on("f-overlay", (_v, t) => { ui.overlay = (t as HTMLInputElement).checked; refreshRace(ui); });
@@ -290,7 +299,7 @@ async function openRace(ui: Ui, scroll: boolean) {
   if (!ui.race) {
     sw.innerHTML = "";
     tabs.innerHTML = "";
-    root.innerHTML = `<p class="note" id="race-h">No race selected. Pick a state above.</p>`;
+    root.innerHTML = `<p class="note" id="${SHOW_DETAILS ? "race-h" : "chart-h"}">No race selected. Pick a state above.</p>`;
     writeUrl(ui);
     return;
   }
@@ -309,6 +318,11 @@ async function openRace(ui: Ui, scroll: boolean) {
   } catch (e) {
     root.innerHTML = `<p class="error" role="alert">Could not load <code>data/${esc(ui.race)}.json</code>
       (${esc((e as Error).message)}).</p>`;
+    return;
+  }
+  if (!SHOW_DETAILS) {
+    await openChart(ui, data, root);
+    if (scroll) document.getElementById("chart-h")?.scrollIntoView({ block: "start" });
     return;
   }
   [ui.from, ui.to] = clampRange(ui.from || null, ui.to || null, data.window.start, data.window.end);
@@ -341,6 +355,52 @@ async function openRace(ui: Ui, scroll: boolean) {
   writeUrl(ui);
   updateHint(ui, data);
   if (scroll) document.getElementById("race-h")?.scrollIntoView({ block: "start" });
+}
+
+/** The demo fixture's display_daily (synthetic news counts), only from a server started with --demo and only for
+ * the race it was started for; undefined until asked, null when there is none. */
+async function demoNews(ui: Ui, raceId: string): Promise<DisplayDaily | null> {
+  if (!ui.demo || localServer() !== "demo") return null;
+  if (demoDisplay === undefined) {
+    try {
+      const fx = await getJson<{ _synthetic: boolean; race_id: string; series: { display_daily?: DisplayDaily } }>(
+        `local/demo/${raceId}.mediacloud.json`);
+      demoDisplay = fx._synthetic && fx.series.display_daily ? { race: fx.race_id, dd: fx.series.display_daily } : null;
+    } catch {
+      return null;  // the server only serves the fixture of the race it was started with
+    }
+  }
+  return demoDisplay && demoDisplay.race === raceId ? demoDisplay.dd : null;
+}
+
+/** The dashboard chart for one race (SHOW_DETAILS off): price, volume and media attention from series.display_daily. */
+async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
+  document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
+  view = null;
+  newsView = null;
+  root.dataset.race = data.race.race_id;
+  const dd = data.series.display_daily;
+  if (!dd) {
+    chart = null;
+    root.innerHTML = `<h2 id="chart-h" class="charttitle">${esc(raceTitle(data))}</h2><p class="note">This race JSON has no
+      series.display_daily yet. Run <code>python -m raceattn run --race ${esc(data.race.race_id)}</code> to add it.</p>`;
+    writeUrl(ui);
+    return;
+  }
+  const demo = await demoNews(ui, data.race.race_id);
+  const series = chartSeries(dd, demo);
+  const { n, m } = coverageCount(series.news);
+  const available = n > 0;
+  const status = !available ? "No news data for this race yet. Price and volume still draw; the media attention line is off."
+    : demo ? `News data: demo (synthetic counts, not real), ${n} of ${m} days`
+    : `News data: live, ${n} of ${m} days`;
+  const e = data.race.election_date;
+  const election = [e, new Date(Date.parse(e + "T00:00:00Z") + 86_400_000).toISOString().slice(0, 10)]
+    .filter((d) => d >= dd.window.start && d <= dd.window.end);
+  chart = new LineChart(root, { series, title: raceTitle(data), window: { start: dd.window.start, end: dd.window.end },
+    election, news: { available, status }, demo: !!demo }, chartState);
+  chart.render();
+  writeUrl(ui);
 }
 
 /** Links between the race overview and the News (Media Cloud) view; real links (the URL works on its own), switched
@@ -391,6 +451,8 @@ function footer(): HTMLElement {
     <ul>${notes.map((n) => `<li>${esc(n.name)}: ${esc(n.note)} <a href="${esc(n.url)}" rel="noreferrer">Source
       terms</a></li>`).join("")}</ul>
     <p>Map geometry: us-atlas 3.0.1 (US Census Bureau cartographic boundaries, ISC license), bundled with the page.</p>
+    ${SHOW_DETAILS ? "" : `<p id="news-caveat">News counts come from Media Cloud sources only. Queries are still in draft.
+      Timing alone does not show that one thing caused another.</p>`}
     <p>Only counts and metrics are published, never post text or user data. Code and data licenses are not yet decided.</p>
     ${SHOW_FUNDING_DISCLOSURE ? `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>` : ""}`);
 }
