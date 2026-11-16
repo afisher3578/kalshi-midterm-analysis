@@ -1,7 +1,7 @@
 import "./style.css";
 import { format } from "d3";
 import { DEFAULT_RACE, FUNDING_DISCLOSURE, GROUP_DEFAULT_SOURCE, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE,
-  SOURCE_LABEL, SOURCE_NOTES, STATES } from "./config";
+  SOURCE_LABEL, STATES } from "./config";
 import { chartSeries, coverageCount } from "./display";
 import { type ChartState, LineChart } from "./linechart";
 import { fmtMap, renderMap, type StateCell } from "./map";
@@ -153,11 +153,7 @@ function renderShell(ui: Ui) {
   const opt = (v: string, label: string, cur: string) => `<option value="${esc(v)}" ${v === cur ? "selected" : ""}>${esc(label)}</option>`;
   app.innerHTML = "";
   const header = el("header", { class: "wrap head" }, `
-    <p class="kicker">${esc(PROJECT_NAME)}: Kalshi market data next to attention data, on one UTC clock</p>
-    <h1>2026 races: market prices and attention</h1>
-    <p class="lede">${Object.keys(index.races).length} races with committed data. Pick a state on the map, in the table or
-      in the list${SHOW_DETAILS ? "" : "; the chart below the map shows that race"}. Every number shows its n; anything with
-      fewer than 20 days or pairs reads "insufficient data". The tool reports timing and association, not causation.</p>`);
+    <h1>2026 races: market prices and attention</h1>`);
   const main = el("main", { class: "wrap", id: "main" });
   const filters = el("form", { class: "filters", id: "filters", "aria-labelledby": "filters-h" }, `
     <h2 id="filters-h" class="filters-h">Filters</h2>
@@ -182,19 +178,17 @@ function renderShell(ui: Ui) {
     <p class="hint" id="filter-hint"></p>`);
   const mapSec = el("section", { "aria-labelledby": "map-h", id: "mapsec" }, `
     <h2 id="map-h">Map</h2>
-    <p id="map-caption" class="note"></p>
     <div id="map"></div>
-    <h3 class="tcap" id="maptable-cap">The map's values as a table</h3>
-    <div class="table-scroll" role="region" aria-labelledby="maptable-cap" tabindex="0"><table id="map-table"
-      aria-labelledby="maptable-cap"><thead><tr><th scope="col">State</th><th scope="col">Race</th><th scope="col">Value (n)</th>
-      <th scope="col">Polling band</th><th scope="col">Quality (series)</th><th scope="col">Open</th></tr></thead><tbody></tbody></table></div>
-    <p class="note" id="map-none"></p>`);
+    <div class="vh" id="map-table-wrap"><table id="map-table" aria-label="Map values by state"><thead><tr><th scope="col">State</th><th scope="col">Race</th>
+      <th scope="col">Value (n)</th><th scope="col">Polling band</th><th scope="col">Quality (series)</th><th scope="col">Open</th></tr></thead>
+      <tbody></tbody></table></div>`);
   const raceSec = SHOW_DETAILS ? el("section", { "aria-labelledby": "race-h", id: "racesec" }, `
     <div id="race-switch"></div><nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`)
     : el("section", { "aria-labelledby": "chart-h", id: "racesec", class: "chartsec" }, `
     <div id="race-switch"></div><div id="race"></div>`);
   main.append(filters, mapSec, raceSec);
-  app.append(header, main, footer());
+  app.append(header, main);
+  if (SHOW_FUNDING_DISCLOSURE) app.append(footer());
   filters.addEventListener("submit", (e) => e.preventDefault());
   const on = (id: string, f: (v: string, e: HTMLInputElement | HTMLSelectElement) => void, ev = "change") =>
     document.getElementById(id)!.addEventListener(ev, (e) => f((e.target as HTMLInputElement).value, e.target as HTMLInputElement));
@@ -238,7 +232,6 @@ function drawMap(ui: Ui) {
   const m = METRICS[ui.metric];
   const cells = new Map<string, StateCell>();
   const rows: StateCell[] = [];
-  const multi: string[] = [];
   const fmt = { int: format(".3~s"), two: format(".2f"), pct: format(".0%") };
   const cellOf = (code: string, r: IndexRace): StateCell => {
     const v = mapValue(r.metrics, ui.metric, mapSeries(r, source), fmt);
@@ -256,15 +249,7 @@ function drawMap(ui: Ui) {
     }
     cells.set(code, cellOf(code, r));
     for (const x of rs) rows.push(x === r ? cells.get(code)! : cellOf(code, x));
-    if (rs.length > 1) multi.push(`${STATES[code]} by ${raceTitle({ race: r })}${code === ui.state ? " (the open race)" : ""}`);
   }
-  const usesSource = ui.metric === "attention_total" || ui.metric === "attention_rho";
-  document.getElementById("map-caption")!.innerHTML = `Colored by <strong>${esc(m.label)}</strong>${usesSource
-    ? ` for <strong>${esc(SOURCE_LABEL[source] ?? source)}</strong>${source === "wikipedia" ? " (race page plus candidate pages, summed)" : ""}`
-    : ""}; ${ui.office === "all" ? "all race types" : `${esc(ui.office)} races only`}; ${esc(BANDS[ui.band].toLowerCase())}.
-    Totals and changes cover the non-excluded days of each race's window (election night left out). Bins are equal
-    width over the values shown.${multi.length ? ` A state with more than one race is colored by the open race, else by
-    Senate, then Governor, House, national: ${esc(multi.join("; "))}. The table lists every race.` : ""}`;
   renderMap(document.getElementById("map")!, cells, { diverging: m.diverging, metricLabel: m.label, selected: ui.state,
     fmt: fmtMap[ui.metric], onPick: (code) => pickState(ui, code) });
   rows.sort((a, b) => a.name.localeCompare(b.name) || byOffice(index.races[a.raceId!], index.races[b.raceId!]));
@@ -279,16 +264,13 @@ function drawMap(ui: Ui) {
       <td data-k="value">${c.filteredOut ? `filtered out by the band; ${esc(c.text)}` : esc(c.text)}</td>
       <td>${band ?? "unknown"}${r.metrics?.polling_density != null ? ` (n=${r.metrics.polling_density} poll${r.metrics.polling_density === 1 ? "" : "s"})` : ""}</td>
       <td>${qs ? `${qs.ok} ok, ${qs.degraded} degraded, ${qs.unusable} unusable` : "n/a"}</td>
-      <td><button type="button" class="linkish" data-open="${esc(r.race_id)}" ${ui.race === r.race_id ? 'aria-current="true"' : ""}>Open
+      <td><button type="button" class="linkish" tabindex="-1" data-open="${esc(r.race_id)}" ${ui.race === r.race_id ? 'aria-current="true"' : ""}>Open
         <span class="vh">${esc(raceTitle({ race: r }))}</span></button></td></tr>`;
   }).join("");
   tbody.querySelectorAll<HTMLButtonElement>("button[data-open]").forEach((b) => b.addEventListener("click", () => {
     ui.race = b.dataset.open!;
     pickState(ui, index.races[ui.race].state);
   }));
-  const none = [...cells.values()].filter((c) => !c.raceId && c.code !== "DC" && c.code !== "PR").map((c) => c.name);
-  document.getElementById("map-none")!.textContent = `${none.length} states (plus DC and Puerto Rico) have no processed
-    race for this race type and are drawn as insufficient data: ${none.join(", ")}.`.replace(/\s+/g, " ");
 }
 
 async function openRace(ui: Ui, scroll: boolean) {
@@ -445,16 +427,7 @@ function refreshRace(ui: Ui) {
 }
 
 function footer(): HTMLElement {
-  const notes = ["kalshi", "wikipedia"].map((s) => SOURCE_NOTES[s]).filter(Boolean);
-  return el("footer", { class: "wrap foot" }, `
-    <p><strong>${esc(PROJECT_NAME)}</strong> (working name). Index updated ${esc(index.updated_at)}.</p>
-    <ul>${notes.map((n) => `<li>${esc(n.name)}: ${esc(n.note)} <a href="${esc(n.url)}" rel="noreferrer">Source
-      terms</a></li>`).join("")}</ul>
-    <p>Map geometry: us-atlas 3.0.1 (US Census Bureau cartographic boundaries, ISC license), bundled with the page.</p>
-    ${SHOW_DETAILS ? "" : `<p id="news-caveat">News counts come from Media Cloud sources only. Queries are still in draft.
-      Timing alone does not show that one thing caused another.</p>`}
-    <p>Only counts and metrics are published, never post text or user data. Code and data licenses are not yet decided.</p>
-    ${SHOW_FUNDING_DISCLOSURE ? `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>` : ""}`);
+  return el("footer", { class: "wrap foot" }, `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>`);
 }
 
 main();

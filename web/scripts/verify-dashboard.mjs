@@ -2,7 +2,8 @@
 // Blocks every request that is not to 127.0.0.1/localhost and collects console errors. Checks the map, the chart
 // toggles (the last line cannot be switched off), the date range (out-of-range dates are rejected), the readout
 // values against data/processed (spot check table), the no-news state, touch target sizes and overflow at 390 px,
-// the demo label, and runs axe at 1280 and 390 px. Writes docs/screenshots/mc-simple-1280.png and mc-simple-390.png.
+// the demo label, that the removed explanatory copy is gone and the map table is clipped to 1x1 px, and runs axe at 1280
+// and 390 px. Writes docs/screenshots/min-dashboard-1280.png and min-dashboard-390.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -102,25 +103,47 @@ async function domain(page) {
   const idxStates = [...new Set(Object.values(index.races).map((r) => r.state))].sort();
   check("map: every state with a race is a focusable button", mapStates.join(","), idxStates.join(","),
     JSON.stringify(mapStates) === JSON.stringify(idxStates));
-  const txRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').innerText()).trim();
+  const txRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
   const txTotal = index.races["tx-senate-2026"].metrics.attention_total;
   check("map table: TX total attention with n", txRow, `n=${txTotal.n_days} days`, txRow.includes(`n=${txTotal.n_days} days`));
   const hatched = await page.$$eval("svg.usmap path", (ps) => ps.filter((p) => p.getAttribute("fill") === "url(#hatch-insufficient)").length);
   check("map: states with no race are drawn as insufficient data", hatched, "> 0", hatched > 0);
   await page.selectOption("#f-metric", "attention_rho");
-  const rhoRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').innerText()).trim();
+  const rhoRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
   check("map metric filter still recolors the map and table", rhoRow, "rho ... n=... pairs", /rho .*n=\d+ pairs/.test(rhoRow));
   await page.selectOption("#f-metric", "attention_total");
 
-  // status line and footer
+  // status line
   const dd = tx.series.display_daily;
   const n = dd.rows.filter((r) => r[NEWS] != null).length;
   const status = (await page.locator("#news-status").innerText()).trim();
   check("status line: live news N of M days", status, `News data: live, ${n} of ${dd.rows.length} days`,
     status === `News data: live, ${n} of ${dd.rows.length} days`);
-  const foot = (await page.locator("#news-caveat").innerText()).replace(/\s+/g, " ").trim();
-  const FOOT = "News counts come from Media Cloud sources only. Queries are still in draft. Timing alone does not show that one thing caused another.";
-  check("footer line", foot, FOOT, foot === FOOT);
+  // the explanatory copy removed in R1 (docs/dashboard-copy-removed.md) is not on the page; the map table stays as a
+  // visually hidden text alternative for the map
+  const REMOVED = ["on one UTC clock", "races with committed data", "Colored by", "The map's values as a table",
+    "have no processed race for this race type", "(working name)", "Source terms", "Map geometry: us-atlas",
+    "News counts come from Media Cloud sources only", "Only counts and metrics are published"];
+  const bodyText = await page.evaluate(() => document.body.innerText);
+  const found = REMOVED.filter((t) => bodyText.includes(t));
+  check("removed copy is not on the page", found.join(" | ") || "none", "none", found.length === 0);
+  // the table sits in a 1x1 px clipped wrapper (sr-only), not hidden or scaled, so screen readers still read it
+  const wrap = await page.$eval("#map-table-wrap", (e) => {
+    const b = e.getBoundingClientRect();
+    return { w: b.width, h: b.height, overflow: getComputedStyle(e).overflow };
+  });
+  const tableRows = await page.locator("#map-table tbody tr").count();
+  const tableAria = await page.locator("#map-table-wrap").ariaSnapshot();
+  const tableNamed = /table "Map values by state"/.test(tableAria);
+  const tableFocus = await page.$$eval("#map-table-wrap :is(a[href], button, input, select, textarea, [tabindex], [contenteditable=''], [contenteditable='true'])",
+    (es) => es.filter((e) => e.tabIndex >= 0 && !e.disabled).length);
+  check("map table is clipped to 1x1 px, has rows, is in the accessibility tree, and takes no focus",
+    `wrapper ${wrap.w}x${wrap.h} overflow ${wrap.overflow}; ${tableRows} rows; named table ${tableNamed}; ${tableFocus} focusable`,
+    `wrapper <=1x1 overflow hidden; ${Object.keys(index.races).length} rows; named table true; 0 focusable`,
+    wrap.w <= 1 && wrap.h <= 1 && wrap.overflow === "hidden" && tableRows === Object.keys(index.races).length
+      && tableNamed && tableFocus === 0);
+  const footers = await page.locator("footer").count();
+  check("no footer while the funding disclosure is off", footers, "0", footers === 0);
   const elabel = await page.locator('#chart g[data-mark="election"] text').textContent();
   check("election days shaded and labeled", elabel, "Election, Nov 3 and 4", elabel === "Election, Nov 3 and 4"
     && await page.locator('#chart g[data-mark="election"] rect').count() === 1);
@@ -225,7 +248,7 @@ async function domain(page) {
 
   await page.locator("#chart").blur();
   await page.mouse.move(0, 0);
-  await page.screenshot({ path: resolve(SHOTS, "mc-simple-1280.png"), fullPage: true });
+  await page.screenshot({ path: resolve(SHOTS, "min-dashboard-1280.png"), fullPage: true });
   await axe(page, "1280 Texas");
 
   // keyboard on the map opens another race; the chart redraws for it (no news: toggle off and disabled, gaps kept)
@@ -267,7 +290,7 @@ async function domain(page) {
   await page.touchscreen.tap(box.x + box.width * 0.25, box.y + box.height / 2);
   const r = await readout(page);
   check("tap on the chart fills the readout row", JSON.stringify(r), "date and three values", r.date && r.price && r.volume && r.news);
-  await page.screenshot({ path: resolve(SHOTS, "mc-simple-390.png"), fullPage: true });
+  await page.screenshot({ path: resolve(SHOTS, "min-dashboard-390.png"), fullPage: true });
   await axe(page, "390 Texas");
   await ctx.close();
 }

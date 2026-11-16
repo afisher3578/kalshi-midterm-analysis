@@ -244,7 +244,7 @@ tests/                 pytest suite; fixtures/raw/ holds recorded responses
 scripts/               check_secrets.py, hooks/pre-commit, fixture recorders
 ```
 
-## Limitations and ethics
+## Limitations and sources
 
 - Counts are a proxy for attention, not a measure of who saw what. A story is not a reader.
 - Each source covers only what it indexes: Media Cloud's outlet list is the frame, paywalled content is thin,
@@ -257,6 +257,15 @@ scripts/               check_secrets.py, hooks/pre-commit, fixture recorders
 - The Kalshi grant funding disclosure is off: `funding_disclosure_enabled: false` in `config/project.yaml`, and
   `SHOW_FUNDING_DISCLOSURE` in `web/src/config.ts` (on only with `VITE_FUNDING_DISCLOSURE=on npm run build`).
 - The repo is private. No license has been chosen yet.
+- News counts on the dashboard come from Media Cloud sources only, and the Media Cloud queries are still draft.
+- Kalshi public market data API: unauthenticated, read-only candlesticks. Only aggregates are published. Kalshi's
+  terms on redistributing derived aggregates were not yet reviewed ([docs/sources/kalshi.md](docs/sources/kalshi.md)).
+  [Source terms](https://docs.kalshi.com/getting_started/quick_start_market_data).
+- Wikimedia Analytics API (pageviews): pageview data is CC0 1.0; use of the API is under the Wikimedia Terms of Use
+  ([docs/sources/wikipedia.md](docs/sources/wikipedia.md)).
+  [Source terms](https://doc.wikimedia.org/generated-data-platform/aqs/analytics-api/documentation/access-policy.html).
+- Map geometry: us-atlas 3.0.1, US Census Bureau cartographic boundaries, ISC license, bundled with the page; license
+  text in `web/src/geo/LICENSE-us-atlas`, shipped as `web/dist/LICENSE-us-atlas`.
 
 ## Troubleshooting
 

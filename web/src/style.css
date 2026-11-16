@@ -23,10 +23,10 @@ a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .skip { position: absolute; left: -9999px; top: 0; background: #fff; padding: 8px; }
 .skip:focus { left: 8px; }
-.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0);
+  clip-path: inset(50%); white-space: nowrap; }
 
 .head { padding-top: 20px; }
-.kicker { color: var(--muted); margin: 0; font-size: 0.9rem; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 6px 20px; margin: 0 0 0.6rem; }
 .facts div { min-width: 0; }
 .facts dt { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }

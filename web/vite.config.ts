@@ -31,9 +31,20 @@ function processedData(): Plugin {
   };
 }
 
+// The us-atlas license ships next to the page that bundles its geometry.
+function atlasLicense(): Plugin {
+  return {
+    name: "atlas-license",
+    generateBundle() {
+      const source = readFileSync(resolve(import.meta.dirname, "src/geo/LICENSE-us-atlas"));
+      this.emitFile({ type: "asset", fileName: "LICENSE-us-atlas", source });
+    },
+  };
+}
+
 export default defineConfig({
   base: "./",
-  plugins: [processedData()],
+  plugins: [processedData(), atlasLicense()],
   build: { outDir: "dist", emptyOutDir: true },
   preview: { host: "127.0.0.1", port: 4173, strictPort: true },
   server: { host: "127.0.0.1" },
