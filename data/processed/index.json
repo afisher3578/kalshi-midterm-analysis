@@ -178,6 +178,22 @@
       "reason": null
      }
     }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 7281826.56,
+     "n_days": 92
+    },
+    "wikipedia_pageviews_total": {
+     "total": 1364636.0,
+     "n_days": 92
+    }
    }
   },
   "ky-senate-2026": {
@@ -357,6 +373,22 @@
       "reason": null
      }
     }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 1016154.96,
+     "n_days": 90
+    },
+    "wikipedia_pageviews_total": {
+     "total": 302941.0,
+     "n_days": 92
+    }
    }
   },
   "nc-senate-2026": {
@@ -516,6 +548,22 @@
       "metric_status": "skipped",
       "reason": "Kalshi series unusable or missing: kalshi/volume"
      }
+    }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 1199467.94,
+     "n_days": 92
+    },
+    "wikipedia_pageviews_total": {
+     "total": 717120.0,
+     "n_days": 92
     }
    }
   },
@@ -696,6 +744,22 @@
       "reason": null
      }
     }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 7715984.73,
+     "n_days": 92
+    },
+    "wikipedia_pageviews_total": {
+     "total": 1336952.0,
+     "n_days": 92
+    }
    }
   },
   "tx-governor-2026": {
@@ -859,6 +923,22 @@
       "metric_status": "computed",
       "reason": null
      }
+    }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 20130068.7,
+     "n_days": 92
+    },
+    "wikipedia_pageviews_total": {
+     "total": 2943162.0,
+     "n_days": 92
     }
    }
   },
@@ -1281,6 +1361,26 @@
       "metric_status": "computed",
       "reason": null
      }
+    }
+   },
+   "display": {
+    "window": {
+     "start": "2026-08-05",
+     "end": "2026-11-04",
+     "days": 92
+    },
+    "note": "Totals over the display window from series.display_daily, for the dashboard map: the sum of the non-null days and n_days, the days with a value. A column the race does not have is left out.",
+    "kalshi_volume": {
+     "total": 42959694.59,
+     "n_days": 92
+    },
+    "wikipedia_pageviews_total": {
+     "total": 5457294.0,
+     "n_days": 92
+    },
+    "news/race_either/national": {
+     "total": 6655.0,
+     "n_days": 92
     }
    }
   }

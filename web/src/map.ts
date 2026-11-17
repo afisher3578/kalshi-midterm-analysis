@@ -1,6 +1,6 @@
 // US state map (d3-geo + us-atlas, bundled; no remote topojson). The geometry is the pre-projected
 // states-albers-10m.json from us-atlas 3.0.1, committed in src/geo/, so the map renders from the page's own files.
-import { geoPath, scaleQuantize, format } from "d3";
+import { geoPath, scaleQuantize } from "d3";
 import { feature } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import atlas from "./geo/states-albers-10m.json";
@@ -8,10 +8,12 @@ import atlas from "./geo/states-albers-10m.json";
 export interface StateCell {
   code: string;
   name: string;
-  value: number | null;      // null: insufficient data or no race
+  value: number | null;      // null: no data, insufficient data or no race
+  status: "ok" | "insufficient" | "nodata";
   text: string;              // value with unit and n, or the reason
   raceId: string | null;
-  filteredOut: boolean;      // outside the polling density band
+  filteredOut: boolean;      // outside the polling filter
+  active: boolean;           // open for clicks; every other state is drawn faded (coming soon)
 }
 
 // FIPS code -> postal code (us-atlas ids are FIPS)
@@ -32,17 +34,16 @@ const path = geoPath();
 const LABEL_NUDGE: Record<string, [number, number]> = { FL: [22, 12], LA: [-12, 0], MI: [12, 22], KY: [6, 2], VA: [6, 2] };
 
 export const INSUFFICIENT_FILL = "url(#hatch-insufficient)";
+export const NO_DATA_FILL = "var(--rule)";
 export const FILTERED_FILL = "url(#dots-filtered)";
 
-// One ramp for every metric, --map-1 (closest to the page) to --map-5 (closest to the text color), from style.css.
+// One ramp for both metrics, --map-1 (closest to the page) to --map-5 (closest to the text color), from style.css.
 export const RAMP = [1, 2, 3, 4, 5].map((i) => `var(--map-${i})`);
 
-/** Five equal-width bins over the shown values. Diverging metrics are centered on 0 (low bins are the most negative). */
-export function binScale(values: number[], diverging: boolean) {
+/** Five equal-width bins from 0 (or the lowest value, if negative) to the highest shown value. */
+export function binScale(values: number[]) {
   const lo = Math.min(...values), hi = Math.max(...values);
-  const m = Math.max(Math.abs(lo), Math.abs(hi)) || 1;
-  const domain: [number, number] = diverging ? [-m, m] : [Math.min(0, lo), hi === lo ? lo + 1 : hi];
-  return scaleQuantize<string>().domain(domain).range(RAMP);
+  return scaleQuantize<string>().domain([Math.min(0, lo), hi === lo ? lo + 1 : hi]).range(RAMP);
 }
 
 /** Labels on bins 3 to 5 use the background color, on bins 1 and 2 the text color (4.5:1 in both themes, see
@@ -51,22 +52,31 @@ function onDark(fill: string): boolean {
   return RAMP.indexOf(fill) >= 2;
 }
 
-export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts: { diverging: boolean;
-  metricLabel: string; selected: string | null; fmt: (n: number) => string; onPick: (code: string) => void }) {
+/** The words a reader gets for one state, on the path (aria-label and title) and in the map table. */
+export function stateText(c: StateCell): string {
+  const parts = [c.filteredOut ? `outside the polling filter, ${c.text}` : c.text];
+  if (!c.active) parts.push("coming soon");
+  return `${c.name}: ${parts.join(", ")}`;
+}
+
+export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts: { metricLabel: string;
+  selected: string | null; fmt: (n: number) => string; onPick: (code: string) => void }) {
   const shown = [...cells.values()].filter((c) => c.value !== null && !c.filteredOut).map((c) => c.value as number);
-  const scale = shown.length ? binScale(shown, opts.diverging) : null;
+  const scale = shown.length ? binScale(shown) : null;
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 975 610");
   svg.setAttribute("class", "usmap");
   svg.setAttribute("role", "group");
-  svg.setAttribute("aria-label", `US map colored by ${opts.metricLabel}. States with a race are buttons; the same
-    values are in the table below the map.`.replace(/\s+/g, " "));
+  svg.setAttribute("aria-label", `US map colored by ${opts.metricLabel}. Texas is a button; the other states are
+    coming soon. The same values are in the table below the map.`.replace(/\s+/g, " "));
   svg.innerHTML = `<defs>
     <pattern id="hatch-insufficient" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
       <rect class="pat-bg" width="8" height="8"/><line class="pat-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern>
     <pattern id="dots-filtered" patternUnits="userSpaceOnUse" width="7" height="7">
       <rect class="pat-bg" width="7" height="7"/><circle class="pat-dot" cx="3.5" cy="3.5" r="1.1"/></pattern></defs>`;
+  const fillOf = (c: StateCell | undefined) => !c || c.status === "nodata" && !c.filteredOut ? NO_DATA_FILL
+    : c.filteredOut ? FILTERED_FILL : c.value === null || !scale ? INSUFFICIENT_FILL : scale(c.value);
   for (const f of states.features) {
     const code = FIPS[String(f.id).padStart(2, "0")];
     if (!code) continue;
@@ -75,21 +85,27 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     p.setAttribute("d", path(f) ?? "");
     p.setAttribute("data-state", code);
     if (c?.raceId) p.setAttribute("data-race", c.raceId);
-    const fill = !c || c.filteredOut ? FILTERED_FILL : c.value === null || !scale ? INSUFFICIENT_FILL : scale(c.value);
-    // patterns as an attribute; ramp colors as inline style, since var() belongs in CSS, not in presentation attributes
+    const fill = fillOf(c);
+    // patterns as an attribute; tokens as inline style, since var() belongs in CSS, not in presentation attributes
     if (fill.startsWith("url(")) p.setAttribute("fill", fill);
     else p.style.fill = fill;
-    p.setAttribute("class", "st" + (c?.raceId ? " has-race" : "") + (opts.selected === code ? " selected" : ""));
-    const name = c?.name ?? code;
-    if (c?.raceId) {
+    p.setAttribute("class", "st" + (c?.active ? " active" : " greyed") + (opts.selected === code ? " selected" : ""));
+    const text = c ? stateText(c) : code;
+    const title = document.createElementNS(NS, "title");
+    title.textContent = text;
+    p.append(title);
+    if (c?.active && c.raceId) {
       p.setAttribute("tabindex", "0");
       p.setAttribute("role", "button");
-      p.setAttribute("aria-label", `${name}: ${c.filteredOut ? "filtered out by the polling density band, " : ""}${c.text}. Open the race.`);
+      p.setAttribute("aria-label", `${text}. Open the race.`);
       p.setAttribute("aria-pressed", opts.selected === code ? "true" : "false");
       p.addEventListener("click", () => opts.onPick(code));
       p.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); opts.onPick(code); }
       });
+    } else if (c?.raceId) {
+      p.setAttribute("role", "img");
+      p.setAttribute("aria-label", text);
     } else {
       p.setAttribute("aria-hidden", "true");
     }
@@ -114,17 +130,17 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     const [cx, cy] = path.centroid(f);
     const [dx, dy] = LABEL_NUDGE[code] ?? [0, 0];
     const x = cx + dx, y = cy + dy;
-    const fill = c.filteredOut || c.value === null || !scale ? "" : scale(c.value);
+    const fill = fillOf(c);
     const t = document.createElementNS(NS, "text");
     t.setAttribute("x", String(x));
     t.setAttribute("y", String(y));
-    t.setAttribute("class", "stlabel" + (onDark(fill) ? " on-dark" : ""));
+    t.setAttribute("class", "stlabel" + (onDark(fill) ? " on-dark" : "") + (c.active ? "" : " greyed"));
     t.setAttribute("aria-hidden", "true");
     t.innerHTML = `<tspan x="${x}" dy="-0.2em">${code}</tspan><tspan x="${x}" dy="1.15em" class="stval">${
-      c.filteredOut ? "filtered" : c.value === null ? "n/a" : opts.fmt(c.value)}</tspan>`;
+      c.filteredOut ? "filtered" : c.status === "nodata" ? "no data" : c.value === null ? "n/a" : opts.fmt(c.value)}</tspan>`;
     svg.append(t);
   }
-  // legend: discrete bins plus the two patterns, each with text
+  // legend: discrete bins plus the no data fill and the two patterns, each with text
   const legend = document.createElement("ul");
   legend.className = "legend";
   legend.setAttribute("aria-label", `Legend for ${opts.metricLabel}`);
@@ -135,10 +151,12 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
       items.push(`<li><span class="sw" style="background:${col}"></span>${opts.fmt(a)} to ${opts.fmt(b)}</li>`);
     }
   }
+  items.push(`<li><span class="sw" style="background:${NO_DATA_FILL}"></span>no data</li>`);
   items.push(`<li><svg class="sw" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" fill="url(#hatch-insufficient)"/></svg>
-    insufficient data (no race, or n under 20)</li>`);
+    insufficient data (n under 20 days)</li>`);
   items.push(`<li><svg class="sw" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" fill="url(#dots-filtered)"/></svg>
-    filtered out (polling density band or race type)</li>`);
+    outside the polling filter</li>`);
+  items.push(`<li><span class="sw sw-greyed" style="background:var(--map-3)"></span>faded: coming soon</li>`);
   legend.innerHTML = items.join("");
   root.innerHTML = "";
   const fig = document.createElement("div");
@@ -147,11 +165,3 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
   root.append(fig, legend);
   return { scale };
 }
-
-export const fmtMap = {
-  attention_total: format(".3~s"),
-  attention_rho: format(".2f"),
-  price_change: (v: number) => `${v > 0 ? "+" : ""}${format(".1f")(v)}`,
-  polling_density: format(",.0f"),
-  data_coverage: format(".0%"),
-};

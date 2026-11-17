@@ -2,14 +2,13 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { IndexData, RaceData } from "../src/types";
-import { byOffice, clampRange, column, densityBand, eventStudy, keepMask, lagCellRho, mapValue, outcomes, passesFilter,
+import { byOffice, clampRange, column, eventStudy, keepMask, lagCellRho, outcomes, passesFilter,
   spearman, surprise, VOLUME, PRICE } from "../src/transforms";
 
 const PROCESSED = resolve(import.meta.dirname, "../../data/processed");
 const index: IndexData = JSON.parse(readFileSync(resolve(PROCESSED, "index.json"), "utf-8"));
 const races: RaceData[] = readdirSync(PROCESSED).filter((n) => n.endsWith(".json") && n !== "index.json")
   .map((n) => JSON.parse(readFileSync(resolve(PROCESSED, n), "utf-8")));
-const fmt = { int: (n: number) => String(Math.round(n)), two: (n: number) => n.toFixed(2), pct: (n: number) => `${Math.round(n * 100)}%` };
 
 describe("lead-lag math in the page", () => {
   it("reproduces every pipeline daily lag cell vs volume surprise for every committed race", () => {
@@ -51,7 +50,7 @@ describe("lead-lag math in the page", () => {
   });
 });
 
-describe("filters and map values", () => {
+describe("filters", () => {
   it("platform groups", () => {
     expect(passesFilter("wikipedia/pageviews_total", "looking", "all")).toBe(true);
     expect(passesFilter("bluesky/post_count", "looking", "all")).toBe(false);
@@ -62,29 +61,6 @@ describe("filters and map values", () => {
     expect(clampRange(null, null, "2026-09-01", "2026-11-04")).toEqual(["2026-09-01", "2026-11-04"]);
     expect(clampRange("2026-08-01", "2026-10-01", "2026-09-01", "2026-11-04")).toEqual(["2026-09-01", "2026-10-01"]);
     expect(clampRange("2026-10-05", "2026-10-01", "2026-09-01", "2026-11-04")).toEqual(["2026-09-01", "2026-11-04"]);
-  });
-  it("density bands", () => {
-    expect(densityBand(null)).toBeNull();
-    expect(densityBand(3)).toBe("low");
-    expect(densityBand(10)).toBe("medium");
-    expect(densityBand(53)).toBe("high");
-  });
-  it("every map value of every race carries n, and n < 20 is insufficient data", () => {
-    for (const r of Object.values(index.races)) {
-      for (const metric of ["attention_total", "attention_rho", "price_change", "polling_density", "data_coverage"] as const) {
-        const v = mapValue(r.metrics, metric, "wikipedia/pageviews_total", fmt);
-        if (v.value === null) expect(v.text).toBe("insufficient data");
-        else expect(v.text).toMatch(/n=\d+/);
-        if (metric === "attention_rho" && v.value !== null) expect(v.n).toBeGreaterThanOrEqual(20);
-      }
-    }
-    expect(mapValue(undefined, "attention_total", "wikipedia/pageviews_total", fmt).value).toBeNull();
-  });
-  it("Texas map values match the index", () => {
-    const tx = index.races["tx-senate-2026"];
-    const v = mapValue(tx.metrics, "attention_rho", "wikipedia/pageviews_total", fmt);
-    expect(v.value).toBeCloseTo(0.2383, 4);
-    expect(v.n).toBe(56);
   });
 });
 

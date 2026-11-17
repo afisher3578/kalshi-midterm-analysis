@@ -157,6 +157,14 @@ export interface IndexRace {
   quality: Record<string, Status>;
   headline: { status: string; lags?: Record<string, { rho: Num; n: number }> };
   metrics?: IndexMetrics;
+  display?: IndexDisplay | null;
+}
+
+// index.json races[*].display (raceattn/display.py display_totals): sums over the display window, each with n_days.
+export interface IndexDisplay {
+  window: { start: string; end: string; days: number };
+  note?: string;
+  [column: string]: { total: Num; n_days: number } | { start: string; end: string; days: number } | string | undefined;
 }
 
 export interface IndexData {

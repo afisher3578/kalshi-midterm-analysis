@@ -72,17 +72,6 @@ export const STATES: Record<string, string> = {
   UT: "Utah", VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming",
 };
 
-export const SOURCE_LABEL: Record<string, string> = {
-  wikipedia: "Wikipedia pageviews", bluesky: "Bluesky posts", x: "X posts", news_mediacloud: "Media Cloud stories",
-  news_guardian: "Guardian articles", news_nyt: "NYT articles", news_manual: "News (manual CSV)", gdelt: "GDELT articles",
-  reddit: "Reddit posts", youtube: "YouTube videos",
-};
-
-// The series the map uses for the attention metrics when no single source is picked.
-export const GROUP_DEFAULT_SOURCE: Record<string, string> = {
-  all: "wikipedia", looking: "wikipedia", talking: "bluesky", reporting: "news_mediacloud",
-};
-
 // The race detail views (race page charts, lag tables, drawers, the News (Media Cloud) view, breakdowns, top
 // sources, quality tables and downloads). Off: the page is the map plus one line chart. Turn on to bring them back.
 export const SHOW_DETAILS = false;

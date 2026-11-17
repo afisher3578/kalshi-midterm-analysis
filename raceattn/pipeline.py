@@ -13,6 +13,7 @@ from raceattn.connectors import REGISTRY
 from raceattn.connectors.base import Connector, Row, iso_utc, now_utc
 from raceattn.connectors.kalshi import SERIES_PRICE, SERIES_SMALL_TRADE_SHARE, SERIES_TRADE_COUNT, SERIES_VOLUME
 from raceattn.connectors.wikipedia import SERIES_TOTAL
+from raceattn.display import display_totals
 from raceattn.http import HttpClient
 from raceattn.metrics.events import event_metrics, load_events
 from raceattn.metrics.lags import (DAILY_LAGS, HOURLY_LAGS, MIN_PAIRS, attention_lag_table, noise_band,
@@ -584,6 +585,7 @@ def write_outputs(result: dict[str, Any], out_dir: str) -> tuple[str, str]:
         "headline": headline(result),
         "kalshi": k, "status": r.get("status", "confirmed"),
         "metrics": index_metrics(result),
+        "display": display_totals(result["series"].get("display_daily")),
     }
     idx["project"] = PROJECT_NAME
     idx["updated_at"] = result["generated_at"]

@@ -15,6 +15,9 @@ export const SERIES_STYLE: Record<SeriesKey, { label: string; short: string; uni
   volume: { label: "Kalshi volume (contracts per day)", short: "Kalshi volume", unit: "contracts", color: "var(--series-volume)", dash: "7,4" },
   news: { label: "Media attention (news stories per day)", short: "Media attention", unit: "stories", color: "var(--series-news)", dash: "2,3" },
 };
+// the attention line when the source is Wikipedia (ChartInput.attention); same slot, color and dash as news
+const WIKI_STYLE = { ...SERIES_STYLE.news, label: "Wikipedia attention (pageviews per day)", short: "Wikipedia attention",
+  unit: "pageviews" };
 const AXIS_TITLE: Record<SeriesKey, string> = { price: "Price, %", volume: "Volume", news: "Stories" };
 
 export interface ChartState {
@@ -32,6 +35,7 @@ export interface ChartInput {
   election: string[];       // shaded days, e.g. election day and the day after
   news: { available: boolean; status: string };
   demo: boolean;
+  attention?: "news" | "wikipedia";  // what the attention line plots (default news)
 }
 
 const fmtDay = utcFormat("%b %-d");
@@ -42,11 +46,11 @@ const fmtNews = format(",.0f");
 const fmtTick = format(".2~s");
 let uid = 0;
 
-export function formatValue(key: SeriesKey, v: Num): string {
+export function formatValue(key: SeriesKey, v: Num, attention: "news" | "wikipedia" = "news"): string {
   if (v === null) return "no data";
   if (key === "price") return `${fmtPrice(v)}%`;
   if (key === "volume") return `${fmtVolume(v)} contracts`;
-  return `${fmtNews(v)} stories`;
+  return `${fmtNews(v)} ${attention === "wikipedia" ? "pageviews" : "stories"}`;
 }
 
 function addDays(d: string, n: number): string {
@@ -73,6 +77,13 @@ export class LineChart {
 
   get dates(): string[] { return this.input.series.dates; }
 
+  private get wiki(): boolean { return this.input.attention === "wikipedia"; }
+
+  /** Label, unit and color of a line; the attention line follows the chosen source. */
+  style(k: SeriesKey) { return k === "news" && this.wiki ? WIKI_STYLE : SERIES_STYLE[k]; }
+
+  private fmt(k: SeriesKey, v: Num): string { return formatValue(k, v, this.input.attention); }
+
   /** Index range [lo, hi] of the dates in view. */
   range(): [number, number] {
     const lo = this.dates.findIndex((d) => d >= this.state.from);
@@ -95,14 +106,14 @@ export class LineChart {
     state.to = clampDate(state.to || input.window.end, input.window.start, input.window.end);
     if (state.from > state.to) [state.from, state.to] = [input.window.start, input.window.end];
     const toggle = (k: SeriesKey) => {
-      const s = SERIES_STYLE[k];
+      const s = this.style(k);
       return `<label class="tg" data-key="${k}"><input type="checkbox" id="tg-${k}" data-key="${k}"${state.visible[k] ? " checked" : ""}>
         <svg class="swatch" viewBox="0 0 30 10" width="30" height="10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5"
           ${s.dash ? ` stroke-dasharray="${s.dash}"` : ""}/></svg>
-        <span>${esc(s.label)}${k === "news" && !input.news.available ? ' <span class="tg-off">(no news data for this race yet)</span>' : ""}</span></label>`;
+        <span>${esc(s.label)}${k === "news" && !input.news.available ? ` <span class="tg-off">(no ${this.wiki ? "Wikipedia" : "news"} data for this race yet)</span>` : ""}</span></label>`;
     };
     this.root.innerHTML = `
-      <h2 id="chart-h" class="charttitle">${esc(input.title)}: Kalshi price, Kalshi volume and media attention</h2>
+      <h2 id="chart-h" class="charttitle">${esc(input.title)}: Kalshi price, Kalshi volume and ${this.wiki ? "Wikipedia" : "media"} attention</h2>
       ${input.demo ? '<p class="demo-banner" id="demo-label">Demo data</p>' : ""}
       <p class="status" id="news-status" data-news="${input.news.available ? "yes" : "no"}">${esc(input.news.status)}</p>
       <div class="chartctl">
@@ -202,7 +213,7 @@ export class LineChart {
       i.checked = this.state.visible[k];
       i.disabled = unavailable || last;
       i.closest("label")!.classList.toggle("disabled", i.disabled);
-      if (last) note.push(`${SERIES_STYLE[k].short} is the only line on, so it cannot be switched off.`);
+      if (last) note.push(`${this.style(k).short} is the only line on, so it cannot be switched off.`);
     }
     this.root.querySelector("#tg-note")!.textContent = note.join(" ");
   }
@@ -316,7 +327,7 @@ export class LineChart {
       const y = this.ys[k]!;
       const v = this.shown[k];
       const idx = this.dates.map((_, i) => i).filter((i) => i >= lo && i <= hi);
-      const st = SERIES_STYLE[k];
+      const st = this.style(k);
       lines.append("path").attr("class", `line line-${k}`).attr("data-series", k)
         .attr("stroke-dasharray", st.dash).attr("stroke-linecap", st.dash ? "butt" : "round")
         .attr("d", line<number>().defined((i) => v[i] !== null).x(cx).y((i) => y(v[i] as number))(idx));
@@ -345,7 +356,7 @@ export class LineChart {
    * text muted, so no text depends on a series color for contrast. */
   private axisTitle(g: Selection<SVGGElement, unknown, null, undefined>, k: SeriesKey, anchor: "start" | "end", row = 0) {
     g.append("text").attr("class", "atitle").attr("x", anchor === "end" ? -this.dims.ml + 2 : 2).attr("y", this.dims.mt - 14 - row * 14)
-      .attr("text-anchor", "start").text(AXIS_TITLE[k]);
+      .attr("text-anchor", "start").text(k === "news" && this.wiki ? "Pageviews" : AXIS_TITLE[k]);
   }
 
   private drawCursor() {
@@ -371,12 +382,12 @@ export class LineChart {
     }
     const s = this.input.series;
     const parts = vis.map((k) => `<span class="rd" data-k="${k}"><span class="rk" data-k="${k}">${
-      esc(SERIES_STYLE[k].short)}</span> <span class="rv" data-v="${k}">${esc(formatValue(k, s[k][i]))}</span></span>`);
+      esc(this.style(k).short)}</span> <span class="rv" data-v="${k}">${esc(this.fmt(k, s[k][i]))}</span></span>`);
     const dateText = `<span class="rdate" data-date="${date}">${esc(fmtLong(new Date(utcMs(date))))} (${date})</span>`;
     out.innerHTML = `${dateText}<span class="sep">:</span> ${parts.join('<span class="sep">; </span>')}`;
     this.tip.innerHTML = `<strong>${esc(fmtLong(new Date(utcMs(date))))}</strong>${vis.map((k) =>
-      `<div><span class="rk" data-k="${k}">${esc(SERIES_STYLE[k].short)}</span> ${
-        esc(formatValue(k, s[k][i]))}</div>`).join("")}`;
+      `<div><span class="rk" data-k="${k}">${esc(this.style(k).short)}</span> ${
+        esc(this.fmt(k, s[k][i]))}</div>`).join("")}`;
     this.tip.hidden = false;
     const scale = this.svgBox.clientWidth / w || 1;
     const left = cx * scale;

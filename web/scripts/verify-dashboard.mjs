@@ -5,7 +5,9 @@
 // the demo label, that the removed explanatory copy is gone and the map table is clipped to 1x1 px, the theme switch
 // (data-theme flips, localStorage, chart and map colors follow, system setting fallback), that no element has a box
 // shadow or a gradient, 44 px touch targets at 390 px, and runs axe in the light and dark theme at 1280 and 390 px.
-// Writes docs/screenshots/style-{light,dark}-{1280,390}.png.
+// The Filters panel: the button right of the map heading, exactly five controls, disabled "coming soon" choices,
+// the URL hash, the count badge, Reset, Esc and outside click, the map and chart following the controls.
+// Writes docs/screenshots/style-{light,dark}-{1280,390}.png and filt-{closed,open}-{1280,390}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -121,7 +123,8 @@ async function domain(page) {
   const order = await page.evaluate(() => {
     const m = document.querySelector("#mapsec"), c = document.querySelector("#racesec");
     return { next: m?.nextElementSibling?.id, below: c.getBoundingClientRect().top >= m.getBoundingClientRect().bottom,
-      hidden: ["#race-tabs", "#charts", "#m3charts", "#daily-table", "#export-daily", "table.lag", "#f-from", "#f-overlay"]
+      hidden: ["#race-tabs", "#charts", "#m3charts", "#daily-table", "#export-daily", "table.lag", "#f-from", "#f-overlay",
+        "#f-office", "#f-band", "#f-group", "#f-metric", "#f-source", "#filter-hint", "#race-type", "form#filters .fgrid"]
         .filter((s) => document.querySelector(s)) };
   });
   check("layout: chart section directly below the map section", JSON.stringify(order), "next racesec, below, no hidden views",
@@ -129,20 +132,133 @@ async function domain(page) {
   const race = await page.locator("#race").getAttribute("data-race");
   check("default race is Texas Senate", race, "tx-senate-2026", race === "tx-senate-2026");
 
-  // map behavior kept (the M3 map checks)
-  const mapStates = await page.$$eval("svg.usmap path.has-race", (ps) => ps.map((p) => p.getAttribute("data-state")).sort());
-  const idxStates = [...new Set(Object.values(index.races).map((r) => r.state))].sort();
-  check("map: every state with a race is a focusable button", mapStates.join(","), idxStates.join(","),
+  // map: every state with a race is drawn with its value; only Texas is a button (the rest are coming soon)
+  const mapStates = await page.$$eval("svg.usmap path[data-race]", (ps) => ps.map((p) => p.getAttribute("data-state")).sort());
+  const idxStates = [...new Set(Object.values(index.races).filter((r) => r.office === "senate").map((r) => r.state))].sort();
+  check("map: every state with a Senate race carries its race", mapStates.join(","), idxStates.join(","),
     JSON.stringify(mapStates) === JSON.stringify(idxStates));
+  const buttons = await page.$$eval('svg.usmap path[role="button"]', (ps) => ps.map((p) => `${p.dataset.state}:${p.tabIndex}`));
+  const greyed = await page.$$eval("svg.usmap path.st.greyed", (ps) => ps.length);
+  const greyFocus = await page.$$eval("svg.usmap path.st.greyed", (ps) => ps.filter((p) => p.tabIndex >= 0 || p.getAttribute("role") === "button").length);
+  const opacity = await page.$eval('svg.usmap path[data-state="FL"]', (p) => getComputedStyle(p).opacity);
+  check("map: only Texas is a button; every other state is faded and takes no focus", `${buttons.join(",")}; ${greyed} greyed, ${greyFocus} focusable, FL opacity ${opacity}`,
+    "TX:0; 50 greyed, 0 focusable, opacity < 1", buttons.join(",") === "TX:0" && greyed >= 50 && greyFocus === 0 && Number(opacity) < 1);
+  const txVol = index.races["tx-senate-2026"].display.kalshi_volume;
   const txRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
-  const txTotal = index.races["tx-senate-2026"].metrics.attention_total;
-  check("map table: TX total attention with n", txRow, `n=${txTotal.n_days} days`, txRow.includes(`n=${txTotal.n_days} days`));
-  const hatched = await page.$$eval("svg.usmap path", (ps) => ps.filter((p) => p.getAttribute("fill") === "url(#hatch-insufficient)").length);
-  check("map: states with no race are drawn as insufficient data", hatched, "> 0", hatched > 0);
-  await page.selectOption("#f-metric", "attention_rho");
-  const rhoRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
-  check("map metric filter still recolors the map and table", rhoRow, "rho ... n=... pairs", /rho .*n=\d+ pairs/.test(rhoRow));
-  await page.selectOption("#f-metric", "attention_total");
+  const txLabel = await page.$eval('svg.usmap path[data-state="TX"]', (p) => `${p.getAttribute("aria-label")} | title ${p.querySelector("title")?.textContent}`);
+  check("map default metric: TX Kalshi volume with n in the table, the aria-label and the title",
+    `${txRow} | ${txLabel}`, `43M contracts (n=${txVol.n_days} days)`,
+    txRow === `43M contracts (n=${txVol.n_days} days)` && txLabel.includes(`43M contracts (n=${txVol.n_days} days)`)
+      && txLabel.includes("title Texas: 43M contracts"));
+  const flLabel = await page.$eval('svg.usmap path[data-state="FL"]', (p) => p.getAttribute("aria-label"));
+  check("greyed state with a race keeps its value as text and says coming soon", flLabel, "Florida: ... contracts (n=92 days), coming soon",
+    /^Florida: .* contracts \(n=\d+ days\), coming soon$/.test(flLabel));
+  const noData = await page.$eval('svg.usmap path[data-state="AL"]', (p) => p.style.fill);
+  check("map: states with no race are drawn as no data", noData, "var(--rule)", noData === "var(--rule)");
+  // a click on a greyed state does nothing
+  await page.locator('svg.usmap path[data-state="FL"]').click({ force: true });
+  await page.waitForTimeout(200);
+  check("click on a greyed state (Florida) does not open its race", await page.locator("#race").getAttribute("data-race"), "tx-senate-2026",
+    await page.locator("#race").getAttribute("data-race") === "tx-senate-2026");
+
+  // ---- the Filters panel
+  const fb = page.locator("#filters-btn");
+  const geo = await page.evaluate(() => {
+    const h = document.querySelector("#map-h").getBoundingClientRect(), b = document.querySelector("#filters-btn").getBoundingClientRect();
+    return { sameRow: b.top < h.bottom && b.bottom > h.top, right: b.left > h.right };
+  });
+  check("Filters button sits right of the map heading, same row", JSON.stringify(geo), "same row, right", geo.sameRow && geo.right);
+  const attrs = `${await fb.getAttribute("aria-expanded")} ${await fb.getAttribute("aria-controls")} ${await page.locator("#filters-panel").isVisible()}`;
+  check("Filters button: aria-expanded false, aria-controls the panel, panel closed", attrs, "false filters-panel false", attrs === "false filters-panel false");
+  check("no count badge in the default view", await page.locator("#filters-badge").isVisible(), "false", !(await page.locator("#filters-badge").isVisible()));
+  await page.mouse.move(0, 0);
+  await page.locator("#mapsec").scrollIntoViewIfNeeded();
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "filt-closed-1280.png") });
+  await fb.click();
+  const opened = `${await fb.getAttribute("aria-expanded")} ${await page.locator("#filters-panel").isVisible()}`;
+  check("click opens the panel", opened, "true true", opened === "true true");
+  const controls = await page.$$eval("#filters-panel [data-control]", (cs) => cs.map((c) => c.dataset.control).join(","));
+  check("panel has exactly five controls", controls, "state,type,metric,polls,source", controls === "state,type,metric,polls,source");
+  const stateOpts = await page.$$eval("#f-state option", (os) => ({ n: os.length, enabled: os.filter((o) => !o.disabled).map((o) => o.value),
+    ariaOff: os.filter((o) => o.disabled && o.getAttribute("aria-disabled") === "true" && o.title === "Coming soon").length,
+    value: document.querySelector("#f-state").value }));
+  check("State: 50 states, only Texas enabled (others disabled, aria-disabled, title Coming soon), Texas selected",
+    JSON.stringify(stateOpts), "50, [TX], 49, TX", stateOpts.n === 50 && stateOpts.enabled.join() === "TX" && stateOpts.ariaOff === 49 && stateOpts.value === "TX");
+  const types = await page.$$eval('input[name="f-type"]', (is) => is.map((i) => `${i.value}:${i.checked ? "on" : ""}${i.disabled ? "off" : ""}${
+    i.getAttribute("aria-disabled") === "true" && i.title === "Coming soon" ? "-soon" : ""}`).join(","));
+  check("Race type: Senate checked and active; Governor, House, National disabled and coming soon", types,
+    "senate:on,governor:off-soon,house:off-soon,national:off-soon", types === "senate:on,governor:off-soon,house:off-soon,national:off-soon");
+  const soonOpacity = await page.$eval('input[name="f-type"][value="governor"]', (i) => getComputedStyle(i.closest("label")).opacity);
+  check("disabled race types are visibly greyed", soonOpacity, "< 1", Number(soonOpacity) < 1);
+  const radios = await page.$$eval('#filters-panel fieldset', (fs) => fs.map((f) => `${f.dataset.control}:${f.querySelector("legend")?.textContent}:${
+    [...f.querySelectorAll("input")].map((i) => i.value).join("/")}`).join(" | "));
+  check("radio groups with fieldset and legend", radios,
+    "type:Race type:senate/governor/house/national | metric:Map metric:volume/attention | polls:Polling:all/few/many | source:Sources:news/wikipedia",
+    radios === "type:Race type:senate/governor/house/national | metric:Map metric:volume/attention | polls:Polling:all/few/many | source:Sources:news/wikipedia");
+  const srcNote = await page.locator('#filters-panel [data-control="source"] .hint').innerText();
+  check("Sources: muted note", srcNote, "More sources in development.", srcNote === "More sources in development.");
+  await page.screenshot({ path: resolve(SHOTS, "filt-open-1280.png") });
+  await axe(page, "1280 filters open");
+  // map metric Attention with News: Texas shows stories; every other state has no news (no data)
+  await page.locator('#filters-panel label:has(input[name="f-metric"][value="attention"])').click();
+  const attRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
+  const txNews = index.races["tx-senate-2026"].display["news/race_either/national"];
+  const flAtt = await page.$eval('svg.usmap path[data-state="FL"]', (p) => `${p.style.fill} ${p.getAttribute("aria-label")}`);
+  check("Attention (News): TX stories with n; Florida has no news (no data)", `${attRow} | ${flAtt}`,
+    `6.66k stories (n=${txNews.n_days} days) | var(--rule) Florida: no news data, coming soon`,
+    attRow === `6.66k stories (n=${txNews.n_days} days)` && flAtt === "var(--rule) Florida: no news data, coming soon");
+  // polling Few: Texas (53 polls) is outside and greyed with the filtered pattern; Kentucky (1 poll) stays in
+  await page.locator('#filters-panel label:has(input[name="f-polls"][value="few"])').click();
+  const pf = await page.evaluate(() => ({ tx: document.querySelector('svg.usmap path[data-state="TX"]').getAttribute("fill"),
+    ky: document.querySelector('svg.usmap path[data-state="KY"]').getAttribute("fill") }));
+  check("Polling Few: TX outside (dots), KY inside", JSON.stringify(pf), "TX url(#dots-filtered), KY not",
+    pf.tx === "url(#dots-filtered)" && pf.ky !== "url(#dots-filtered)");
+  const badge = (await page.locator("#filters-badge").innerText()).trim();
+  const hash = await page.evaluate(() => location.hash);
+  check("badge counts two changed controls; hash holds them", `${badge} | ${hash}`, "2 changed | #metric=attention&polls=few",
+    /^2\s*changed$/.test(badge) && hash === "#metric=attention&polls=few");
+  // Esc closes and returns focus to the button
+  await page.locator('#filters-panel input[name="f-polls"][value="few"]').focus();
+  await page.keyboard.press("Escape");
+  const esc = `${await page.locator("#filters-panel").isVisible()} ${await fb.getAttribute("aria-expanded")} ${await page.evaluate(() => document.activeElement?.id)}`;
+  check("Esc closes the panel and focus returns to the button", esc, "false false filters-btn", esc === "false false filters-btn");
+  // keyboard: Enter opens, focus moves into the panel; Tab reaches the controls
+  await page.keyboard.press("Enter");
+  const inPanel = await page.evaluate(() => document.querySelector("#filters-panel").contains(document.activeElement) && document.activeElement.id);
+  check("keyboard: Enter on the button opens the panel and focuses the first control", inPanel, "f-state", inPanel === "f-state");
+  // a click outside closes
+  await page.mouse.click(5, 5);
+  check("click outside closes the panel", await page.locator("#filters-panel").isVisible(), "false", !(await page.locator("#filters-panel").isVisible()));
+  // Reset restores the defaults
+  await fb.click();
+  await page.locator("#f-reset").click();
+  const afterReset = `${await page.evaluate(() => location.hash)}|${await page.locator("#filters-badge").isVisible()}|${
+    await page.$eval('input[name="f-metric"]:checked', (i) => i.value)}|${await page.$eval('input[name="f-polls"]:checked', (i) => i.value)}`;
+  check("Reset: defaults, empty hash, no badge", afterReset, "|false|volume|all", afterReset === "|false|volume|all");
+  // Sources: Wikipedia switches the chart's attention line
+  await page.locator('#filters-panel label:has(input[name="f-source"][value="wikipedia"])').click();
+  await page.waitForFunction(() => document.querySelector("#news-status")?.textContent.startsWith("Wikipedia"));
+  const wst = (await page.locator("#news-status").innerText()).trim();
+  const wdd = tx.series.display_daily;
+  const wn = wdd.rows.filter((r) => r.wikipedia_pageviews_total != null).length;
+  const wlabel = await page.locator('label[data-key="news"]').innerText();
+  check("Sources Wikipedia: chart plots Wikipedia pageviews", `${wst} | ${wlabel} | lines ${await lines(page)}`,
+    `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`, wst === `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`
+      && wlabel.includes("Wikipedia") && await lines(page) === "news,price,volume");
+  await page.locator("#chart").focus();
+  await page.keyboard.press("Home");
+  const wr = await readout(page);
+  const w0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(wdd.rows[0].wikipedia_pageviews_total);
+  check("Wikipedia readout matches the JSON on the first day", wr.news, `${w0} pageviews`, wr.news === `${w0} pageviews`);
+  await page.locator("#chart").blur();
+  check("hash after Sources Wikipedia", await page.evaluate(() => location.hash), "#source=wikipedia",
+    await page.evaluate(() => location.hash) === "#source=wikipedia");
+  await page.keyboard.press("Escape");
+  await fb.click();
+  await page.locator('#filters-panel label:has(input[name="f-source"][value="news"])').click();
+  await page.waitForFunction(() => document.querySelector("#news-status")?.textContent.startsWith("News data"));
+  await page.keyboard.press("Escape");
 
   // status line
   const dd = tx.series.display_daily;
@@ -310,17 +426,17 @@ async function domain(page) {
   const back = await drawn(page);
   check("toggle again: back to light and saved", JSON.stringify(back), "light", themeOk(back, "light") && back.stored === "light");
 
-  // keyboard on the map opens another race; the chart redraws for it (no news: toggle off and disabled, gaps kept)
+  // another race by URL (?race=); no news: one short line, toggle off and disabled, gaps kept
   if (noNews) {
     const id = noNews.race.race_id;
-    await page.locator(`svg.usmap path[data-state="${noNews.race.state}"]`).focus();
-    await page.keyboard.press("Enter");
+    await page.goto(`${BASE}?race=${id}`, { waitUntil: "networkidle" });
     await page.waitForFunction((rid) => document.querySelector("#race")?.getAttribute("data-race") === rid, id);
+    await page.waitForSelector("#chart svg path.line");
     const st = (await page.locator("#news-status").innerText()).trim();
     const nd = await page.locator("#tg-news").isDisabled(), nc = await page.locator("#tg-news").isChecked();
-    check(`map Enter opens ${id}; no news: status, toggle off and disabled, price and volume drawn`,
-      `${st} | disabled ${nd} checked ${nc} | lines ${await lines(page)}`, "No news data for this race yet",
-      st.startsWith("No news data for this race yet") && nd && !nc && await lines(page) === "price,volume");
+    check(`?race=${id}: no news: one short line, toggle off and disabled, price and volume drawn`,
+      `${st} | disabled ${nd} checked ${nc} | lines ${await lines(page)}`, "No news data for this race yet.",
+      st === "No news data for this race yet." && nd && !nc && await lines(page) === "price,volume");
     const miss = noNews.series.display_daily.coverage.kalshi_price_close.missing_days;
     const segs = await page.$eval("#chart svg path.line-price", (p) => (p.getAttribute("d").match(/M/g) || []).length);
     check(`${id}: missing Kalshi days break the price line (not drawn as zero)`, `${segs} segment(s); missing ${miss.join(", ")}`,
@@ -328,9 +444,21 @@ async function domain(page) {
     await axe(page, `1280 ${id}`);
     await page.locator('svg.usmap path[data-state="TX"]').click();
     await page.waitForFunction(() => document.querySelector("#race")?.getAttribute("data-race")?.startsWith("tx-"));
-    check("back to Texas: news toggle on again", `${await page.locator("#tg-news").isChecked()} ${await lines(page)}`, "true news,price,volume",
-      await page.locator("#tg-news").isChecked() && await lines(page) === "news,price,volume");
+    check("Texas on the map opens Texas Senate; news toggle on again", `${await page.locator("#race").getAttribute("data-race")} ${await page.locator("#tg-news").isChecked()} ${await lines(page)}`,
+      "tx-senate-2026 true news,price,volume", await page.locator("#race").getAttribute("data-race") === "tx-senate-2026"
+        && await page.locator("#tg-news").isChecked() && await lines(page) === "news,price,volume");
   }
+  // the hash on load: known values apply, unknown or disabled values fall back to the default
+  await page.goto(`${BASE}#state=FL&type=governor&metric=attention&polls=many&source=bluesky`, { waitUntil: "networkidle" });
+  await page.waitForSelector("body[data-ready=true]");
+  const fromHash = await page.evaluate(() => ({ state: document.querySelector("#f-state").value,
+    type: document.querySelector('input[name="f-type"]:checked').value, metric: document.querySelector('input[name="f-metric"]:checked').value,
+    polls: document.querySelector('input[name="f-polls"]:checked').value, source: document.querySelector('input[name="f-source"]:checked').value,
+    badge: document.querySelector("#filters-badge").textContent, race: document.querySelector("#race").dataset.race }));
+  check("hash on load: FL, governor and bluesky rejected; attention and many kept; Texas Senate open",
+    JSON.stringify(fromHash), "TX senate attention many news, badge 2", fromHash.state === "TX" && fromHash.type === "senate"
+      && fromHash.metric === "attention" && fromHash.polls === "many" && fromHash.source === "news"
+      && fromHash.badge.startsWith("2") && fromHash.race === "tx-senate-2026");
   await ctx.close();
 }
 
@@ -347,13 +475,25 @@ async function domain(page) {
   const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("no horizontal page scroll at 390 px", overflow, "0", overflow <= 0);
-  const targets = "#theme-btn, #racesec label.tg, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters select, #race-type label";
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "filt-closed-390.png") });
+  await page.locator("#filters-btn").tap();
+  const sheet = await page.$eval("#filters-panel", (p) => { const r = p.getBoundingClientRect(); return { pos: getComputedStyle(p).position,
+    left: r.left, right: innerWidth - r.right, bottom: Math.round(innerHeight - r.bottom), h: r.height }; });
+  check("390: the panel is a bottom sheet (fixed, full width, on the bottom edge)", JSON.stringify(sheet), "fixed 0 0 0",
+    sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
+  await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
+  await axe(page, "390 filters open");
+  const targets = "#theme-btn, #racesec label.tg, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
-  check(`touch targets at least 44 px (theme, toggles, scale, dates, Reset, chart, brush, filters; ${nTargets} checked)`,
-    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 14);
+  check(`touch targets at least 44 px (theme, toggles, scale, dates, Reset, chart, brush, Filters button and panel; ${nTargets} checked)`,
+    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 24);
+  await page.touchscreen.tap(195, 40);
+  check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
+    !(await page.locator("#filters-panel").isVisible()));
   await page.locator("#chart").scrollIntoViewIfNeeded();
   const box = await page.locator("#chart svg rect.hit").boundingBox();
   await page.touchscreen.tap(box.x + box.width * 0.25, box.y + box.height / 2);

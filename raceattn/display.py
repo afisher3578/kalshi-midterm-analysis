@@ -406,3 +406,49 @@ def patch_processed(race: Race, path: str, kalshi_conn: Connector, refresh: bool
     _dump(path, result)
     return {"block": series["display_hourly"], "granularity": series["granularity"], "size_before": size_before,
             "size_after": os.path.getsize(path)}
+
+
+# the news column the dashboard charts and maps (race_either, national), as web/src/display.ts NEWS_COL
+COL_NEWS_HEADLINE = news_col("race_either", "national")
+TOTALS_NOTE = ("Totals over the display window from series.display_daily, for the dashboard map: the sum of the "
+               "non-null days and n_days, the days with a value. A column the race does not have is left out.")
+
+
+def display_totals(display_daily: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Per-column totals of series.display_daily (Kalshi volume, Wikipedia total, the headline news count), each
+    with n_days. None when the race has no display_daily."""
+    if not display_daily:
+        return None
+    cols = display_daily.get("columns") or []
+    out: dict[str, Any] = {"window": {k: display_daily["window"].get(k) for k in ("start", "end", "days")},
+                           "note": TOTALS_NOTE}
+    for c in (COL_VOLUME, COL_WIKI, COL_NEWS_HEADLINE):
+        if c not in cols:
+            continue
+        vals = [r.get(c) for r in display_daily.get("rows") or []]
+        vals = [v for v in vals if v is not None]
+        out[c] = {"total": round(sum(vals), 4) if vals else None, "n_days": len(vals)}
+    return out
+
+
+def refresh_index_totals(out_dir: str) -> dict[str, Any]:
+    """Set index.json races[*].display from each processed race JSON's series.display_daily, in place. Every other
+    key of the index is left as it is. Returns the new display blocks by race id."""
+    import json
+
+    from raceattn.pipeline import _dump
+
+    idx_path = os.path.join(out_dir, "index.json")
+    with open(idx_path, encoding="utf-8") as f:
+        idx = json.load(f)
+    done: dict[str, Any] = {}
+    for rid, entry in idx.get("races", {}).items():
+        path = os.path.join(out_dir, rid + ".json")
+        if not os.path.isfile(path):
+            continue
+        with open(path, encoding="utf-8") as f:
+            res = json.load(f)
+        entry["display"] = display_totals((res.get("series") or {}).get("display_daily"))
+        done[rid] = entry["display"]
+    _dump(idx_path, idx)
+    return done

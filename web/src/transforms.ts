@@ -247,68 +247,12 @@ export function passesFilter(series: string, group: string, source: string): boo
   return true;
 }
 
-export type MapMetric = "attention_total" | "attention_rho" | "price_change" | "polling_density" | "data_coverage";
-
-export interface MapValue {
-  value: number | null;   // null: insufficient data
-  n: number;
-  nLabel: string;         // what n counts
-  text: string;           // the number as shown, with its unit and n
-  reason?: string;        // why the value is insufficient
-}
-
-export const MAP_MIN_N = 20;
-
-/** The map value for one race. `series` picks the attention series for the attention metrics. Every value carries
- * n; anything with n < 20 (pairs or days) is "insufficient data", never a number. */
-export function mapValue(m: import("./types").IndexMetrics | undefined, metric: MapMetric, series: string,
-  fmt: { int: (n: number) => string; two: (n: number) => string; pct: (n: number) => string }): MapValue {
-  const insufficient = (reason: string, n = 0, nLabel = ""): MapValue => ({ value: null, n, nLabel, text: "insufficient data", reason });
-  if (!m) return insufficient("no processed data for this race");
-  if (metric === "attention_total" || metric === "attention_rho") {
-    const a = m.attention[series];
-    if (!a) return insufficient(`no ${series} series for this race`);
-    if (a.status === "unusable") return insufficient(`${series} is unusable`, a.n_days, "days");
-    if (metric === "attention_total") {
-      if (a.total === null || a.n_days < MAP_MIN_N) return insufficient(`n=${a.n_days} days with data (under ${MAP_MIN_N})`, a.n_days, "days");
-      return { value: a.total, n: a.n_days, nLabel: "days", text: `${fmt.int(a.total)} (n=${a.n_days} days)` };
-    }
-    if (a.rho_volume_surprise === null || a.n_pairs < MAP_MIN_N) {
-      return insufficient(`n=${a.n_pairs} pairs (under ${MAP_MIN_N})${a.reason ? `: ${a.reason}` : ""}`, a.n_pairs, "pairs");
-    }
-    return { value: a.rho_volume_surprise, n: a.n_pairs, nLabel: "pairs",
-      text: `rho ${fmt.two(a.rho_volume_surprise)} (n=${a.n_pairs} pairs, lag ${a.lag})` };
-  }
-  if (metric === "price_change") {
-    const p = m.price_change;
-    if (!p || p.n_days < MAP_MIN_N) return insufficient(`n=${p?.n_days ?? 0} days of prices (under ${MAP_MIN_N})`, p?.n_days ?? 0, "days");
-    return { value: p.cents, n: p.n_days, nLabel: "days",
-      text: `${p.cents > 0 ? "+" : ""}${p.cents.toFixed(1)} cents (n=${p.n_days} days, ${p.from} to ${p.to})` };
-  }
-  if (metric === "polling_density") {
-    if (m.polling_density === null || m.polling_density === undefined) return insufficient("no poll count (run the events generator)");
-    return { value: m.polling_density, n: m.polling_density, nLabel: "polls",
-      text: `${m.polling_density} poll${m.polling_density === 1 ? "" : "s"} in the window (n=${m.polling_density})` };
-  }
-  const c = m.data_coverage;
-  if (c.share === null || c.n_series === 0) return insufficient("no attention series ran");
-  return { value: c.share, n: c.n_series * c.window_days, nLabel: "series-days",
-    text: `${fmt.pct(c.share)} (n=${c.n_series} series x ${c.window_days} days)` };
-}
-
 /** Office order for picking a state's default race: senate, governor, house, national, then others by name. */
 export const OFFICE_ORDER = ["senate", "governor", "house", "national"];
 
 export function byOffice(a: { office: string; race_id: string }, b: { office: string; race_id: string }): number {
   const rank = (o: string) => { const i = OFFICE_ORDER.indexOf(o); return i < 0 ? OFFICE_ORDER.length : i; };
   return rank(a.office) - rank(b.office) || a.office.localeCompare(b.office) || a.race_id.localeCompare(b.race_id);
-}
-
-export type DensityBand = "all" | "low" | "medium" | "high";
-/** Polling density bands for the map filter: low under 10 polls in the window, medium 10 to 29, high 30 or more. */
-export function densityBand(polls: number | null | undefined): Exclude<DensityBand, "all"> | null {
-  if (polls === null || polls === undefined) return null;
-  return polls < 10 ? "low" : polls < 30 ? "medium" : "high";
 }
 
 /** Mean of the outcome at offsets -k..k around anchor days (each offset with its own n). */

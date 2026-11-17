@@ -94,6 +94,9 @@ def build_parser() -> argparse.ArgumentParser:
     dh.add_argument("--refresh", action="store_true", help="ignore the disk cache and re-fetch the Kalshi candles")
     dh.add_argument("--raw-dir", default=DEFAULT_RAW, help="raw response cache (default: data/raw)")
     dh.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, patched in place (default: data/processed)")
+    it = sub.add_parser("index-totals",
+                        help="set index.json display totals (Kalshi volume, Wikipedia, news) from the processed JSONs")
+    it.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, index.json patched in place")
     pub = sub.add_parser("publish", help="check processed output before publishing (licensing, funding flag)")
     pub.add_argument("--out-dir", default=DEFAULT_OUT)
     return p
@@ -307,6 +310,18 @@ def cmd_display_hourly(args) -> int:
     return 0
 
 
+def cmd_index_totals(args) -> int:
+    """Patch index.json in place: races[*].display from each race's series.display_daily. No network."""
+    from raceattn import display
+
+    done = display.refresh_index_totals(args.out_dir)
+    for rid, d in done.items():
+        v = (d or {}).get(display.COL_VOLUME) or {}
+        print("  %s: volume %s (n=%s days)" % (rid, v.get("total"), v.get("n_days")))
+    print("index-totals: %d race(s) updated in %s/index.json" % (len(done), args.out_dir))
+    return 0
+
+
 def cmd_publish(args) -> int:
     """Prints the licensing warning (until confirmed) and the funding flag state. Publishes nothing."""
     import json
@@ -354,6 +369,8 @@ def main(argv: list[str] | None = None) -> int:
                                  build=not args.no_build)
         if args.cmd == "display-hourly":
             return cmd_display_hourly(args)
+        if args.cmd == "index-totals":
+            return cmd_index_totals(args)
         if args.cmd == "events":
             return cmd_events(args)
         if args.cmd == "discover":

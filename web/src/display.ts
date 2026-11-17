@@ -5,6 +5,7 @@ import type { DisplayDaily, Num } from "./types";
 export const PRICE_COL = "kalshi_price_close";
 export const VOLUME_COL = "kalshi_volume";
 export const NEWS_COL = "news/race_either/national";
+export const WIKI_COL = "wikipedia_pageviews_total";
 
 export type SeriesKey = "price" | "volume" | "news";
 export const SERIES_KEYS: SeriesKey[] = ["price", "volume", "news"];
@@ -13,18 +14,19 @@ export interface ChartSeries {
   dates: string[];
   price: Num[];   // Democratic-win contract close as percent chance (0 to 100)
   volume: Num[];  // contracts per day
-  news: Num[];    // Media Cloud stories per day (race_either, national); all null when the race has no news
-}
+  news: Num[];    // the attention line: Media Cloud stories per day (race_either, national) or Wikipedia pageviews
+}                 // per day (attentionCol); all null when the race has none
 
 function num(v: unknown): Num {
   return v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
 }
 
 /** The three chart series, one value per display date. Missing values stay null (a gap, never zero). The price
- * is scaled from 0..1 to percent; `news` may come from another block of the same window (the demo fixture). */
-export function chartSeries(dd: DisplayDaily, news?: DisplayDaily | null): ChartSeries {
+ * is scaled from 0..1 to percent; `news` may come from another block of the same window (the demo fixture).
+ * `attentionCol` picks the attention line (NEWS_COL or WIKI_COL). */
+export function chartSeries(dd: DisplayDaily, news?: DisplayDaily | null, attentionCol = NEWS_COL): ChartSeries {
   const dates = dd.rows.map((r) => String(r.date));
-  const newsBy = new Map((news ?? dd).rows.map((r) => [String(r.date), num(r[NEWS_COL])]));
+  const newsBy = new Map((news ?? dd).rows.map((r) => [String(r.date), num(r[attentionCol])]));
   return {
     dates,
     price: dd.rows.map((r) => { const v = num(r[PRICE_COL]); return v === null ? null : v * 100; }),

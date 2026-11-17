@@ -64,7 +64,7 @@ body {
 }
 /* the page is a 960px frame; text sits in the centered 640px column, the chart may use the full frame */
 .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
-.head > *, #filters, #mapsec > *, #race-switch, #race > *, .foot > * { max-width: 640px; margin-left: auto; margin-right: auto; }
+.head > *, #mapsec > *, #race-switch, #race > *, .foot > * { max-width: 640px; margin-left: auto; margin-right: auto; }
 #race > .chartbox, #race > .brushbox { max-width: none; }
 
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
@@ -124,14 +124,43 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .series-toggles .tg[data-key="news"] .swatch line { stroke: var(--series-news); }
 .series-toggles .tg:has(input:not(:checked)) .swatch line { stroke: var(--faint); }
 
-/* ---- filters */
-.filters { margin: 0 auto; }
-.filters-h { margin-top: 1.5rem; }
-.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.5rem; }
+/* ---- filters: a text button right of the map heading; the panel is a popover, a bottom sheet on phones */
 .f { display: flex; flex-direction: column; min-width: 0; }
 .f label { font-size: 0.9rem; color: var(--muted); }
 .f.fcheck { flex-direction: row; align-items: center; gap: 0.5rem; }
 .f.fcheck input { width: 18px; height: 18px; accent-color: var(--fg); margin: 0; flex: none; }
+.maphead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 3rem; margin-bottom: 0.75rem; }
+.maphead h2 { margin: 0; }
+.fwrap { position: relative; }
+.filters-btn { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; min-width: 44px; padding: 0 0.1rem;
+  font-size: 0.95rem; border-bottom: 1px solid var(--muted); }
+.filters-btn[aria-expanded="true"] { border-bottom-color: var(--fg); }
+.fbadge { display: inline-flex; align-items: center; justify-content: center; min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
+  font-size: 0.75rem; font-weight: 600; line-height: 1; color: var(--bg); background: var(--fg); border-radius: 0.625rem; }
+.fbadge[hidden] { display: none; }
+.fpanel { position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 20; width: 25rem; max-width: calc(100vw - 3rem);
+  padding: 0.75rem 1.25rem 1.25rem; background: var(--bg); border: 1px solid var(--faint); }
+.fpanel[hidden] { display: none; }
+.fhead { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 0.5rem; }
+.fhead h3 { margin: 0 auto 0 0; font-size: 1rem; }
+.fhead button { min-height: 44px; min-width: 44px; font-size: 0.9rem; }
+.filters { display: flex; flex-direction: column; gap: 1rem; }
+.filters select { min-height: 44px; }
+.filters select option:disabled { color: var(--faint); }
+.fset legend { margin-bottom: 0.1rem; }
+.fset .tg { min-height: 44px; margin-right: 1rem; }
+.fset .tg:has(input:checked) > span:first-of-type { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.fset .tg.soon { cursor: not-allowed; color: var(--muted); opacity: 0.55; }
+.fset .tg.soon:hover { color: var(--muted); }
+.soon-tag { font-size: 0.75rem; }
+.fset .hint { margin: 0; }
+/* polling: a three-way segmented control, equal columns with hairline dividers */
+.fset.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fset.seg legend { grid-column: 1 / -1; }
+.fset.seg .tg { margin: 0; justify-content: center; text-align: center; line-height: 1.25; padding: 0.35rem 0.4rem;
+  border: 1px solid var(--rule); font-size: 0.9rem; text-wrap: balance; }
+.fset.seg .tg + .tg { margin-left: -1px; }
+.fset.seg .tg:has(input:checked) { border-color: var(--fg); z-index: 1; }
 
 /* ---- map */
 .mapwrap { width: 100%; }
@@ -140,8 +169,11 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
    the pale low bins and the page, so it would not separate states, while a background-colored gap does on every
    fill in both themes. */
 .usmap .st { stroke: var(--bg); stroke-width: 1.2; }
-.usmap .st.has-race { cursor: pointer; }
-.usmap .st.has-race:hover { stroke: var(--muted); stroke-width: 2; }
+.usmap .st.active[role="button"] { cursor: pointer; }
+.usmap .st.active[role="button"]:hover { stroke: var(--muted); stroke-width: 2; }
+/* every state but Texas is faded for now (coming soon) and takes no clicks */
+.usmap .st.greyed { opacity: 0.4; }
+.usmap .stlabel.greyed { opacity: 0.55; }
 .usmap .st:focus { outline: none; }
 .usmap .st:focus-visible { stroke: var(--fg); stroke-width: 4; }
 /* selected state: a background halo under a 2.5px text-colored line, so the outline shows on any fill */
@@ -157,6 +189,7 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   font-size: 0.9rem; color: var(--muted); }
 .legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
 .legend .sw { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--faint); flex: none; }
+.legend .sw-greyed { opacity: 0.4; }
 #map-table td, #map-table th { text-align: left; font-size: 0.9rem; }
 #map-table { min-width: 680px; }
 @media (max-width: 560px) {
@@ -234,7 +267,9 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 @media (max-width: 600px) {
   .wrap { padding: 0 1.25rem; }
   .head { padding-top: 2rem; }
-  .fgrid { grid-template-columns: minmax(0, 1fr); }
+  .fpanel { position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: auto; max-width: none; max-height: 85vh;
+    overflow-y: auto; padding: 0.75rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); border: 0;
+    border-top: 1px solid var(--fg); }
   .theme-toggle, .tg, .toggle label, button, select, input[type="date"] { min-height: 44px; }
   .theme-toggle { min-width: 44px; text-align: right; }
   .chartctl fieldset { width: 100%; }
