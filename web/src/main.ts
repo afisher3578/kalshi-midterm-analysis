@@ -29,8 +29,8 @@ let index: IndexData;
 let view: RaceView | null = null;
 let newsView: NewsView | null = null;
 let chart: LineChart | null = null;
-// the chart's toggles, scale and dates carry over when another race is opened
-const chartState: ChartState = { visible: { price: true, volume: true, news: true }, mode: "own", from: "", to: "" };
+// the chart's line toggles and dates carry over when another race is opened
+const chartState: ChartState = { visible: { price: true, volume: true, news: true }, from: "", to: "" };
 let demoDisplay: { race: string; dd: DisplayDaily } | null | undefined;
 
 async function getJson<T>(url: string): Promise<T> {
@@ -135,9 +135,9 @@ function renderShell(ui: Ui) {
       <div class="f"><label for="f-to">Window to</label><input type="date" id="f-to"></div>
       <div class="f fcheck"><input type="checkbox" id="f-overlay" ${ui.overlay ? "checked" : ""}><label for="f-overlay">Show
         information events on the charts</label></div></form>
-    <div id="race-switch"></div><nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`)
+    <nav id="race-tabs" aria-label="Race views"></nav><div id="race" aria-live="polite"></div>`)
     : el("section", { "aria-labelledby": "chart-h", id: "racesec", class: "chartsec" }, `
-    <div id="race-switch"></div><div id="race"></div>`);
+    <div id="race"></div>`);
   main.append(mapSec, raceSec);
   app.append(header, main);
   if (SHOW_FUNDING_DISCLOSURE) app.append(footer());
@@ -316,25 +316,14 @@ function drawMap(ui: Ui) {
 
 async function openRace(ui: Ui, scroll: boolean) {
   const root = document.getElementById("race")!;
-  const sw = document.getElementById("race-switch")!;
-  const tabs = document.getElementById("race-tabs")!;
+  const tabs = document.getElementById("race-tabs");
   if (!ui.race) {
-    sw.innerHTML = "";
-    tabs.innerHTML = "";
+    if (tabs) tabs.innerHTML = "";
     root.innerHTML = `<p class="note" id="${SHOW_DETAILS ? "race-h" : "chart-h"}">No race selected. Pick Texas on the map.</p>`;
     writeUrl(ui);
     return;
   }
-  const rs = racesIn(ui.state ?? index.races[ui.race].state, "all");
-  if (!SHOW_DETAILS) sw.innerHTML = "";  // race type is a filter now (Filters panel)
-  else sw.innerHTML = rs.length > 1 ? `<fieldset class="toggle" id="race-type"><legend>Race type in ${esc(STATES[ui.state!] ?? ui.state)}</legend>${
-    rs.map((r) => `<label><input type="radio" name="racetype" value="${esc(r.race_id)}" ${r.race_id === ui.race ? "checked" : ""}>
-      ${esc(r.office.charAt(0).toUpperCase() + r.office.slice(1))}</label>`).join("")}</fieldset>`
-    : `<p class="note" id="race-type">${esc(STATES[ui.state!] ?? "")}: one race with data (${esc(index.races[ui.race].office)}).</p>`;
-  sw.querySelectorAll<HTMLInputElement>('input[name="racetype"]').forEach((i) => i.addEventListener("change", () => {
-    ui.race = i.value;
-    openRace(ui, false);
-  }));
+  // the race comes from the map and the Filters panel (State, Race type) or ?race=; the chart has no race switch
   let data: RaceData;
   try {
     data = await loadRace(ui.race);
@@ -351,7 +340,7 @@ async function openRace(ui: Ui, scroll: boolean) {
   [ui.from, ui.to] = clampRange(ui.from || null, ui.to || null, data.window.start, data.window.end);
   syncDateInputs(ui, data);
   if (!shownSeries(data, ui).includes(ui.focus)) ui.focus = shownSeries(data, ui)[0] ?? ui.focus;
-  renderTabs(ui, tabs);
+  renderTabs(ui, tabs!);
   if (ui.page === "news") {
     document.title = `${raceTitle(data)}: News (Media Cloud) | ${PROJECT_NAME}`;
     view = null;
@@ -422,7 +411,8 @@ async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
   const election = [e, new Date(Date.parse(e + "T00:00:00Z") + 86_400_000).toISOString().slice(0, 10)]
     .filter((d) => d >= dd.window.start && d <= dd.window.end);
   chart = new LineChart(root, { series, title: raceTitle(data), window: { start: dd.window.start, end: dd.window.end },
-    election, news: { available, status }, demo: !!demo, attention: wiki ? "wikipedia" : "news" }, chartState);
+    election, news: { available, status }, demo: !!demo, attention: wiki ? "wikipedia" : "news",
+    granularity: "day" }, chartState);  // daily display_daily rows; hourly when zoomed in comes with F3
   chart.render();
   writeUrl(ui);
 }

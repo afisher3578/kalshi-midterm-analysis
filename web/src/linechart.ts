@@ -1,9 +1,11 @@
 // The dashboard chart: one line chart for the selected race with three series on their own y axes (Kalshi price
-// on the left, Kalshi volume and media attention on the right), y axis toggles, an indexed mode, a date range
-// (two date inputs plus a brush) and a day cursor for pointer, touch and keyboard. Data: series.display_daily.
+// on the left, Kalshi volume and media attention on the right), a legend whose entries switch each line and its
+// y axis, a date range (two date inputs plus a brush) and a day cursor for pointer, touch and keyboard.
+// Data: series.display_daily.
 import { axisBottom, axisLeft, axisRight, brushX, format, line, max, type ScaleLinear, scaleLinear, type ScaleTime, scaleUtc,
   select, type Selection, utcFormat } from "d3";
-import { canHide, type ChartSeries, checkRange, clampDate, indexed, SERIES_KEYS, type SeriesKey } from "./display";
+import { type ChartSeries, checkRange, clampDate, type Granularity, legendText, lockedLine, PRICE_WHY, SERIES_KEYS, type SeriesKey,
+  toggleLine } from "./display";
 import { esc } from "./race";
 import { DAY_MS, utcMs } from "./transforms";
 import type { Num } from "./types";
@@ -22,7 +24,6 @@ const AXIS_TITLE: Record<SeriesKey, string> = { price: "Price, %", volume: "Volu
 
 export interface ChartState {
   visible: Record<SeriesKey, boolean>;
-  mode: "own" | "indexed";
   from: string;
   to: string;
   newsAutoOff?: boolean;  // news was switched off because the race had none; it comes back for a race with news
@@ -36,6 +37,7 @@ export interface ChartInput {
   news: { available: boolean; status: string };
   demo: boolean;
   attention?: "news" | "wikipedia";  // what the attention line plots (default news)
+  granularity?: Granularity;         // one point per day (default) or per hour; the legend says "per day" or "per hour"
 }
 
 const fmtDay = utcFormat("%b %-d");
@@ -105,26 +107,27 @@ export class LineChart {
     state.from = clampDate(state.from || input.window.start, input.window.start, input.window.end);
     state.to = clampDate(state.to || input.window.end, input.window.start, input.window.end);
     if (state.from > state.to) [state.from, state.to] = [input.window.start, input.window.end];
-    const toggle = (k: SeriesKey) => {
+    const entry = (k: SeriesKey) => {
       const s = this.style(k);
-      return `<label class="tg" data-key="${k}"><input type="checkbox" id="tg-${k}" data-key="${k}"${state.visible[k] ? " checked" : ""}>
-        <svg class="swatch" viewBox="0 0 30 10" width="30" height="10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5"
-          ${s.dash ? ` stroke-dasharray="${s.dash}"` : ""}/></svg>
-        <span>${esc(s.label)}${k === "news" && !input.news.available ? ` <span class="tg-off">(no ${this.wiki ? "Wikipedia" : "news"} data for this race yet)</span>` : ""}</span></label>`;
+      const t = legendText(k, this.input.attention, input.granularity);
+      const off = k === "news" && !input.news.available
+        ? ` <span class="lg-off">(no ${this.wiki ? "Wikipedia" : "news"} data for this race yet)</span>` : "";
+      const why = k === "price" ? `<button type="button" class="lg-why" id="lg-why" aria-expanded="false"
+        aria-controls="lg-note" aria-label="Why is there no Republican line?">why?</button>` : "";
+      return `<li class="lg-item" data-key="${k}"><button type="button" class="lg-btn" id="lg-${k}" data-key="${k}"
+        aria-pressed="${state.visible[k]}"><svg class="swatch" viewBox="0 0 30 10" width="30" height="10" aria-hidden="true"><line
+        x1="1" y1="5" x2="29" y2="5"${s.dash ? ` stroke-dasharray="${s.dash}"` : ""}/></svg><span class="lg-text"><strong
+        class="lg-name">${esc(t.name)}</strong><span class="vh">:</span> <span class="lg-desc">${esc(t.desc)}</span>${off}</span></button>${why}</li>`;
     };
     this.root.innerHTML = `
       <h2 id="chart-h" class="charttitle">${esc(input.title)}: Kalshi price, Kalshi volume and ${this.wiki ? "Wikipedia" : "media"} attention</h2>
       ${input.demo ? '<p class="demo-banner" id="demo-label">Demo data</p>' : ""}
       <p class="status" id="news-status" data-news="${input.news.available ? "yes" : "no"}">${esc(input.news.status)}</p>
-      <div class="chartctl">
-        <fieldset class="series-toggles"><legend>Lines and their y axes</legend>
-          ${SERIES_KEYS.map(toggle).join("")}
-          <p class="hint" id="tg-note" aria-live="polite"></p>
-        </fieldset>
-        <fieldset class="scale-mode"><legend>Scale</legend>
-          <label class="tg"><input type="radio" name="${this.id}-mode" value="own"${state.mode === "own" ? " checked" : ""}><span>Own scale</span></label>
-          <label class="tg"><input type="radio" name="${this.id}-mode" value="indexed"${state.mode === "indexed" ? " checked" : ""}><span>Indexed (each line 0 to 100)</span></label>
-        </fieldset>
+      <div class="lgbox">
+        <ul class="lg" id="legend" aria-label="Lines on the chart; each button shows or hides a line and its y axis">
+          ${SERIES_KEYS.map(entry).join("")}</ul>
+        <p class="lg-note" id="lg-note" hidden>${esc(PRICE_WHY)}</p>
+        <p class="hint" id="tg-note" aria-live="polite"></p>
       </div>
       <div class="chartbox" id="chart" tabindex="0" role="group"
         aria-label="Line chart, ${esc(input.title)}. Use the left and right arrow keys to move the day cursor; the values are read out below the chart."
@@ -144,20 +147,20 @@ export class LineChart {
     this.svgBox = this.root.querySelector(".chartsvg")!;
     this.brushBox = this.root.querySelector(".brushbox")!;
     this.tip = this.root.querySelector(".tip")!;
-    this.root.querySelectorAll<HTMLInputElement>(".series-toggles input").forEach((i) => i.addEventListener("change", () => {
-      const k = i.dataset.key as SeriesKey;
-      if (!i.checked && !canHide(state.visible, k)) {
-        i.checked = true;
-      } else {
-        state.visible[k] = i.checked;
-      }
+    this.root.querySelectorAll<HTMLButtonElement>(".lg-btn").forEach((b) => b.addEventListener("click", () => {
+      const k = b.dataset.key as SeriesKey;
+      if (b.getAttribute("aria-disabled") === "true") return;
+      state.visible = toggleLine(state.visible, k);
       this.syncToggles();
       this.changed();
     }));
-    this.root.querySelectorAll<HTMLInputElement>(`input[name="${this.id}-mode"]`).forEach((r) => r.addEventListener("change", () => {
-      state.mode = r.value as ChartState["mode"];
-      this.changed();
-    }));
+    const why = this.root.querySelector<HTMLButtonElement>("#lg-why")!;
+    const note = this.root.querySelector<HTMLElement>("#lg-note")!;
+    why.addEventListener("click", () => {
+      const open = why.getAttribute("aria-expanded") !== "true";
+      why.setAttribute("aria-expanded", String(open));
+      note.hidden = !open;
+    });
     const from = this.root.querySelector<HTMLInputElement>("#d-from")!;
     const to = this.root.querySelector<HTMLInputElement>("#d-to")!;
     const onDate = () => this.setRange(from.value, to.value);
@@ -205,17 +208,16 @@ export class LineChart {
   }
 
   private syncToggles() {
-    const note: string[] = [];
+    const locked = lockedLine(this.state.visible);
     for (const k of SERIES_KEYS) {
-      const i = this.root.querySelector<HTMLInputElement>(`#tg-${k}`)!;
+      const b = this.root.querySelector<HTMLButtonElement>(`#lg-${k}`)!;
       const unavailable = k === "news" && !this.input.news.available;
-      const last = this.state.visible[k] && !canHide(this.state.visible, k);
-      i.checked = this.state.visible[k];
-      i.disabled = unavailable || last;
-      i.closest("label")!.classList.toggle("disabled", i.disabled);
-      if (last) note.push(`${this.style(k).short} is the only line on, so it cannot be switched off.`);
+      b.setAttribute("aria-pressed", String(this.state.visible[k]));
+      if (unavailable || locked === k) b.setAttribute("aria-disabled", "true");
+      else b.removeAttribute("aria-disabled");
     }
-    this.root.querySelector("#tg-note")!.textContent = note.join(" ");
+    this.root.querySelector("#tg-note")!.textContent = locked
+      ? `${legendText(locked, this.input.attention).name} is the only line on, so it cannot be switched off.` : "";
   }
 
   private onKey(e: KeyboardEvent) {
@@ -239,7 +241,6 @@ export class LineChart {
   // ---------------------------------------------------------------- drawing
   private x!: ScaleTime<number, number>;
   private ys: Partial<Record<SeriesKey, ScaleLinear<number, number>>> = {};
-  private shown: Record<SeriesKey, Num[]> = { price: [], volume: [], news: [] };
   private dims = { w: 0, h: 0, ml: 0, mr: 0, mt: 0, mb: 0 };
   private cursorG!: Selection<SVGGElement, unknown, null, undefined>;
 
@@ -249,10 +250,9 @@ export class LineChart {
     const W = Math.max(280, Math.floor(this.svgBox.clientWidth || this.root.clientWidth || 800));
     const H = W < 560 ? 300 : 380;
     const vis = SERIES_KEYS.filter((k) => state.visible[k]);
-    const own = state.mode === "own";
-    const rightKeys = own ? vis.filter((k) => k !== "price") : [];
+    const rightKeys = vis.filter((k) => k !== "price");
     const axisW = W < 560 ? 44 : 56;
-    const ml = own ? (state.visible.price ? axisW : 14) : axisW;
+    const ml = state.visible.price ? axisW : 14;
     const mr = 14 + rightKeys.length * axisW;
     const mt = rightKeys.length > 1 ? 44 : 30, mb = 28;  // two right axes: their titles go on two rows
     this.dims = { w: W, h: H, ml, mr, mt, mb };
@@ -260,24 +260,19 @@ export class LineChart {
     if (this.cursor !== null && (this.cursor < lo || this.cursor > hi)) this.cursor = null;
     const x = scaleUtc().domain([new Date(utcMs(state.from)), new Date(utcMs(state.to) + DAY_MS)]).range([ml, W - mr]);
     this.x = x;
-    const s = input.series;
-    this.shown = {
-      price: own ? s.price : indexed(s.price, lo, hi),
-      volume: own ? s.volume : indexed(s.volume, lo, hi),
-      news: own ? s.news : indexed(s.news, lo, hi),
-    };
     const inView = (v: Num[]) => v.slice(lo, hi + 1).filter((z): z is number => z !== null);
-    const top = (k: SeriesKey) => (max(inView(this.shown[k])) ?? 1) || 1;
+    const top = (k: SeriesKey) => (max(inView(input.series[k])) ?? 1) || 1;
     this.ys = {};
     for (const k of vis) {
-      const dom: [number, number] = !own || k === "price" ? [0, 100] : [0, top(k)];
+      const dom: [number, number] = k === "price" ? [0, 100] : [0, top(k)];
       const y = scaleLinear().domain(dom).range([H - mb, mt]);
-      if (own && k !== "price") y.nice(5);
+      if (k !== "price") y.nice(5);
       this.ys[k] = y;
     }
     this.svgBox.innerHTML = "";
     const svg = select(this.svgBox).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("width", W).attr("height", H)
-      .attr("class", "lc").attr("aria-hidden", "true").attr("data-mode", state.mode);
+      .attr("class", "lc").attr("aria-hidden", "true")
+      .attr("data-xdomain", x.domain().map((d) => d.getTime()).join(",")).attr("data-xrange", x.range().join(","));
     const clipId = `${this.id}-clip`;
     svg.append("defs").append("clipPath").attr("id", clipId).append("rect")
       .attr("x", ml).attr("y", mt - 2).attr("width", W - ml - mr).attr("height", H - mt - mb + 4);
@@ -296,25 +291,17 @@ export class LineChart {
     const span = (utcMs(state.to) - utcMs(state.from)) / DAY_MS + 1;
     const xa = axisBottom(x).ticks(Math.max(2, Math.min(span, Math.floor((W - ml - mr) / 70)))).tickFormat((d) => fmtDay(d as Date));
     svg.append("g").attr("class", "axis xaxis").attr("transform", `translate(0,${H - mb})`).call(xa);
-    // y axes, each in its series color (one shared neutral axis in indexed mode)
-    if (own) {
-      rightKeys.forEach((k, j) => {
-        const g = svg.append("g").attr("class", `axis yaxis y-${k}`).attr("data-axis", k)
-          .attr("transform", `translate(${W - mr + j * axisW},0)`)
-          .call(axisRight(this.ys[k]!).ticks(5).tickFormat((d) => fmtTick(d as number)));
-        this.axisTitle(g, k, "start", j);
-      });
-      if (state.visible.price) {
-        const g = svg.append("g").attr("class", "axis yaxis y-price").attr("data-axis", "price").attr("transform", `translate(${ml},0)`)
-          .call(axisLeft(this.ys.price!).tickValues([0, 25, 50, 75, 100]).tickFormat((d) => `${d}%`));
-        this.axisTitle(g, "price", "end");
-      }
-    } else {
-      const y = scaleLinear().domain([0, 100]).range([H - mb, mt]);
-      const g = svg.append("g").attr("class", "axis yaxis y-index").attr("data-axis", "index").attr("transform", `translate(${ml},0)`)
-        .call(axisLeft(y).tickValues([0, 25, 50, 75, 100]));
-      g.append("text").attr("class", "atitle").attr("x", -ml + 2).attr("y", mt - 14).attr("text-anchor", "start")
-        .text("Index, 0 to 100");
+    // y axes, each in its series color
+    rightKeys.forEach((k, j) => {
+      const g = svg.append("g").attr("class", `axis yaxis y-${k}`).attr("data-axis", k)
+        .attr("transform", `translate(${W - mr + j * axisW},0)`)
+        .call(axisRight(this.ys[k]!).ticks(5).tickFormat((d) => fmtTick(d as number)));
+      this.axisTitle(g, k, "start", j);
+    });
+    if (state.visible.price) {
+      const g = svg.append("g").attr("class", "axis yaxis y-price").attr("data-axis", "price").attr("transform", `translate(${ml},0)`)
+        .call(axisLeft(this.ys.price!).tickValues([0, 25, 50, 75, 100]).tickFormat((d) => `${d}%`));
+      this.axisTitle(g, "price", "end");
     }
     // grid
     const gy = scaleLinear().domain([0, 100]).range([H - mb, mt]);
@@ -325,10 +312,12 @@ export class LineChart {
     const lines = svg.append("g").attr("clip-path", `url(#${clipId})`);
     for (const k of vis) {
       const y = this.ys[k]!;
-      const v = this.shown[k];
+      const v = input.series[k];
       const idx = this.dates.map((_, i) => i).filter((i) => i >= lo && i <= hi);
       const st = this.style(k);
+      // data-domain and data-range let the render check read values back from the path coordinates
       lines.append("path").attr("class", `line line-${k}`).attr("data-series", k)
+        .attr("data-domain", y.domain().join(",")).attr("data-range", y.range().join(","))
         .attr("stroke-dasharray", st.dash).attr("stroke-linecap", st.dash ? "butt" : "round")
         .attr("d", line<number>().defined((i) => v[i] !== null).x(cx).y((i) => y(v[i] as number))(idx));
       const lone = idx.filter((i) => v[i] !== null && (i === lo || v[i - 1] === null) && (i === hi || v[i + 1] === null));
@@ -376,7 +365,7 @@ export class LineChart {
     g.append("line").attr("x1", cx).attr("x2", cx).attr("y1", mt).attr("y2", h - mb);
     const vis = SERIES_KEYS.filter((k) => this.state.visible[k]);
     for (const k of vis) {
-      const v = this.shown[k][i];
+      const v = this.input.series[k][i];
       if (v === null) continue;
       g.append("circle").attr("class", `cdot-${k}`).attr("cx", cx).attr("cy", this.ys[k]!(v)).attr("r", 4.5);
     }

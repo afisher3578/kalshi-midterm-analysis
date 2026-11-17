@@ -64,8 +64,8 @@ body {
 }
 /* the page is a 960px frame; text sits in the centered 640px column, the chart may use the full frame */
 .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
-.head > *, #mapsec > *, #race-switch, #race > *, .foot > * { max-width: 640px; margin-left: auto; margin-right: auto; }
-#race > .chartbox, #race > .brushbox { max-width: none; }
+.head > *, #mapsec > *, #race > *, .foot > * { max-width: 640px; margin-left: auto; margin-right: auto; }
+#race > .chartbox, #race > .brushbox, #race > .lgbox { max-width: none; }
 
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
 h2 { font-size: 1.1rem; font-weight: 600; margin: 3rem auto 0.75rem; }
@@ -112,17 +112,7 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .tg:hover, .toggle label:hover { color: var(--fg); }
 .tg:has(input:focus-visible), .toggle label:has(input:focus-visible) { outline: 2px solid var(--fg); outline-offset: 2px; }
 .tg:has(input:checked), .toggle label:has(input:checked) { color: var(--fg); }
-.scale-mode .tg:has(input:checked) > span, .toggle label:has(input:checked) > span { text-decoration: underline;
-  text-decoration-thickness: 1px; text-underline-offset: 4px; }
-.series-toggles .tg:has(input:not(:checked)) > span { text-decoration: line-through; text-decoration-thickness: 1px; }
-.tg.disabled { cursor: not-allowed; }
-.tg-off { text-decoration: none; }
-.swatch { flex: none; }
-.swatch line { stroke-width: 3; }
-.series-toggles .tg[data-key="price"] .swatch line { stroke: var(--series-price); }
-.series-toggles .tg[data-key="volume"] .swatch line { stroke: var(--series-volume); }
-.series-toggles .tg[data-key="news"] .swatch line { stroke: var(--series-news); }
-.series-toggles .tg:has(input:not(:checked)) .swatch line { stroke: var(--faint); }
+.toggle label:has(input:checked) > span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
 /* ---- filters: a text button right of the map heading; the panel is a popover, a bottom sheet on phones */
 .f { display: flex; flex-direction: column; min-width: 0; }
@@ -200,13 +190,35 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 /* ---- dashboard chart */
 .chartsec { margin-top: 1rem; }
 .charttitle { margin-top: 3rem; }
-#race-switch { margin-top: 3rem; }
-#race-switch + #race .charttitle { margin-top: 1.5rem; }
-#race-type { margin-bottom: 0; }
 .status { color: var(--muted); font-size: 0.9rem; margin: 0 auto 1rem; }
 .demo-banner { font-weight: 600; margin: 0 auto 0.25rem; }
-.chartctl { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; align-items: flex-start; margin-bottom: 1rem; }
-.chartctl fieldset { margin: 0; }
+/* legend: one row above the chart (entries shrink and their text wraps inside them), one entry per row on phones;
+   each entry is the toggle for its line and y axis */
+.lgbox { margin: 0 auto 0.5rem; }
+.lg { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 0 1.5rem;
+  font-size: 0.85rem; line-height: 1.35; }
+.lg-item { display: flex; align-items: flex-start; gap: 0.35rem; min-width: 0; flex: 0 1 auto; }
+.lg-btn { display: inline-flex; align-items: flex-start; gap: 0.5rem; min-height: 2.25rem; min-width: 0; padding: 0.4rem 0;
+  border: 0; text-align: left; color: var(--fg); }
+.lg-btn .swatch { flex: none; margin-top: 0.3em; }
+.lg-btn .swatch line { stroke-width: 3; }
+.lg-item[data-key="price"] .swatch line { stroke: var(--series-price); }
+.lg-item[data-key="volume"] .swatch line { stroke: var(--series-volume); }
+.lg-item[data-key="news"] .swatch line { stroke: var(--series-news); }
+.lg-name { font-weight: 600; }
+.lg-desc, .lg-off { color: var(--muted); }
+.lg-btn[aria-pressed="false"] { color: var(--muted); }
+.lg-btn[aria-pressed="false"] .lg-name, .lg-btn[aria-pressed="false"] .lg-desc { text-decoration: line-through;
+  text-decoration-thickness: 1px; }
+.lg-btn[aria-pressed="false"] .swatch { opacity: 0.35; }
+.lg-btn[aria-disabled="true"] { cursor: not-allowed; }
+.lg-btn[aria-disabled="true"]:hover { opacity: 1; }
+.lg-why { flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--muted);
+  padding: 0.4rem 0.2rem; border: 0; line-height: 1.35; text-decoration: underline; text-decoration-thickness: 1px;
+  text-underline-offset: 3px; }
+.lg-why[aria-expanded="true"] { color: var(--fg); }
+.lg-note { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--fg); }
+.lgbox .hint { margin: 0.25rem 0 0; }
 .chartbox { position: relative; width: 100%; margin: 0 auto; }
 .chartsvg { width: 100%; }
 .chartsvg svg, .brushbox svg { display: block; max-width: 100%; height: auto; }
@@ -272,7 +284,10 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
     border-top: 1px solid var(--fg); }
   .theme-toggle, .tg, .toggle label, button, select, input[type="date"] { min-height: 44px; }
   .theme-toggle { min-width: 44px; text-align: right; }
-  .chartctl fieldset { width: 100%; }
+  .lg { flex-wrap: wrap; gap: 0; }
+  .lg-item { width: 100%; }
+  .lg-btn { min-height: 44px; }
+  .lg-why { min-width: 44px; min-height: 44px; padding-top: 0; padding-bottom: 0; }
   .readout .rd, .readout .rdate { white-space: normal; display: block; }
   .readout .sep { display: none; }
   .tip { display: none; }  /* the readout row under the chart shows the same values */

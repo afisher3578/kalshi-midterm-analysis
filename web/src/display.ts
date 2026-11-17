@@ -1,5 +1,5 @@
-// Pure helpers for the dashboard line chart: series from series.display_daily, indexing, date range checks and the
-// news coverage count. No DOM here, so they can be unit tested.
+// Pure helpers for the dashboard line chart: series from series.display_daily, date range checks, the news coverage
+// count, the legend text and the line toggles. No DOM here, so they can be unit tested.
 import type { DisplayDaily, Num } from "./types";
 
 export const PRICE_COL = "kalshi_price_close";
@@ -40,22 +40,6 @@ export function coverageCount(values: Num[]): { n: number; m: number } {
   return { n: values.filter((v) => v !== null).length, m: values.length };
 }
 
-/** Rescale the values at indexes lo..hi (inclusive) so their min is 0 and their max is 100. Values outside the
- * range and nulls are null. A flat series (max equals min) maps to 50. */
-export function indexed(values: Num[], lo = 0, hi = values.length - 1): Num[] {
-  let min = Infinity, max = -Infinity;
-  for (let i = lo; i <= hi; i++) {
-    const v = values[i];
-    if (v === null || v === undefined) continue;
-    if (v < min) min = v;
-    if (v > max) max = v;
-  }
-  return values.map((v, i) => {
-    if (v === null || i < lo || i > hi || !Number.isFinite(min)) return null;
-    return max === min ? 50 : ((v - min) / (max - min)) * 100;
-  });
-}
-
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 export function isIsoDate(s: string): boolean {
@@ -84,3 +68,31 @@ export function clampDate(d: string, min: string, max: string): string {
 export function canHide(visible: Record<SeriesKey, boolean>, key: SeriesKey): boolean {
   return !visible[key] || SERIES_KEYS.some((k) => k !== key && visible[k]);
 }
+
+/** Switch a line on or off. The last visible line stays on: the same object comes back unchanged. */
+export function toggleLine(visible: Record<SeriesKey, boolean>, key: SeriesKey): Record<SeriesKey, boolean> {
+  if (!canHide(visible, key)) return visible;
+  return { ...visible, [key]: !visible[key] };
+}
+
+/** The line that cannot be switched off (the only one on), or null when two or more are on. */
+export function lockedLine(visible: Record<SeriesKey, boolean>): SeriesKey | null {
+  const on = SERIES_KEYS.filter((k) => visible[k]);
+  return on.length === 1 ? on[0] : null;
+}
+
+export type Granularity = "day" | "hour";
+export type AttentionSource = "news" | "wikipedia";
+
+/** Legend name and one-line description of a line. The attention line follows the Sources choice; "per day"
+ * follows the granularity of the plotted data. */
+export function legendText(key: SeriesKey, source: AttentionSource = "news", granularity: Granularity = "day"):
+  { name: string; desc: string } {
+  const per = `per ${granularity}`;
+  if (key === "price") return { name: "Price", desc: "Kalshi chance that Democrats win (%)" };
+  if (key === "volume") return { name: "Volume", desc: `contracts traded ${per}` };
+  return { name: "Attention", desc: source === "wikipedia" ? `Wikipedia pageviews ${per} (race and candidate pages)`
+    : `news stories ${per} mentioning the race (Media Cloud)` };
+}
+
+export const PRICE_WHY = "The Republican contract is the mirror image: its price is about 100% minus this line.";

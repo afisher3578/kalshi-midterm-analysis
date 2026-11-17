@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { DisplayDaily, RaceData } from "../src/types";
-import { canHide, chartSeries, checkRange, clampDate, coverageCount, indexed, isIsoDate, NEWS_COL } from "../src/display";
+import { canHide, chartSeries, checkRange, clampDate, coverageCount, isIsoDate, legendText, lockedLine, NEWS_COL, PRICE_WHY,
+  toggleLine } from "../src/display";
 import { formatValue } from "../src/linechart";
 
 const load = (id: string): RaceData =>
@@ -68,19 +69,6 @@ describe("coverageCount", () => {
   });
 });
 
-describe("indexed", () => {
-  it("maps min to 0 and max to 100 over the range, nulls stay null", () => {
-    expect(indexed([2, null, 4, 6])).toEqual([0, null, 50, 100]);
-  });
-  it("uses only the given index range and blanks values outside it", () => {
-    expect(indexed([100, 2, 4, 6, -5], 1, 3)).toEqual([null, 0, 50, 100, null]);
-  });
-  it("maps a flat series to 50 and an all-null series to nulls", () => {
-    expect(indexed([3, 3, null])).toEqual([50, 50, null]);
-    expect(indexed([null, null])).toEqual([null, null]);
-  });
-});
-
 describe("date range", () => {
   const MIN = "2026-08-05", MAX = "2026-11-04";
   it("accepts the full window and any inner range", () => {
@@ -118,6 +106,42 @@ describe("toggles", () => {
     expect(canHide({ price: true, volume: false, news: false }, "price")).toBe(false);
     expect(canHide({ price: false, volume: false, news: true }, "news")).toBe(false);
     expect(canHide({ price: false, volume: false, news: true }, "price")).toBe(true);  // already off
+  });
+  it("toggleLine switches a line, but the last visible line stays on", () => {
+    const all = { price: true, volume: true, news: true };
+    expect(toggleLine(all, "volume")).toEqual({ price: true, volume: false, news: true });
+    expect(all.volume).toBe(true);  // no mutation
+    const one = { price: false, volume: true, news: false };
+    expect(toggleLine(one, "volume")).toBe(one);
+    expect(toggleLine(one, "price")).toEqual({ price: true, volume: true, news: false });
+  });
+  it("lockedLine names the only line on, else null", () => {
+    expect(lockedLine({ price: true, volume: true, news: true })).toBeNull();
+    expect(lockedLine({ price: true, volume: false, news: true })).toBeNull();
+    expect(lockedLine({ price: false, volume: true, news: false })).toBe("volume");
+    expect(lockedLine({ price: true, volume: false, news: false })).toBe("price");
+  });
+});
+
+describe("legend text", () => {
+  it("price and volume, daily by default", () => {
+    expect(legendText("price")).toEqual({ name: "Price", desc: "Kalshi chance that Democrats win (%)" });
+    expect(legendText("volume")).toEqual({ name: "Volume", desc: "contracts traded per day" });
+  });
+  it("attention follows the Sources choice", () => {
+    expect(legendText("news", "news")).toEqual({ name: "Attention",
+      desc: "news stories per day mentioning the race (Media Cloud)" });
+    expect(legendText("news", "wikipedia")).toEqual({ name: "Attention",
+      desc: "Wikipedia pageviews per day (race and candidate pages)" });
+  });
+  it("per day becomes per hour with hourly granularity", () => {
+    expect(legendText("volume", "news", "hour").desc).toBe("contracts traded per hour");
+    expect(legendText("news", "news", "hour").desc).toBe("news stories per hour mentioning the race (Media Cloud)");
+    expect(legendText("news", "wikipedia", "hour").desc).toBe("Wikipedia pageviews per hour (race and candidate pages)");
+    expect(legendText("price", "news", "hour").desc).toBe("Kalshi chance that Democrats win (%)");
+  });
+  it("the price note explains the missing Republican line", () => {
+    expect(PRICE_WHY).toBe("The Republican contract is the mirror image: its price is about 100% minus this line.");
   });
 });
 

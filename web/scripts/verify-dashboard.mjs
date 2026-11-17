@@ -1,13 +1,16 @@
 // Render check for the dashboard page (SHOW_DETAILS off): the map, and below it one line chart for the selected race.
 // Blocks every request that is not to 127.0.0.1/localhost and collects console errors. Checks the map, the chart
-// toggles (the last line cannot be switched off), the date range (out-of-range dates are rejected), the readout
+// legend (one row at 1280, wraps at 390, swatches match the lines in both themes, each entry toggles its line and
+// axis, the last line cannot be switched off, the "why?" note opens by keyboard), that the chart has no race type
+// switch and no scale switch, the plotted values (read back from the line paths) against data/processed, the date range (out-of-range dates are rejected), the readout
 // values against data/processed (spot check table), the no-news state, touch target sizes and overflow at 390 px,
 // the demo label, that the removed explanatory copy is gone and the map table is clipped to 1x1 px, the theme switch
 // (data-theme flips, localStorage, chart and map colors follow, system setting fallback), that no element has a box
 // shadow or a gradient, 44 px touch targets at 390 px, and runs axe in the light and dark theme at 1280 and 390 px.
 // The Filters panel: the button right of the map heading, exactly five controls, disabled "coming soon" choices,
 // the URL hash, the count badge, Reset, Esc and outside click, the map and chart following the controls.
-// Writes docs/screenshots/style-{light,dark}-{1280,390}.png and filt-{closed,open}-{1280,390}.png.
+// Writes docs/screenshots/style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png and
+// chart-{1280,390}-{light,dark}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -31,7 +34,7 @@ const noNews = Object.keys(index.races).filter((id) => id !== "tx-senate-2026").
 mkdirSync(SHOTS, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
-const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], axe: {} };
+const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], plotted: [], axe: {} };
 let failed = false;
 
 async function open(width, url = `${BASE}?race=tx-senate-2026`, touch = false, colorScheme = "light") {
@@ -116,6 +119,49 @@ async function domain(page) {
   return page.$$eval("#chart svg .xaxis .tick text", (ts) => ts.map((t) => t.textContent).join(" "));
 }
 
+/** No race type switch and no scale switch in the chart section, and none of their old ids, names or labels on the
+ * page. (The Race type choice in the Filters panel is the one way to pick a race type.) */
+const noOldControls = (page) => page.evaluate(() => {
+  const sec = document.querySelector("#racesec");
+  const found = ["#race-type", "#race-switch", 'input[name="racetype"]', 'input[name$="-mode"]', ".scale-mode",
+    ".series-toggles", "#tg-price", "#tg-volume", "#tg-news", '[data-mode]'].filter((q) => document.querySelector(q));
+  const radios = sec.querySelectorAll("input[type=radio], input[type=checkbox], select").length;
+  const text = sec.innerText;
+  const words = ["Own scale", "Indexed", "Scale", "Senate or Governor", "Governor", "Race type"].filter((w) => text.includes(w));
+  return { found, radios, words };
+});
+/** Legend geometry: each entry's box, the legend's overflow, the page overflow. */
+const legendBox = (page) => page.evaluate(() => {
+  const items = [...document.querySelectorAll("#legend .lg-item")].map((li) => {
+    const r = li.getBoundingClientRect();
+    return { k: li.dataset.key, top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right), bottom: Math.round(r.bottom) };
+  });
+  const lg = document.querySelector("#legend");
+  const chart = document.querySelector("#chart").getBoundingClientRect();
+  return { items, lgOverflow: lg.scrollWidth - lg.clientWidth, pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    vw: innerWidth, aboveChart: lg.getBoundingClientRect().bottom <= chart.top };
+});
+/** Swatch stroke vs line stroke for every series, as computed colors. */
+const swatches = (page) => page.evaluate(() => ["price", "volume", "news"].map((k) => ({ k,
+  swatch: getComputedStyle(document.querySelector(`#lg-${k} .swatch line`)).stroke,
+  line: getComputedStyle(document.querySelector(`#chart path.line-${k}`)).stroke })));
+/** The values a line actually plots, read back from its path: each point's x is inverted to a UTC day with the
+ * svg's x domain and range, its y to a value with the path's y domain and range. */
+const plotted = (page, k) => page.evaluate((key) => {
+  const svg = document.querySelector("#chart svg.lc"), p = document.querySelector(`#chart path.line-${key}`);
+  const [x0, x1] = svg.dataset.xdomain.split(",").map(Number), [r0, r1] = svg.dataset.xrange.split(",").map(Number);
+  const [d0, d1] = p.dataset.domain.split(",").map(Number), [y0, y1] = p.dataset.range.split(",").map(Number);
+  const pts = [...p.getAttribute("d").matchAll(/(-?[\d.]+(?:e-?\d+)?),(-?[\d.]+(?:e-?\d+)?)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+  // d3 writes path coordinates to 0.001 px, so a value is exact to 0.001 px in data units
+  const out = { tol: (0.001 * Math.abs(d1 - d0)) / Math.abs(y1 - y0), at: {} };
+  for (const [px, py] of pts) {
+    const t = x0 + ((px - r0) / (r1 - r0)) * (x1 - x0);
+    const day = new Date(Math.floor(t / 86_400_000) * 86_400_000).toISOString().slice(0, 10);
+    out.at[day] = d0 + ((py - y0) / (y1 - y0)) * (d1 - d0);
+  }
+  return out;
+}, k);
+
 // ---------------------------------------------------------------- 1280 desktop, Texas
 {
   const { ctx, page } = await open(1280);
@@ -124,7 +170,7 @@ async function domain(page) {
     const m = document.querySelector("#mapsec"), c = document.querySelector("#racesec");
     return { next: m?.nextElementSibling?.id, below: c.getBoundingClientRect().top >= m.getBoundingClientRect().bottom,
       hidden: ["#race-tabs", "#charts", "#m3charts", "#daily-table", "#export-daily", "table.lag", "#f-from", "#f-overlay",
-        "#f-office", "#f-band", "#f-group", "#f-metric", "#f-source", "#filter-hint", "#race-type", "form#filters .fgrid"]
+        "#f-office", "#f-band", "#f-group", "#f-metric", "#f-source", "#filter-hint", "#race-type", "#race-switch", "form#filters .fgrid"]
         .filter((s) => document.querySelector(s)) };
   });
   check("layout: chart section directly below the map section", JSON.stringify(order), "next racesec, below, no hidden views",
@@ -242,10 +288,10 @@ async function domain(page) {
   const wst = (await page.locator("#news-status").innerText()).trim();
   const wdd = tx.series.display_daily;
   const wn = wdd.rows.filter((r) => r.wikipedia_pageviews_total != null).length;
-  const wlabel = await page.locator('label[data-key="news"]').innerText();
+  const wlabel = (await page.locator("#lg-news").textContent()).replace(/\s+/g, " ").trim();
   check("Sources Wikipedia: chart plots Wikipedia pageviews", `${wst} | ${wlabel} | lines ${await lines(page)}`,
     `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`, wst === `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`
-      && wlabel.includes("Wikipedia") && await lines(page) === "news,price,volume");
+      && wlabel === "Attention: Wikipedia pageviews per day (race and candidate pages)" && await lines(page) === "news,price,volume");
   await page.locator("#chart").focus();
   await page.keyboard.press("Home");
   const wr = await readout(page);
@@ -296,6 +342,58 @@ async function domain(page) {
     && await page.locator('#chart g[data-mark="election"] rect').count() === 1);
   check("three lines and three axes by default", `${await lines(page)} | ${await axes(page)}`, "news,price,volume twice",
     await lines(page) === "news,price,volume" && await axes(page) === "news,price,volume");
+  const old = await noOldControls(page);
+  check("no race type switch and no scale switch in the chart area (no radios, checkboxes or selects, no such labels)",
+    JSON.stringify(old), '{"found":[],"radios":0,"words":[]}', old.found.length === 0 && old.radios === 0 && old.words.length === 0);
+
+  // legend: one entry per line, one row above the chart, the texts, real buttons with aria-pressed
+  const lt = await page.$$eval("#legend .lg-btn", (bs) => bs.map((b) => `${b.tagName}|${b.type}|${b.getAttribute("aria-pressed")}|${
+    b.textContent.replace(/\s+/g, " ").trim()}`));
+  const wantLt = ["BUTTON|button|true|Price: Kalshi chance that Democrats win (%)", "BUTTON|button|true|Volume: contracts traded per day",
+    "BUTTON|button|true|Attention: news stories per day mentioning the race (Media Cloud)"];
+  check("legend: three button entries, pressed, with name and description", lt.join(" / "), wantLt.join(" / "),
+    JSON.stringify(lt) === JSON.stringify(wantLt));
+  const lb = await legendBox(page);
+  const oneRow = lb.items.length === 3 && lb.items.every((i) => Math.abs(i.top - lb.items[0].top) <= 2)
+    && lb.items[0].right <= lb.items[1].left && lb.items[1].right <= lb.items[2].left;
+  check("1280: legend entries share one row, above the chart, no overflow", JSON.stringify(lb), "same top, left to right, above chart",
+    oneRow && lb.aboveChart && lb.lgOverflow <= 0 && lb.pageOverflow <= 0);
+  const sw = await swatches(page);
+  check("light: each legend swatch has its line's stroke color", JSON.stringify(sw), "swatch == line, the light tokens",
+    sw.every((x) => x.swatch === x.line && x.line === THEME.light[x.k]));
+  // the why? note: a separate button with aria-expanded and aria-controls, opened and closed by keyboard
+  const why = page.locator("#lg-why");
+  const whyAttrs = await why.evaluate((b) => `${b.tagName} ${b.closest(".lg-btn") ? "nested" : "separate"} ${b.getAttribute("aria-expanded")} ${
+    b.getAttribute("aria-controls")} ${document.querySelector("#lg-note").hidden}`);
+  check("why? is a separate button, aria-expanded false, controls the hidden note", whyAttrs, "BUTTON separate false lg-note true",
+    whyAttrs === "BUTTON separate false lg-note true");
+  await why.focus();
+  await page.keyboard.press("Enter");
+  const nEnter = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()} ${(await page.locator("#lg-note").innerText()).trim()}`;
+  await page.keyboard.press("Space");
+  const nSpace = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()}`;
+  await page.keyboard.press("Space");
+  const nSpace2 = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()}`;
+  const NOTE = "The Republican contract is the mirror image: its price is about 100% minus this line.";
+  check("why? opens with Enter, closes and opens with Space; the note text", `${nEnter} | ${nSpace} | ${nSpace2}`,
+    `true true ${NOTE} | false false | true true`, nEnter === `true true ${NOTE}` && nSpace === "false false" && nSpace2 === "true true");
+  check("no Republican line is drawn", await lines(page), "news,price,volume", await lines(page) === "news,price,volume");
+  await axe(page, "1280 legend and note open");
+  await page.mouse.move(0, 0);
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-1280-light.png") });
+
+  // plotted values: each line's path coordinates, read back to values, against the JSON on three days
+  for (const k of ["price", "volume", "news"]) {
+    const got = await plotted(page, k);
+    for (const d of ["2026-08-05", "2026-09-15", "2026-11-03"]) {
+      const raw = dd.rows.find((r) => r.date === d)[COL[k]];
+      const exp = raw == null ? null : k === "price" ? raw * 100 : raw;
+      const v = got.at[d] ?? null;
+      const ok = exp === null ? v === null : v !== null && Math.abs(v - exp) <= got.tol + 1e-9 * Math.abs(exp);
+      report.plotted.push({ date: d, series: k, plotted: v, json: raw, tol: got.tol, ok });
+      if (!ok) failed = true;
+    }
+  }
 
   // spot check: readout text against the processed JSON, by keyboard (focus the chart, Home, arrows)
   await page.locator("#chart").focus();
@@ -329,30 +427,33 @@ async function domain(page) {
   const live = await page.locator("#readout").getAttribute("aria-live");
   check("readout row is aria-live polite", live, "polite", live === "polite");
 
-  // toggles: off removes the line and its axis; on brings both back
-  await page.locator("#tg-volume").uncheck();
-  check("toggle volume off: line and axis gone", `${await lines(page)} | ${await axes(page)}`, "news,price | news,price",
-    await lines(page) === "news,price" && await axes(page) === "news,price");
-  await page.locator("#tg-volume").check();
-  check("toggle volume on: line and axis back", `${await lines(page)} | ${await axes(page)}`, "news,price,volume",
-    await lines(page) === "news,price,volume" && await axes(page) === "news,price,volume");
-  await page.locator("#tg-price").uncheck();
-  check("toggle price off: left axis gone", `${await lines(page)} | ${await axes(page)}`, "news,volume",
+  // legend entries are the toggles: a click switches the line and its axis; the last line stays on
+  const pressed = (k) => page.locator(`#lg-${k}`).getAttribute("aria-pressed");
+  await page.locator("#lg-volume").click();
+  check("legend: Volume off: line and axis gone, aria-pressed false", `${await lines(page)} | ${await axes(page)} | ${await pressed("volume")}`,
+    "news,price | news,price | false", await lines(page) === "news,price" && await axes(page) === "news,price" && await pressed("volume") === "false");
+  await page.locator("#lg-volume").click();
+  check("legend: Volume on: line and axis back", `${await lines(page)} | ${await axes(page)} | ${await pressed("volume")}`, "news,price,volume | true",
+    await lines(page) === "news,price,volume" && await axes(page) === "news,price,volume" && await pressed("volume") === "true");
+  await page.locator("#lg-price").click();
+  check("legend: Price off: left axis gone", `${await lines(page)} | ${await axes(page)}`, "news,volume",
     await lines(page) === "news,volume" && await axes(page) === "news,volume");
-  await page.locator("#tg-news").uncheck();
-  const lastDisabled = await page.locator("#tg-volume").isDisabled();
-  await page.locator('label[data-key="volume"]').click({ force: true });
+  // keyboard: Enter and Space on a focused entry
+  await page.locator("#lg-news").focus();
+  await page.keyboard.press("Enter");
+  const lastLocked = await page.locator("#lg-volume").getAttribute("aria-disabled");
+  await page.locator("#lg-volume").focus();
+  await page.keyboard.press("Space");
+  await page.locator("#lg-volume").click({ force: true });  // aria-disabled: Playwright would wait for it to be enabled
   const note = await page.locator("#tg-note").innerText();
-  check("last visible series cannot be switched off", `disabled ${lastDisabled}; checked ${await page.locator("#tg-volume").isChecked()}; lines ${await lines(page)}; note "${note}"`,
-    "disabled, still checked, volume line drawn, note", lastDisabled && await page.locator("#tg-volume").isChecked()
-      && await lines(page) === "volume" && note.includes("cannot be switched off"));
-  await page.locator("#tg-price").check();
-  await page.locator("#tg-news").check();
-  // indexed mode: one shared 0 to 100 axis
-  await page.locator('input[value="indexed"]').check();
-  check("indexed mode: one shared axis, three lines", `${await lines(page)} | ${await axes(page)}`, "news,price,volume | index",
-    await lines(page) === "news,price,volume" && await axes(page) === "index");
-  await page.locator('input[value="own"]').check();
+  check("last visible line cannot be switched off (aria-disabled, still pressed, line drawn, note)",
+    `aria-disabled ${lastLocked}; pressed ${await pressed("volume")}; lines ${await lines(page)}; note "${note}"`,
+    "true, true, volume, note", lastLocked === "true" && await pressed("volume") === "true" && await lines(page) === "volume"
+      && note.includes("cannot be switched off"));
+  await page.locator("#lg-price").click();
+  await page.locator("#lg-news").click();
+  check("all three lines back; nothing locked", `${await lines(page)} | ${await page.locator('.lg-btn[aria-disabled="true"]').count()} locked`,
+    "news,price,volume | 0 locked", await lines(page) === "news,price,volume" && await page.locator('.lg-btn[aria-disabled="true"]').count() === 0);
 
   // date range: inputs carry min and max; out-of-range and start-after-end are rejected with a visible message
   const mm = await page.$eval("#d-from", (i) => `${i.min}..${i.max}`);
@@ -411,7 +512,11 @@ async function domain(page) {
     JSON.stringify(THEME.dark), themeOk(dark, "dark") && dark.stored === "dark");
   const decoDark = await decorated(page);
   check("dark: no element has a box shadow or a gradient", decoDark.join(", ") || "none", "none", decoDark.length === 0);
+  const swd = await swatches(page);
+  check("dark: each legend swatch has its line's stroke color", JSON.stringify(swd), "swatch == line, the dark tokens",
+    swd.every((x) => x.swatch === x.line && x.line === THEME.dark[x.k]));
   await page.locator("#theme-btn").blur();
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-1280-dark.png") });
   await page.screenshot({ path: resolve(SHOTS, "style-dark-1280.png"), fullPage: true });
   await axe(page, "1280 Texas dark");
   // the saved choice wins on reload, and is in place before the app script runs
@@ -433,10 +538,13 @@ async function domain(page) {
     await page.waitForFunction((rid) => document.querySelector("#race")?.getAttribute("data-race") === rid, id);
     await page.waitForSelector("#chart svg path.line");
     const st = (await page.locator("#news-status").innerText()).trim();
-    const nd = await page.locator("#tg-news").isDisabled(), nc = await page.locator("#tg-news").isChecked();
-    check(`?race=${id}: no news: one short line, toggle off and disabled, price and volume drawn`,
-      `${st} | disabled ${nd} checked ${nc} | lines ${await lines(page)}`, "No news data for this race yet.",
-      st === "No news data for this race yet." && nd && !nc && await lines(page) === "price,volume");
+    const nd = await page.locator("#lg-news").getAttribute("aria-disabled") === "true", nc = await pressed("news") === "true";
+    await page.locator("#lg-news").click({ force: true });
+    const legNews = (await page.locator("#lg-news").textContent()).replace(/\s+/g, " ").trim();
+    check(`?race=${id}: no news: status line, Attention entry off and disabled (a click does nothing), price and volume drawn`,
+      `${st} | disabled ${nd} pressed ${nc} | ${legNews} | lines ${await lines(page)}`, "No news data for this race yet.",
+      st === "No news data for this race yet." && nd && !nc && legNews.includes("(no news data for this race yet)")
+        && await lines(page) === "price,volume");
     const miss = noNews.series.display_daily.coverage.kalshi_price_close.missing_days;
     const segs = await page.$eval("#chart svg path.line-price", (p) => (p.getAttribute("d").match(/M/g) || []).length);
     check(`${id}: missing Kalshi days break the price line (not drawn as zero)`, `${segs} segment(s); missing ${miss.join(", ")}`,
@@ -444,9 +552,9 @@ async function domain(page) {
     await axe(page, `1280 ${id}`);
     await page.locator('svg.usmap path[data-state="TX"]').click();
     await page.waitForFunction(() => document.querySelector("#race")?.getAttribute("data-race")?.startsWith("tx-"));
-    check("Texas on the map opens Texas Senate; news toggle on again", `${await page.locator("#race").getAttribute("data-race")} ${await page.locator("#tg-news").isChecked()} ${await lines(page)}`,
+    check("Texas on the map opens Texas Senate; Attention entry on again", `${await page.locator("#race").getAttribute("data-race")} ${await pressed("news")} ${await lines(page)}`,
       "tx-senate-2026 true news,price,volume", await page.locator("#race").getAttribute("data-race") === "tx-senate-2026"
-        && await page.locator("#tg-news").isChecked() && await lines(page) === "news,price,volume");
+        && await pressed("news") === "true" && await lines(page) === "news,price,volume");
   }
   // the hash on load: known values apply, unknown or disabled values fall back to the default
   await page.goto(`${BASE}#state=FL&type=governor&metric=attention&polls=many&source=bluesky`, { waitUntil: "networkidle" });
@@ -475,6 +583,13 @@ async function domain(page) {
   const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("no horizontal page scroll at 390 px", overflow, "0", overflow <= 0);
+  const lb = await legendBox(page);
+  const rows = new Set(lb.items.map((i) => i.top)).size;
+  check("390: legend wraps (entries on more than one row), every entry inside the viewport, no overflow", JSON.stringify(lb),
+    "rows > 1, right <= 390, overflow 0", rows > 1 && lb.items.every((i) => i.left >= 0 && i.right <= lb.vw) && lb.lgOverflow <= 0
+      && lb.pageOverflow <= 0);
+  await page.locator("#lg-why").tap();
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-390-light.png") });
   await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: resolve(SHOTS, "filt-closed-390.png") });
   await page.locator("#filters-btn").tap();
@@ -484,13 +599,13 @@ async function domain(page) {
     sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
   await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
   await axe(page, "390 filters open");
-  const targets = "#theme-btn, #racesec label.tg, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
+  const targets = "#theme-btn, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
-  check(`touch targets at least 44 px (theme, toggles, scale, dates, Reset, chart, brush, Filters button and panel; ${nTargets} checked)`,
-    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 24);
+  check(`touch targets at least 44 px (theme, legend entries, why?, dates, Reset, chart, brush, Filters button and panel; ${nTargets} checked)`,
+    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 23);
   await page.touchscreen.tap(195, 40);
   check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
     !(await page.locator("#filters-panel").isVisible()));
@@ -510,7 +625,10 @@ async function domain(page) {
   check("390 dark: no box shadow or gradient", decoDark.join(", ") || "none", "none", decoDark.length === 0);
   const overflowDark = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("390 dark: no horizontal page scroll", overflowDark, "0", overflowDark <= 0);
+  const sw390 = await swatches(page);
+  check("390 dark: swatches match the lines", JSON.stringify(sw390), "swatch == line", sw390.every((x) => x.swatch === x.line && x.line === THEME.dark[x.k]));
   await page.locator("#theme-btn").blur();
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-390-dark.png") });
   await page.screenshot({ path: resolve(SHOTS, "style-dark-390.png"), fullPage: true });
   await axe(page, "390 Texas dark");
   await ctx.close();
@@ -534,5 +652,9 @@ console.log(JSON.stringify(report, null, 1));
 console.log("\nSpot check (readout text vs data/processed/tx-senate-2026.json, series.display_daily):");
 console.log("| date | series | readout | JSON value | ok |\n|---|---|---|---|---|");
 for (const s of report.spot) console.log(`| ${s.date} | ${s.series} | ${s.readout} | ${s.json} | ${s.ok ? "yes" : "NO"} |`);
+console.log("\nPlotted values (line path coordinates read back to values) vs data/processed/tx-senate-2026.json (price x100):");
+console.log("| date | series | plotted | JSON value | tolerance (0.001 px) | ok |\n|---|---|---|---|---|---|");
+for (const s of report.plotted) console.log(`| ${s.date} | ${s.series} | ${s.plotted} | ${s.json} | ${s.tol.toPrecision(3)} | ${s.ok ? "yes" : "NO"} |`);
+if (report.plotted.length !== 9) { console.log("expected 9 plotted spot checks"); failed = true; }
 console.log(failed ? "VERIFY FAILED" : "VERIFY OK");
 process.exit(failed ? 1 : 0);
