@@ -117,6 +117,20 @@ coverage and missing days per column. It is for charts only. The metrics, qualit
 `data/raw` first, and only dates no cache covers are pulled. Pass `--no-display` to skip it, or `--display` to
 build it from the default window when the config does not set one.
 
+Hourly display series. With `series.display_daily`, `run` also writes `series.display_hourly`: the hourly Kalshi
+close and volume (same columns as `series.hourly`, `ts_utc` is the candle end) on a full hourly grid from display
+start 00:00 UTC to the market's last candle. Inside `window` the rows are the `series.hourly` rows; outside it they
+come from the cache the same way as the daily block. An hour with no candle gets the previous close and volume 0,
+and those hours are listed in `filled_hours`. An hour whose candle has a null price (the analysis pull had no
+earlier close) also gets the previous close but keeps its volume, listed in `forward_filled_null_price`; `series.hourly`
+keeps the null. Only leading hours with no earlier close stay null (`null_price_hours`). A `reconciliation` block checks every display date against
+`series.display_daily` (hourly volume sum and last hourly close) and lists any mismatch. It is for charts only; the
+metrics never read it. `series.granularity` says which sources are hourly: Kalshi has hourly and daily values,
+while Wikipedia and Media Cloud are daily only (Media Cloud publish dates have no time of day). To add both blocks
+to existing processed files without a full run, use `python -m raceattn display-hourly --all` (or `--race ID`,
+plus `--refresh`, `--raw-dir`, `--out-dir`). It reads `series.hourly` from each file and the Kalshi cache and
+leaves every other key as it is.
+
 Media Cloud pull for Texas, once the key is in `.env`:
 
 ```

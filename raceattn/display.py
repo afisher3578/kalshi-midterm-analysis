@@ -1,4 +1,5 @@
-"""Display series: series.display_daily in the race JSON, one row per date of the race's display window.
+"""Display series: series.display_daily in the race JSON, one row per date of the race's display window, and
+series.display_hourly, the hourly Kalshi candles for the same window (see build_hourly).
 
 The display window (config `display_window`, default election_date - 90 days to election_date + 1 day) is for
 charts only. Nothing here feeds the metrics, baselines, quality or series.daily: those stay on the analysis
@@ -205,3 +206,203 @@ def build(race: Race, connectors: list[Connector], days: list[dt.date], cols: di
         "requests_made": requests,
         "note": NOTE,
     }
+
+
+# -- series.display_hourly: hourly Kalshi for the display window, charts only
+
+HOURLY_COLUMNS = ["ts_utc", SERIES_PRICE, SERIES_VOLUME]  # the series.hourly columns
+HOURLY_NOTE = ("Hourly Kalshi for charts only: one row per hour of the display window, from display start 00:00 UTC "
+               "to the market's last candle. ts_utc is the candle end_period_ts. Inside the analysis window the "
+               "values are the series.hourly values; outside it they are read from the raw cache (see segments). "
+               "An hour with no candle gets the previous hour's close and volume 0 (counted in filled_hours). "
+               "An hour whose candle has a null price (that pull had no earlier close) gets the previous hour's "
+               "close and keeps its volume (counted in forward_filled_null_price); series.hourly keeps the null. "
+               "Only leading hours with no earlier close anywhere stay null (null_price_hours). "
+               "Kalshi only: news and Wikipedia stay daily, never hourly. The metrics never read this block.")
+GRANULARITY_NOTE = ("Kalshi has hourly candles (series.hourly, series.display_hourly) and daily rows. Wikipedia "
+                    "pageviews and Media Cloud counts are daily only; Media Cloud publish dates carry no time of "
+                    "day, so there are no hourly news values.")
+
+
+def _parse_ts(s: str) -> dt.datetime:
+    return dt.datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
+
+
+def _iso(t: dt.datetime) -> str:
+    return t.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def granularity(series: dict[str, Any]) -> dict[str, Any]:
+    """series.granularity: the sources with data in this race JSON and their time resolution."""
+    daily_cols = (series.get("daily") or {}).get("columns") or []
+    out: dict[str, Any] = {}
+    if (series.get("hourly") or {}).get("rows") or any(c.startswith("kalshi/") for c in daily_cols):
+        out["kalshi"] = "hourly and daily"
+    if any(c.startswith("news_mediacloud/") for c in daily_cols):
+        out["news_mediacloud"] = "daily"
+    if any(c.startswith("wikipedia/") for c in daily_cols):
+        out["wikipedia"] = "daily"
+    out["note"] = GRANULARITY_NOTE
+    return out
+
+
+def reconcile(rows: list[list], daily: dict[str, Any] | None) -> dict[str, Any]:
+    """Hourly rows against series.display_daily: per UTC date of ts_utc, the sum of hourly volume against the
+    daily volume (abs diff > 1e-6 is a mismatch) and the last hourly price against the daily close (exact after
+    rounding to 6 places). Every mismatch is listed."""
+    by_day: dict[str, list[list]] = {}
+    for r in rows:
+        by_day.setdefault(r[0][:10], []).append(r)
+    drows = {r["date"]: r for r in (daily or {}).get("rows") or []}
+    vol_mm, close_mm, null_days, no_hours = [], [], [], []
+    checked = 0
+    for date in sorted(drows):
+        dr = drows[date]
+        hrs = by_day.get(date)
+        dv, dc = dr.get(COL_VOLUME), dr.get(COL_PRICE)
+        if dv is None or dc is None:
+            null_days.append(date)
+        if not hrs:
+            if dv is not None or dc is not None:
+                no_hours.append(date)
+            continue
+        checked += 1
+        hsum = sum(r[2] or 0.0 for r in hrs)
+        if dv is not None and abs(hsum - dv) > 1e-6:
+            vol_mm.append({"date": date, "hourly_sum": hsum, "daily": dv})
+        hlast = hrs[-1][1]
+        if dc is not None and (hlast is None or round(hlast, 6) != round(dc, 6)):
+            close_mm.append({"date": date, "hourly_last": hlast, "daily": dc})
+    out = {"days_checked": checked, "volume_mismatches": vol_mm, "close_mismatches": close_mm,
+           "daily_null_days": null_days,
+           "status": "mismatch" if vol_mm or close_mm or no_hours or not drows else "match"}
+    if no_hours:
+        out["days_without_hourly_rows"] = no_hours
+    if not drows:
+        out["note"] = "no series.display_daily rows to compare against"
+    return out
+
+
+def build_hourly(race: Race, kalshi_conn: Connector, hourly_rows: list[list], refresh: bool = False,
+                 log: Callable[[str], None] = print, daily: dict[str, Any] | None = None) -> dict[str, Any]:
+    """series.display_hourly: hourly Kalshi on a full grid of display window hours. `hourly_rows` are the
+    series.hourly rows of the analysis run; `daily` is series.display_daily for the reconciliation."""
+    display, analysis = race.display_window, race.window
+    first_date, last_date = display.start, display.end
+    # analysis rows first: on a shared ts the analysis value wins
+    by_ts: dict[dt.datetime, list] = {}
+    for ts, price, vol in hourly_rows:
+        t = _parse_ts(ts)
+        if first_date <= t.date() <= last_date:
+            by_ts.setdefault(t, [price, vol])
+    segments: list[dict[str, Any]] = []
+    inside = [d for d in display.days() if analysis.start <= d <= analysis.end]
+    if inside:
+        segments.append({"source": kalshi_conn.id, "days": {"start": inside[0].isoformat(), "end": inside[-1].isoformat(),
+                                                            "n": len(inside)},
+                         "from": "analysis run (series.hourly values)", "hours": len(by_ts)})
+    requests = 0
+    overlap = 0
+    cached = [] if refresh else cached_windows(kalshi_conn, race)
+    for w, take, from_cache in plan(gap_days(display, analysis), cached):
+        hits0, fetches0 = kalshi_conn.cache_hits, kalshi_conn.fetches
+        rows = kalshi_conn.fetch(race, w)
+        vol = {r.ts_utc: r.value for r in rows if r.series == SERIES_VOLUME}
+        take_set = set(take)
+        used = 0
+        for r in rows:
+            if r.series != SERIES_PRICE:
+                continue
+            if r.ts_utc in by_ts:  # chunk or segment edge: the analysis value wins
+                overlap += 1
+                continue
+            if r.ts_utc.date() not in take_set:
+                continue
+            by_ts[r.ts_utc] = [r.value, vol.get(r.ts_utc)]
+            used += 1
+        made = kalshi_conn.fetches - fetches0
+        requests += made
+        segments.append({"source": kalshi_conn.id, "request_window": {"start": w.start.isoformat(), "end": w.end.isoformat()},
+                         "days": {"start": take[0].isoformat(), "end": take[-1].isoformat(), "n": len(take)},
+                         "from": "cached window" if from_cache else "new segment", "hours": used,
+                         "cache_hits": kalshi_conn.cache_hits - hits0, "requests": made})
+        log("   display_hourly %s: %s..%s from %s %s (%d cache hit(s), %d request(s))" % (
+            kalshi_conn.id, take[0], take[-1], "cached window" if from_cache else "new segment", w.label,
+            kalshi_conn.cache_hits - hits0, made))
+    # full hourly grid from display start 00:00 to the last candle; no hours invented after it
+    out_rows: list[list] = []
+    filled: list[str] = []
+    null_price: list[str] = []
+    ffill_null: list[str] = []
+    if by_ts:
+        t, last_t = display.start_dt, max(by_ts)
+        prev = None
+        while t <= last_t:
+            if t in by_ts:
+                price, v = by_ts[t]
+                if price is None and prev is not None:  # candle without a close in its own pull
+                    price = prev
+                    ffill_null.append(_iso(t))
+            else:
+                price, v = prev, 0.0
+                filled.append(_iso(t))
+            if price is None:
+                null_price.append(_iso(t))
+            out_rows.append([_iso(t), price, v])
+            prev = price
+            t += dt.timedelta(hours=1)
+    rec = reconcile(out_rows, daily)
+    log("   display_hourly %s..%s: %d hour(s), %d filled, %d null price filled, %d request(s) made, "
+        "reconciliation %s" % (out_rows[0][0] if out_rows else "-", out_rows[-1][0] if out_rows else "-",
+                               len(out_rows), len(filled), len(ffill_null), requests, rec["status"]))
+    return {
+        "window": {"start": display.start.isoformat(), "end": display.end.isoformat(), "days": display.n_days,
+                   "inclusive": True, "timezone": "UTC",
+                   "source": "race config" if race.display_window_set else "default from election_date"},
+        "analysis_window": {"start": analysis.start.isoformat(), "end": analysis.end.isoformat()},
+        "columns": list(HOURLY_COLUMNS),
+        "rows": out_rows,
+        "first_ts": out_rows[0][0] if out_rows else None,
+        "last_ts": out_rows[-1][0] if out_rows else None,
+        "n_rows": len(out_rows),
+        "filled_hours": {"n": len(filled), "hours": filled,
+                         "rule": "no candle for that hour: price forward-filled from the previous hour, volume 0"},
+        "forward_filled_null_price": {"n": len(ffill_null), "hours": ffill_null,
+                                      "rule": "candle with a null price (its pull had no earlier close): price "
+                                              "forward-filled from the previous hour, volume kept"},
+        "null_price_hours": {"n": len(null_price), "hours": null_price,
+                             "rule": "no close known yet at that hour (no earlier candle with a price)"},
+        "overlap_dropped": {"n": overlap, "rule": "segment candles at a ts the analysis run already has; the "
+                                                  "analysis value is kept"},
+        "segments": segments,
+        "requests_made": requests,
+        "reconciliation": rec,
+        "note": HOURLY_NOTE,
+    }
+
+
+def patch_processed(race: Race, path: str, kalshi_conn: Connector, refresh: bool = False,
+                    log: Callable[[str], None] = print) -> dict[str, Any]:
+    """Add series.display_hourly and series.granularity to an existing processed race JSON, in place. Built from
+    the file's own series.hourly and series.display_daily plus the raw cache; every other key is left as it is."""
+    import json
+
+    from raceattn.pipeline import _dump
+
+    with open(path, encoding="utf-8") as f:
+        result = json.load(f)
+    series = result["series"]
+    w = result.get("window") or {}
+    if (w.get("start"), w.get("end")) != (race.window.start.isoformat(), race.window.end.isoformat()):
+        raise ValueError("%s: analysis window %s..%s does not match the race config %s..%s; re-run the pipeline" % (
+            path, w.get("start"), w.get("end"), race.window.start, race.window.end))
+    if series.get("hourly", {}).get("columns") != HOURLY_COLUMNS:
+        raise ValueError("%s: series.hourly columns are %r, expected %r" % (
+            path, series.get("hourly", {}).get("columns"), HOURLY_COLUMNS))
+    size_before = os.path.getsize(path)
+    series["display_hourly"] = build_hourly(race, kalshi_conn, series["hourly"]["rows"], refresh=refresh, log=log,
+                                            daily=series.get("display_daily"))
+    series["granularity"] = granularity(series)
+    _dump(path, result)
+    return {"block": series["display_hourly"], "granularity": series["granularity"], "size_before": size_before,
+            "size_after": os.path.getsize(path)}

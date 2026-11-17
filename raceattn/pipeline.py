@@ -442,6 +442,16 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
     }
     if display_daily is not None:
         result["series"]["display_daily"] = display_daily
+        kalshi = next((c for c in connectors if c.id == "kalshi"), None)
+        if kalshi is not None:
+            # display_daily just read (or with --refresh re-pulled) these windows: read them from the cache
+            was, kalshi.refresh = kalshi.refresh, False
+            try:
+                result["series"]["display_hourly"] = display_mod.build_hourly(
+                    race, kalshi, hourly_rows, refresh=False, log=log, daily=display_daily)
+            finally:
+                kalshi.refresh = was
+        result["series"]["granularity"] = display_mod.granularity(result["series"])
     print_tables(result, log)
     if warning:
         log(warning)

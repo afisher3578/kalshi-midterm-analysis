@@ -86,6 +86,14 @@ def build_parser() -> argparse.ArgumentParser:
     db.add_argument("--demo", action="store_true",
                     help="serve a synthetic Media Cloud fixture (DEMO DATA, not real) from memory; opens ?demo=1")
     db.add_argument("--no-build", action="store_true", help="serve web/dist as it is (skip the Node check and build)")
+    dh = sub.add_parser("display-hourly",
+                        help="add series.display_hourly and series.granularity to existing processed race JSONs")
+    dg = dh.add_mutually_exclusive_group(required=True)
+    dg.add_argument("--race", help="race id (data/processed/<id>.json and config/races/<id>.yaml)")
+    dg.add_argument("--all", action="store_true", help="every race in --out-dir except index.json")
+    dh.add_argument("--refresh", action="store_true", help="ignore the disk cache and re-fetch the Kalshi candles")
+    dh.add_argument("--raw-dir", default=DEFAULT_RAW, help="raw response cache (default: data/raw)")
+    dh.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, patched in place (default: data/processed)")
     pub = sub.add_parser("publish", help="check processed output before publishing (licensing, funding flag)")
     pub.add_argument("--out-dir", default=DEFAULT_OUT)
     return p
@@ -251,6 +259,54 @@ def cmd_mediacloud(args) -> int:
     return 0
 
 
+def cmd_display_hourly(args) -> int:
+    """Patch existing processed JSONs in place: series.display_hourly from their series.hourly plus the cache."""
+    from raceattn import display
+    from raceattn.cache import Cache
+    from raceattn.pipeline import make_connectors
+
+    if args.all:
+        rids = sorted(fn[:-5] for fn in os.listdir(args.out_dir) if fn.endswith(".json") and fn != "index.json")
+    else:
+        rids = [args.race]
+    if not rids:
+        print("error: no processed race JSON in %s" % args.out_dir, file=sys.stderr)
+        return 2
+    http, cache = HttpClient(), Cache(args.raw_dir)
+    total, bad = 0, []
+    for rid in rids:
+        path = os.path.join(args.out_dir, rid + ".json")
+        if not os.path.isfile(path):
+            print("error: %s not found (run the pipeline first)" % path, file=sys.stderr)
+            return 2
+        race = load_race(rid)
+        kalshi = make_connectors(["kalshi"], http, cache, args.refresh, load_settings())[0]
+        kalshi.log = print
+        print("== %s" % rid)
+        out = display.patch_processed(race, path, kalshi, refresh=args.refresh)
+        b, rec = out["block"], out["block"]["reconciliation"]
+        total += b["requests_made"]
+        print("   rows %d, %s..%s, filled hours %d, null price filled %d, null price hours %d, requests made %d" % (
+            b["n_rows"], b["first_ts"], b["last_ts"], b["filled_hours"]["n"], b["forward_filled_null_price"]["n"],
+            b["null_price_hours"]["n"], b["requests_made"]))
+        print("   reconciliation: %s (%d day(s) checked, %d volume mismatch(es), %d close mismatch(es), "
+              "daily null days: %s)" % (rec["status"], rec["days_checked"], len(rec["volume_mismatches"]),
+                                        len(rec["close_mismatches"]), ", ".join(rec["daily_null_days"]) or "none"))
+        for m in rec["volume_mismatches"]:
+            print("     volume %s: hourly sum %r, daily %r" % (m["date"], m["hourly_sum"], m["daily"]))
+        for m in rec["close_mismatches"]:
+            print("     close %s: hourly last %r, daily %r" % (m["date"], m["hourly_last"], m["daily"]))
+        for d in rec.get("days_without_hourly_rows", []):
+            print("     %s: daily values but no hourly rows" % d)
+        print("   granularity: %s" % ", ".join("%s %s" % kv for kv in out["granularity"].items() if kv[0] != "note"))
+        print("   wrote %s (%d -> %d bytes)" % (path, out["size_before"], out["size_after"]))
+        if rec["status"] != "match":
+            bad.append(rid)
+    print("\ndisplay-hourly: %d race(s) patched, %d request(s) made, reconciliation mismatch in: %s" % (
+        len(rids), total, ", ".join(bad) or "none"))
+    return 0
+
+
 def cmd_publish(args) -> int:
     """Prints the licensing warning (until confirmed) and the funding flag state. Publishes nothing."""
     import json
@@ -296,6 +352,8 @@ def main(argv: list[str] | None = None) -> int:
 
             return dashboard.run(args.race, port=args.port, open_browser=not args.no_open, demo=args.demo,
                                  build=not args.no_build)
+        if args.cmd == "display-hourly":
+            return cmd_display_hourly(args)
         if args.cmd == "events":
             return cmd_events(args)
         if args.cmd == "discover":
