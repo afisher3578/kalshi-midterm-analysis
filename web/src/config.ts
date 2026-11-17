@@ -89,6 +89,12 @@ export function chartTitle(state: string, office: string, year: string): string 
   return CHART_TITLE.replace("{state}", state).replace("{office}", office).replace("{year}", year);
 }
 
-// The page footer: one link to the code and data.
+// The page footer: the data attribution (each source name a link) and one link to the code and data.
+export const DATA_ATTRIBUTION = "Data: Kalshi, Media Cloud, Wikimedia.";
+export const DATA_SOURCES: readonly { name: string; url: string }[] = [
+  { name: "Kalshi", url: "https://kalshi.com" },
+  { name: "Media Cloud", url: "https://www.mediacloud.org" },
+  { name: "Wikimedia", url: "https://www.wikimedia.org" },
+];
 export const REPO_URL = "https://github.com/afisher3578/kalshi-midterm-analysis";
 export const REPO_LINK_TEXT = "Code and data on GitHub";

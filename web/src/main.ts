@@ -1,5 +1,5 @@
 import "./style.css";
-import { chartTitle, DEFAULT_RACE, FUNDING_DISCLOSURE, MAP_TITLE, MEDIA_ATTENTION_DEF, PROJECT_NAME, REPO_LINK_TEXT, REPO_URL, SHOW_DETAILS,
+import { chartTitle, DEFAULT_RACE, FUNDING_DISCLOSURE, MAP_TITLE, MEDIA_ATTENTION_DEF, PROJECT_NAME, SHOW_DETAILS,
   SHOW_FUNDING_DISCLOSURE, STATES, SUBTITLE, TITLE } from "./config";
 import { chartSeries, hasData, hourlySeries, NEWS_COL, partyLines, WIKI_COL } from "./display";
 import { countChanged, DEFAULT_FILTERS, ENABLED_STATES, ENABLED_TYPES, type Filters, mapValue, METRICS, parseHash,
@@ -8,7 +8,7 @@ import { FILTER, INFO, themeIcon } from "./icons";
 import { type ChartState, LineChart } from "./linechart";
 import { fmtCompact, renderMap, type StateCell, stateText } from "./map";
 import { loadNewsModel, localServer, NewsView } from "./newsview";
-import { el, esc, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
+import { el, esc, footerItems, raceTitle, RaceView, shownSeries, type RaceUi } from "./race";
 import type { DisplayDaily, IndexData, IndexRace, RaceData } from "./types";
 import { byOffice, clampRange, raceIdFromSearch, type View } from "./transforms";
 
@@ -511,10 +511,10 @@ function refreshRace(ui: Ui) {
   writeUrl(ui);
 }
 
-/** The page footer: the link to the repository, and the funding disclosure when it is on. Same tab. */
+/** The page footer: the data attribution, the link to the repository, and the funding disclosure when it is on. */
 function footer(): HTMLElement {
-  return el("footer", { class: "wrap foot" }, `<div class="footin"><p><a href="${esc(REPO_URL)}" rel="noopener noreferrer">${
-    esc(REPO_LINK_TEXT)}</a></p>${SHOW_FUNDING_DISCLOSURE ? `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>` : ""}</div>`);
+  return el("footer", { class: "wrap foot" }, `<div class="footin">${footerItems()}${
+    SHOW_FUNDING_DISCLOSURE ? `<p class="disclosure">${esc(FUNDING_DISCLOSURE)}</p>` : ""}</div>`);
 }
 
 main();

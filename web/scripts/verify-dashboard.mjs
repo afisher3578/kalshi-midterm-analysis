@@ -30,13 +30,19 @@
 // Writes docs/screenshots/g2-{1280,390}-{light,dark}.png, g2-1w-hourly.png, g2-crosshair-1280.png,
 // g1-{1280,390}-{light,dark}.png, g1-tooltip-{1280,390}.png, style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
 // chart-{1280,390}-{light,dark}.png, hourly-{1280,390}-{light,dark}.png, h1-{1280,390}-{light,dark}.png and
-// h1-header-{light,dark}.png.
+// h1-header-{light,dark}.png and h2-footer-{1280,390}-{light,dark}.png.
+// H2: the footer data attribution "Data: Kalshi, Media Cloud, Wikimedia." (each source a link) and the GitHub link,
+// on one line at 1280 and on separate lines at 390, in both themes.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 
+// H2: the footer reads the data attribution (each source a link) and then the GitHub link
+const H2_ATTRIBUTION = "Data: Kalshi, Media Cloud, Wikimedia.";
+const FOOT_LINKS = ["Kalshi|https://kalshi.com/", "Media Cloud|https://www.mediacloud.org/", "Wikimedia|https://www.wikimedia.org/",
+  "Code and data on GitHub|https://github.com/afisher3578/kalshi-midterm-analysis"].map((l) => `${l}|noopener noreferrer|`);
 const BASE = process.argv[2] ?? "http://127.0.0.1:4173/";
 const DEMO = process.argv[3] ?? null;
 const ROOT = resolve(import.meta.dirname, "../..");
@@ -429,10 +435,9 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
       && tableNamed && tableFocus === 0);
   const foot = await page.evaluate(() => [...document.querySelectorAll("footer")].map((f) => ({ text: f.innerText.trim(),
     links: [...f.querySelectorAll("a")].map((a) => `${a.textContent}|${a.href}|${a.rel}|${a.target}`) })));
-  check("H1 footer: one footer, one link Code and data on GitHub, same tab, rel noopener noreferrer, no other copy", JSON.stringify(foot),
-    "Code and data on GitHub|https://github.com/afisher3578/kalshi-midterm-analysis|noopener noreferrer|",
-    foot.length === 1 && foot[0].text === "Code and data on GitHub" && foot[0].links.length === 1
-      && foot[0].links[0] === "Code and data on GitHub|https://github.com/afisher3578/kalshi-midterm-analysis|noopener noreferrer|");
+  check("H1/H2 footer: one footer, the data attribution and the GitHub link (4 links, exact hrefs, same tab, rel noopener noreferrer), no other copy",
+    JSON.stringify(foot), FOOT_LINKS.join(" , "), foot.length === 1
+      && foot[0].text.replace(/\s+/g, " ") === `${H2_ATTRIBUTION} Code and data on GitHub` && foot[0].links.join() === FOOT_LINKS.join());
   const elabel = await page.locator('#chart g[data-mark="election"] text').textContent();
   check("election days shaded and labeled", elabel, "Election, Nov 3 and 4", elabel === "Election, Nov 3 and 4"
     && await page.locator('#chart g[data-mark="election"] rect').count() === 1);
@@ -957,7 +962,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
-  check(`touch targets at least 44 px (theme, legend entries, dates, Reset, range buttons, chart, brush, Filters button and panel, footer link; ${nTargets} checked)`,
+  check(`touch targets at least 44 px (theme, legend entries, dates, Reset, range buttons, chart, brush, Filters button and panel, 4 footer links; ${nTargets} checked)`,
     JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 27);
   await page.touchscreen.tap(195, 40);
   check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
@@ -1457,6 +1462,30 @@ for (const [w, theme] of [[1280, "light"], [1280, "dark"], [390, "light"], [390,
   await page.mouse.move(5, 880);
   await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: resolve(SHOTS, `h1-${w}-${theme}.png`) });
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- H2: the footer data attribution
+for (const [w, theme] of [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]]) {
+  const { ctx, page } = await open(w, `${BASE}?race=tx-senate-2026`, w === 390, theme);
+  const key = `${w} ${theme}`;
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  const f = await page.evaluate(() => {
+    const top = (sel) => Math.round(document.querySelector(sel).getBoundingClientRect().top);
+    const foot = document.querySelector("footer");
+    return { theme: document.documentElement.dataset.theme, text: foot.innerText.trim().replace(/\s+/g, " "),
+      attrib: document.querySelector("footer .attrib").innerText.trim(), attribTop: top("footer .attrib"), repoTop: top("footer .repo"),
+      links: [...foot.querySelectorAll("a")].map((a) => { const r = a.getBoundingClientRect();
+        return `${a.textContent}|${a.href}|${a.rel}|${a.target}|${Math.round(r.width) >= 44 && Math.round(r.height) >= 44}`; }) };
+  });
+  check(`H2 ${key}: footer reads the attribution then the GitHub link`, f.text, `${H2_ATTRIBUTION} Code and data on GitHub`,
+    f.theme === theme && f.attrib === H2_ATTRIBUTION && f.text === `${H2_ATTRIBUTION} Code and data on GitHub`);
+  check(`H2 ${key}: 4 footer links, exact hrefs, same tab, rel noopener noreferrer, at least 44 px`, JSON.stringify(f.links),
+    FOOT_LINKS.map((l) => `${l}|true`).join(), f.links.join() === FOOT_LINKS.map((l) => `${l}|true`).join());
+  const oneLine = f.attribTop === f.repoTop;
+  check(`H2 ${key}: attribution and GitHub link ${w === 390 ? "on separate lines" : "on one line"}`,
+    `attribution top ${f.attribTop}, GitHub top ${f.repoTop}`, w === 390 ? "different tops" : "same top", w === 390 ? !oneLine : oneLine);
+  await page.screenshot({ path: resolve(SHOTS, `h2-footer-${w}-${theme}.png`) });
   await ctx.close();
 }
 

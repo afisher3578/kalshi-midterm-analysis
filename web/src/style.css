@@ -306,12 +306,16 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .readout .rdate { font-weight: 600; }
 .readout .rnote, .tip .tnote { color: var(--muted); font-style: italic; }
 
-/* ---- footer: the GitHub link (and the funding disclosure with SHOW_FUNDING_DISCLOSURE) */
+/* ---- footer: the data attribution and the GitHub link (and the funding disclosure with SHOW_FUNDING_DISCLOSURE) */
 .foot { padding-top: 1.5rem; padding-bottom: 3rem; color: var(--muted); font-size: 0.8rem; }
 .foot > .footin { border-top: 1px solid var(--rule); padding-top: 0.75rem; }
 .foot p { margin: 0 0 0.5rem; }
+/* the two items on one line at desktop, wrapped onto separate lines on phones */
+.foot .footrow { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; }
+.foot .footrow p { margin: 0; }
 /* a 44 px tall tap target around the small link text */
-.foot a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
+/* padding and a matching negative margin widen the short links (Kalshi) to 44 px without moving the text */
+.foot a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; margin: 0 -4px; color: var(--muted); }
 .foot a:hover { color: var(--fg); opacity: 1; }
 .foot ul { padding-left: 18px; }
 
@@ -332,6 +336,7 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   .readout .rd, .readout .rdate, .readout .rnote { white-space: normal; display: block; }
   .ranges { justify-content: space-between; }
   .readout .sep { display: none; }
+  .foot .footrow { flex-direction: column; align-items: flex-start; }
   .tip { display: none; }  /* the readout row under the chart shows the same values */
 }
 

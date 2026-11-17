@@ -2,7 +2,7 @@
 // exports) plus the M3 chart types. Every race fact on the page comes from the race JSON, so switching the race
 // switches every title, number and query string.
 import { format, utcFormat } from "d3";
-import { MIN_PAIRS, SOURCE_CATALOG, STATES } from "./config";
+import { DATA_ATTRIBUTION, DATA_SOURCES, MIN_PAIRS, REPO_LINK_TEXT, REPO_URL, SOURCE_CATALOG, STATES } from "./config";
 import { attentionChart, calendarChart, dayCenter, type DayPoint, eventStudyChart, type Frame, heatmapChart,
   type HeatCell, type HourPoint, keptDomain, overlayChart, priceChart, scatterChart, SERIES_COLORS, type StudyPoint,
   volumeChart } from "./charts";
@@ -36,6 +36,12 @@ const fmtSi = format(".3~s");
 
 export function esc(s: unknown): string {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+/** The two footer items: the data attribution with each source name a link, then the GitHub link. Same tab. */
+export function footerItems(): string {
+  const a = (url: string, text: string) => `<a href="${esc(url)}" rel="noopener noreferrer">${esc(text)}</a>`;
+  const attribution = DATA_SOURCES.reduce((html, s) => html.replace(esc(s.name), a(s.url, s.name)), esc(DATA_ATTRIBUTION));
+  return `<div class="footrow"><p class="attrib">${attribution}</p><p class="repo">${a(REPO_URL, REPO_LINK_TEXT)}</p></div>`;
 }
 function signed(n: number): string {
   return n > 0 ? `+${n}` : String(n);
