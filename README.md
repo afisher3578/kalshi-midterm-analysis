@@ -155,6 +155,18 @@ If something goes wrong:
 
 More: [docs/pipeline-reference.md](docs/pipeline-reference.md#troubleshooting).
 
+## Publish to a static site
+
+`scripts/publish-to-site.sh` builds `web/`, copies `web/dist` into `<site>/kalshi-midterm-analysis/`, and adds the page title, description and the site's favicon links from `scripts/site-head.html`.
+The site repo defaults to `../afmedia`; set `AFMEDIA_DIR` to use another one.
+It prints the git status of the site repo when done. It never commits or pushes, so review and commit there yourself.
+The page URL must end in a slash (`/kalshi-midterm-analysis/`), because the page loads `data/<id>.json` relative to itself.
+
+```bash
+scripts/publish-to-site.sh
+AFMEDIA_DIR=/path/to/site scripts/publish-to-site.sh
+```
+
 ## Refresh the data (optional)
 
 Everything above runs from the committed data. To pull fresh data, copy `.env.example` to `.env` and add a free

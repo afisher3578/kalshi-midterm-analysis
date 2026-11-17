@@ -33,6 +33,13 @@ let chart: LineChart | null = null;
 // the chart's line toggles and dates carry over when another race is opened
 const chartState: ChartState = { visible: { dem: true, rep: true, volume: true, news: true }, from: "", to: "" };
 let demoDisplay: { race: string; dd: DisplayDaily } | null | undefined;
+// a host page (such as the site copy) that ships its own <title> keeps it
+const HOST_TITLE = document.title.trim() !== PROJECT_NAME ? document.title : null;
+
+/** Sets the tab title, unless the host page shipped its own title. */
+function setTitle(text: string): void {
+  if (HOST_TITLE === null) document.title = text;
+}
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -399,7 +406,7 @@ async function openRace(ui: Ui, scroll: boolean) {
   if (!shownSeries(data, ui).includes(ui.focus)) ui.focus = shownSeries(data, ui)[0] ?? ui.focus;
   renderTabs(ui, tabs!);
   if (ui.page === "news") {
-    document.title = `${raceTitle(data)}: News (Media Cloud) | ${PROJECT_NAME}`;
+    setTitle(`${raceTitle(data)}: News (Media Cloud) | ${PROJECT_NAME}`);
     view = null;
     try {
       const model = await loadNewsModel(data, ui.demo, getJson);
@@ -415,7 +422,7 @@ async function openRace(ui: Ui, scroll: boolean) {
     return;
   }
   newsView = null;
-  document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
+  setTitle(`${raceTitle(data)} | ${PROJECT_NAME}`);
   view = new RaceView(root, data, ui);
   root.addEventListener("uichange", () => writeUrl(ui));
   view.render();
@@ -443,7 +450,7 @@ async function demoNews(ui: Ui, raceId: string): Promise<DisplayDaily | null> {
 /** The dashboard chart for one race (SHOW_DETAILS off): both candidates' Kalshi prices, volume and attention (news or Wikipedia, from the
  * Sources control) from series.display_daily, and hourly Kalshi from series.display_hourly when zoomed in. */
 async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
-  document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
+  setTitle(`${raceTitle(data)} | ${PROJECT_NAME}`);
   view = null;
   newsView = null;
   root.dataset.race = data.race.race_id;
