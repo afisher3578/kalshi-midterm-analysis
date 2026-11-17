@@ -292,8 +292,11 @@ cd web && npm run build && npm run verify && cd ..
 python scripts/check_secrets.py
 ```
 
-`npm run verify` needs a built `web/dist` and a Chromium for Playwright. It starts the dashboard server itself
-(real and `--demo`) and runs the render, news view and axe checks.
+`npm run verify` needs a built `web/dist` and a Chromium for Playwright. It first runs `npm run contrast`, then starts
+the dashboard server itself (real and `--demo`) and runs the render, theme, news view and axe checks (light and dark).
+
+`npm run contrast` (web/scripts/contrast.mjs) checks the WCAG contrast of the color tokens in `web/src/style.css` in
+both themes and fails on text under 4.5:1 or a chart line under 3:1. Tokens and results: [docs/style-contrast.md](docs/style-contrast.md).
 
 `npm ci` does not download Playwright's browser. On a fresh clone, verify fails with
 `Executable doesn't exist ... chromium_headless_shell`. Fix it one of two ways:

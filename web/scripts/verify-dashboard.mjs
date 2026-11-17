@@ -2,8 +2,10 @@
 // Blocks every request that is not to 127.0.0.1/localhost and collects console errors. Checks the map, the chart
 // toggles (the last line cannot be switched off), the date range (out-of-range dates are rejected), the readout
 // values against data/processed (spot check table), the no-news state, touch target sizes and overflow at 390 px,
-// the demo label, that the removed explanatory copy is gone and the map table is clipped to 1x1 px, and runs axe at 1280
-// and 390 px. Writes docs/screenshots/min-dashboard-1280.png and min-dashboard-390.png.
+// the demo label, that the removed explanatory copy is gone and the map table is clipped to 1x1 px, the theme switch
+// (data-theme flips, localStorage, chart and map colors follow, system setting fallback), that no element has a box
+// shadow or a gradient, 44 px touch targets at 390 px, and runs axe in the light and dark theme at 1280 and 390 px.
+// Writes docs/screenshots/style-{light,dark}-{1280,390}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -30,8 +32,9 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH 
 const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], axe: {} };
 let failed = false;
 
-async function open(width, url = `${BASE}?race=tx-senate-2026`, touch = false) {
-  const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2, hasTouch: touch, isMobile: touch });
+async function open(width, url = `${BASE}?race=tx-senate-2026`, touch = false, colorScheme = "light") {
+  const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2, hasTouch: touch, isMobile: touch,
+    colorScheme });
   const page = await ctx.newPage();
   await page.route("**/*", (route) => {
     const u = new URL(route.request().url());
@@ -55,6 +58,34 @@ function check(label, onPage, expected, ok) {
 async function axe(page, key) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   report.axe[key] = r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s): ${v.nodes.slice(0, 2).map((n) => n.target.join(" ")).join(" | ")}`);
+}
+
+// token values from web/src/style.css, as computed rgb
+const THEME = {
+  light: { bg: "rgb(255, 252, 240)", fg: "rgb(16, 15, 15)", price: "rgb(32, 94, 166)", volume: "rgb(175, 48, 41)", news: "rgb(102, 128, 11)" },
+  dark: { bg: "rgb(16, 15, 15)", fg: "rgb(206, 205, 195)", price: "rgb(67, 133, 190)", volume: "rgb(209, 77, 65)", news: "rgb(135, 154, 57)" },
+};
+/** The colors the page actually draws with, to compare against THEME. */
+const drawn = (page) => page.evaluate(() => {
+  const cs = (sel, prop) => { const e = document.querySelector(sel); return e ? getComputedStyle(e)[prop] : null; };
+  return { theme: document.documentElement.dataset.theme, bg: cs("body", "backgroundColor"), fg: cs("body", "color"),
+    price: cs("#chart path.line-price", "stroke"), volume: cs("#chart path.line-volume", "stroke"),
+    news: cs("#chart path.line-news", "stroke"), selected: cs("svg.usmap .sel-line", "stroke"),
+    pressed: document.querySelector("#theme-btn")?.getAttribute("aria-pressed"),
+    stored: localStorage.getItem("theme") };
+});
+function themeOk(d, name) {
+  const t = THEME[name];
+  return d.theme === name && d.bg === t.bg && d.fg === t.fg && d.price === t.price && d.volume === t.volume
+    && d.news === t.news && d.selected === t.fg && d.pressed === String(name === "dark");
+}
+/** Elements with a box shadow or a gradient background (the style allows neither). */
+const decorated = (page) => page.evaluate(() => [...document.querySelectorAll("*")].filter((e) => {
+  const c = getComputedStyle(e);
+  return c.boxShadow !== "none" || /gradient/.test(c.backgroundImage);
+}).map((e) => e.id || e.className?.baseVal || e.className || e.tagName));
+async function toggleTheme(page) {
+  await page.locator("#theme-btn").click();
 }
 
 const fmt = {
@@ -248,8 +279,36 @@ async function domain(page) {
 
   await page.locator("#chart").blur();
   await page.mouse.move(0, 0);
-  await page.screenshot({ path: resolve(SHOTS, "min-dashboard-1280.png"), fullPage: true });
-  await axe(page, "1280 Texas");
+  // light theme (the context prefers light and nothing is saved yet)
+  const light = await drawn(page);
+  check("light theme by default: page, chart lines and map outline use the light tokens", JSON.stringify(light), JSON.stringify(THEME.light),
+    themeOk(light, "light") && light.stored === null);
+  const deco = await decorated(page);
+  check("light: no element has a box shadow or a gradient", deco.join(", ") || "none", "none", deco.length === 0);
+  await page.screenshot({ path: resolve(SHOTS, "style-light-1280.png"), fullPage: true });
+  await axe(page, "1280 Texas light");
+  // switch to dark: html[data-theme] flips, the choice is saved, colors follow without a reload
+  const name = await page.locator("#theme-btn").evaluate((b) => `${b.textContent} / ${b.getAttribute("aria-label")}`);
+  await toggleTheme(page);
+  const dark = await drawn(page);
+  check("theme toggle: data-theme dark, saved, aria-pressed true, chart and map recolored", `${name}; ${JSON.stringify(dark)}`,
+    JSON.stringify(THEME.dark), themeOk(dark, "dark") && dark.stored === "dark");
+  const decoDark = await decorated(page);
+  check("dark: no element has a box shadow or a gradient", decoDark.join(", ") || "none", "none", decoDark.length === 0);
+  await page.locator("#theme-btn").blur();
+  await page.screenshot({ path: resolve(SHOTS, "style-dark-1280.png"), fullPage: true });
+  await axe(page, "1280 Texas dark");
+  // the saved choice wins on reload, and is in place before the app script runs
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const early = await page.evaluate(() => document.documentElement.dataset.theme);
+  await page.waitForSelector("body[data-ready=true]");
+  await page.waitForSelector("#chart svg path.line");
+  const reloaded = await drawn(page);
+  check("reload keeps the saved dark theme (set in <head>, before the app)", `${early}; ${JSON.stringify(reloaded)}`, "dark",
+    early === "dark" && themeOk(reloaded, "dark"));
+  await toggleTheme(page);
+  const back = await drawn(page);
+  check("toggle again: back to light and saved", JSON.stringify(back), "light", themeOk(back, "light") && back.stored === "light");
 
   // keyboard on the map opens another race; the chart redraws for it (no news: toggle off and disabled, gaps kept)
   if (noNews) {
@@ -275,23 +334,45 @@ async function domain(page) {
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- system setting fallback
+{
+  const { ctx, page } = await open(1280, `${BASE}?race=tx-senate-2026`, false, "dark");
+  const d = await drawn(page);
+  check("no saved choice and the system prefers dark: dark theme", JSON.stringify(d), "dark", themeOk(d, "dark") && d.stored === null);
+  await ctx.close();
+}
+
 // ---------------------------------------------------------------- 390 phone (touch)
 {
   const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("no horizontal page scroll at 390 px", overflow, "0", overflow <= 0);
-  const small = await page.evaluate(() => [...document.querySelectorAll(
-    "#racesec label.tg, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters select, #race-type label")]
-    .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
-    .filter((r) => r.w < 40 || r.h < 40));
-  check("touch targets at least 40 px (toggles, scale, dates, Reset, chart, brush, filters)", JSON.stringify(small), "none smaller", small.length === 0);
+  const targets = "#theme-btn, #racesec label.tg, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters select, #race-type label";
+  const nTargets = await page.locator(targets).count();
+  const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
+    .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
+    .filter((r) => r.w < 44 || r.h < 44), targets);
+  check(`touch targets at least 44 px (theme, toggles, scale, dates, Reset, chart, brush, filters; ${nTargets} checked)`,
+    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 14);
   await page.locator("#chart").scrollIntoViewIfNeeded();
   const box = await page.locator("#chart svg rect.hit").boundingBox();
   await page.touchscreen.tap(box.x + box.width * 0.25, box.y + box.height / 2);
   const r = await readout(page);
   check("tap on the chart fills the readout row", JSON.stringify(r), "date and three values", r.date && r.price && r.volume && r.news);
-  await page.screenshot({ path: resolve(SHOTS, "min-dashboard-390.png"), fullPage: true });
-  await axe(page, "390 Texas");
+  const deco = await decorated(page);
+  check("390 light: no box shadow or gradient", deco.join(", ") || "none", "none", deco.length === 0);
+  await page.screenshot({ path: resolve(SHOTS, "style-light-390.png"), fullPage: true });
+  await axe(page, "390 Texas light");
+  await page.locator("#theme-btn").tap();
+  const dark = await drawn(page);
+  check("390: tap the theme toggle: dark and saved", JSON.stringify(dark), "dark", themeOk(dark, "dark") && dark.stored === "dark");
+  const decoDark = await decorated(page);
+  check("390 dark: no box shadow or gradient", decoDark.join(", ") || "none", "none", decoDark.length === 0);
+  const overflowDark = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check("390 dark: no horizontal page scroll", overflowDark, "0", overflowDark <= 0);
+  await page.locator("#theme-btn").blur();
+  await page.screenshot({ path: resolve(SHOTS, "style-dark-390.png"), fullPage: true });
+  await axe(page, "390 Texas dark");
   await ctx.close();
 }
 

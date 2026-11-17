@@ -153,7 +153,8 @@ function renderShell(ui: Ui) {
   const opt = (v: string, label: string, cur: string) => `<option value="${esc(v)}" ${v === cur ? "selected" : ""}>${esc(label)}</option>`;
   app.innerHTML = "";
   const header = el("header", { class: "wrap head" }, `
-    <h1>2026 races: market prices and attention</h1>`);
+    <div class="headrow"><h1>2026 races: market prices and attention</h1>
+      <button type="button" class="theme-toggle" id="theme-btn" aria-label="Dark theme">Dark</button></div>`);
   const main = el("main", { class: "wrap", id: "main" });
   const filters = el("form", { class: "filters", id: "filters", "aria-labelledby": "filters-h" }, `
     <h2 id="filters-h" class="filters-h">Filters</h2>
@@ -189,6 +190,7 @@ function renderShell(ui: Ui) {
   main.append(filters, mapSec, raceSec);
   app.append(header, main);
   if (SHOW_FUNDING_DISCLOSURE) app.append(footer());
+  themeToggle(document.getElementById("theme-btn") as HTMLButtonElement);
   filters.addEventListener("submit", (e) => e.preventDefault());
   const on = (id: string, f: (v: string, e: HTMLInputElement | HTMLSelectElement) => void, ev = "change") =>
     document.getElementById(id)!.addEventListener(ev, (e) => f((e.target as HTMLInputElement).value, e.target as HTMLInputElement));
@@ -217,6 +219,28 @@ function renderShell(ui: Ui) {
   on("f-from", (v) => { ui.from = v; refreshRace(ui); });
   on("f-to", (v) => { ui.to = v; refreshRace(ui); });
   on("f-overlay", (_v, t) => { ui.overlay = (t as HTMLInputElement).checked; refreshRace(ui); });
+}
+
+/** The theme switch (as on alexfisher.co): flips data-theme on <html> and saves it. index.html sets the first value
+ * before paint. All colors are CSS variables, so the map and chart follow without a redraw. */
+function themeToggle(btn: HTMLButtonElement) {
+  const root = document.documentElement;
+  const sync = () => btn.setAttribute("aria-pressed", String(root.dataset.theme === "dark"));
+  sync();
+  btn.addEventListener("click", () => {
+    const t = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = t;
+    try { localStorage.setItem("theme", t); } catch { /* storage blocked: the switch still works for this page */ }
+    sync();
+  });
+  // without a saved choice, follow the system setting when it changes
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    let saved: string | null = null;
+    try { saved = localStorage.getItem("theme"); } catch { /* none */ }
+    if (saved) return;
+    root.dataset.theme = e.matches ? "dark" : "light";
+    sync();
+  });
 }
 
 function pickState(ui: Ui, code: string) {

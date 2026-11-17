@@ -1,6 +1,6 @@
 // US state map (d3-geo + us-atlas, bundled; no remote topojson). The geometry is the pre-projected
 // states-albers-10m.json from us-atlas 3.0.1, committed in src/geo/, so the map renders from the page's own files.
-import { geoPath, scaleQuantize, interpolateBlues, interpolatePuOr, format } from "d3";
+import { geoPath, scaleQuantize, format } from "d3";
 import { feature } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import atlas from "./geo/states-albers-10m.json";
@@ -34,22 +34,21 @@ const LABEL_NUDGE: Record<string, [number, number]> = { FL: [22, 12], LA: [-12, 
 export const INSUFFICIENT_FILL = "url(#hatch-insufficient)";
 export const FILTERED_FILL = "url(#dots-filtered)";
 
-/** Five equal-width bins over the shown values. Diverging metrics are centered on 0. */
+// One ramp for every metric, --map-1 (closest to the page) to --map-5 (closest to the text color), from style.css.
+export const RAMP = [1, 2, 3, 4, 5].map((i) => `var(--map-${i})`);
+
+/** Five equal-width bins over the shown values. Diverging metrics are centered on 0 (low bins are the most negative). */
 export function binScale(values: number[], diverging: boolean) {
   const lo = Math.min(...values), hi = Math.max(...values);
   const m = Math.max(Math.abs(lo), Math.abs(hi)) || 1;
   const domain: [number, number] = diverging ? [-m, m] : [Math.min(0, lo), hi === lo ? lo + 1 : hi];
-  const colors = diverging ? [0.1, 0.3, 0.5, 0.7, 0.9].map((t) => interpolatePuOr(1 - t))
-    : [0.25, 0.42, 0.59, 0.76, 0.93].map((t) => interpolateBlues(t));
-  return scaleQuantize<string>().domain(domain).range(colors);
+  return scaleQuantize<string>().domain(domain).range(RAMP);
 }
 
-/** Text color with enough contrast on a fill. */
-function inkOn(fill: string): string {
-  const m = fill.match(/rgb\((\d+), (\d+), (\d+)\)/);
-  if (!m) return "#111827";
-  const [r, g, b] = [m[1], m[2], m[3]].map((x) => Number(x) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.25 ? "#111827" : "#ffffff";
+/** Labels on bins 3 to 5 use the background color, on bins 1 and 2 the text color (4.5:1 in both themes, see
+ * docs/style-contrast.md). */
+function onDark(fill: string): boolean {
+  return RAMP.indexOf(fill) >= 2;
 }
 
 export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts: { diverging: boolean;
@@ -65,9 +64,9 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     values are in the table below the map.`.replace(/\s+/g, " "));
   svg.innerHTML = `<defs>
     <pattern id="hatch-insufficient" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-      <rect width="8" height="8" fill="#eceef1"/><line x1="0" y1="0" x2="0" y2="8" stroke="#8b929c" stroke-width="2"/></pattern>
+      <rect class="pat-bg" width="8" height="8"/><line class="pat-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern>
     <pattern id="dots-filtered" patternUnits="userSpaceOnUse" width="7" height="7">
-      <rect width="7" height="7" fill="#ffffff"/><circle cx="3.5" cy="3.5" r="1.1" fill="#9ca3af"/></pattern></defs>`;
+      <rect class="pat-bg" width="7" height="7"/><circle class="pat-dot" cx="3.5" cy="3.5" r="1.1"/></pattern></defs>`;
   for (const f of states.features) {
     const code = FIPS[String(f.id).padStart(2, "0")];
     if (!code) continue;
@@ -77,7 +76,9 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     p.setAttribute("data-state", code);
     if (c?.raceId) p.setAttribute("data-race", c.raceId);
     const fill = !c || c.filteredOut ? FILTERED_FILL : c.value === null || !scale ? INSUFFICIENT_FILL : scale(c.value);
-    p.setAttribute("fill", c?.filteredOut ? FILTERED_FILL : fill);
+    // patterns as an attribute; ramp colors as inline style, since var() belongs in CSS, not in presentation attributes
+    if (fill.startsWith("url(")) p.setAttribute("fill", fill);
+    else p.style.fill = fill;
     p.setAttribute("class", "st" + (c?.raceId ? " has-race" : "") + (opts.selected === code ? " selected" : ""));
     const name = c?.name ?? code;
     if (c?.raceId) {
@@ -94,6 +95,17 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     }
     svg.append(p);
   }
+  // the selected state's outline goes above every state, so no neighbor border covers it
+  const sel = opts.selected ? states.features.find((f) => FIPS[String(f.id).padStart(2, "0")] === opts.selected) : undefined;
+  if (sel) {
+    for (const cls of ["sel-halo", "sel-line"]) {
+      const o = document.createElementNS(NS, "path");
+      o.setAttribute("d", path(sel) ?? "");
+      o.setAttribute("class", cls);
+      o.setAttribute("aria-hidden", "true");
+      svg.append(o);
+    }
+  }
   // state labels for states with a race: postal code and the shown number, so the value does not rely on color
   for (const f of states.features) {
     const code = FIPS[String(f.id).padStart(2, "0")];
@@ -102,13 +114,12 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     const [cx, cy] = path.centroid(f);
     const [dx, dy] = LABEL_NUDGE[code] ?? [0, 0];
     const x = cx + dx, y = cy + dy;
-    const fill = c.filteredOut || c.value === null || !scale ? "#eceef1" : scale(c.value);
+    const fill = c.filteredOut || c.value === null || !scale ? "" : scale(c.value);
     const t = document.createElementNS(NS, "text");
     t.setAttribute("x", String(x));
     t.setAttribute("y", String(y));
-    t.setAttribute("class", "stlabel");
+    t.setAttribute("class", "stlabel" + (onDark(fill) ? " on-dark" : ""));
     t.setAttribute("aria-hidden", "true");
-    t.setAttribute("fill", inkOn(fill));
     t.innerHTML = `<tspan x="${x}" dy="-0.2em">${code}</tspan><tspan x="${x}" dy="1.15em" class="stval">${
       c.filteredOut ? "filtered" : c.value === null ? "n/a" : opts.fmt(c.value)}</tspan>`;
     svg.append(t);

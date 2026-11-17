@@ -6,6 +6,15 @@
     <meta name="referrer" content="no-referrer" />
     <link rel="icon" href="data:," />
     <title>kalshi-midterm-analysis</title>
+    <script>
+      // theme before first paint (as on alexfisher.co): the saved choice, else the system setting
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("theme"); } catch (e) {}
+        if (t !== "dark" && t !== "light") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

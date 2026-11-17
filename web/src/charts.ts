@@ -5,19 +5,20 @@ import { format, scaleLinear, utcDay, utcFormat, utcMonday, utcMonth, utcWeek } 
 import type { Num } from "./types";
 import { DAY_MS, HOUR_MS } from "./transforms";
 
+// All colors are CSS variables from style.css, so the panels follow the theme without a redraw.
 export const COLORS = {
-  line: "#1f4e79",
-  bar: "#2f6690",
-  grey: "#7b8089",
-  rule: "#9a3412",
-  excluded: "#e3e6ea",
-  zero: "#6b7280",
-  event: "#7c3aed",
-  eventDraft: "#a78bfa",
+  line: "var(--series-price)",
+  bar: "var(--muted)",
+  grey: "var(--faint)",
+  rule: "var(--series-volume)",
+  excluded: "var(--rule)",
+  zero: "var(--muted)",
+  event: "var(--cat-4)",
+  eventDraft: "var(--faint)",
 };
 
-// Categorical palette for overlays (Okabe-Ito, color-blind safe); each series also gets its own dash and a text label.
-export const SERIES_COLORS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9", "#000000"];
+// Categorical palette for overlays (Flexoki hues, --cat-1 to --cat-7); each series also gets its own dash and a text label.
+export const SERIES_COLORS = [1, 2, 3, 4, 5, 6, 7].map((i) => `var(--cat-${i})`);
 export const SERIES_DASH = [null, "6,3", "2,2", "8,3,2,3", "1,3", "10,4", "4,4"];
 
 const MARGIN_LEFT = 60;
@@ -46,7 +47,7 @@ function annotations(frame: Frame): Plot.Markish[] {
   const label = utcFormat("%b %-d")(frame.election);
   const text = (t: string, dy: number) => Plot.text([frame.election], {
     x: (d: Date) => d, frameAnchor: "top", textAnchor: "end", lineAnchor: "top", dx: -5, dy,
-    text: () => t, fontSize: 11, fill: "#1f2937", stroke: "white", strokeWidth: 3, paintOrder: "stroke",
+    text: () => t, fontSize: 11, fill: "var(--fg)", stroke: "var(--bg)", strokeWidth: 3, paintOrder: "stroke",
   });
   const inDomain = (t: Date) => t >= frame.domain[0] && t <= frame.domain[1];
   const ev = (frame.events ?? []).filter((e) => inDomain(e.t));
@@ -79,12 +80,12 @@ function panel(o: PanelOpts): SVGSVGElement {
     marginRight: MARGIN_RIGHT,
     marginTop: 26,
     marginBottom: 28,
-    style: { fontSize: "12px", fontFamily: "inherit", background: "white", color: "#1f2937", overflow: "visible" },
+    style: { fontSize: "12px", fontFamily: "inherit", background: "var(--bg)", color: "var(--fg)", overflow: "visible" },
     ariaLabel: o.ariaLabel,
     ariaDescription: o.ariaDescription,
     x: xAxis(o.frame),
     y: { grid: true, insetTop: TOP_BAND, labelAnchor: "top", ...o.y } as Plot.ScaleOptions,
-    marks: [...annotations(o.frame), ...o.marks, Plot.frame({ anchor: "bottom", stroke: "#9ca3af" })],
+    marks: [...annotations(o.frame), ...o.marks, Plot.frame({ anchor: "bottom", stroke: "var(--faint)" })],
   }) as SVGSVGElement;
   // The svg is one image with a text alternative. Plot labels its mark groups with aria-label, which is not valid
   // on <g> or <line> without a role, so move those names to data-mark.
@@ -103,7 +104,7 @@ export function priceChart(frame: Frame, rows: HourPoint[], aria: [string, strin
     frame, height: 200, ariaLabel: aria[0], ariaDescription: aria[1],
     y: { domain: [0, 100], ticks: [0, 25, 50, 75, 100], label: "Yes price, cents (= implied probability, %)" },
     marks: [
-      Plot.ruleY([50], { stroke: "#c4c8ce" }),
+      Plot.ruleY([50], { stroke: "var(--rule)" }),
       Plot.lineY(rows, { x: "t", y: (d: HourPoint) => (d.price === null ? null : d.price * 100), stroke: COLORS.line,
         strokeWidth: 1.4 }),
     ],
@@ -156,8 +157,8 @@ export function attentionChart(frame: Frame, rows: DayPoint[], o: { label: strin
       rotate: (r: DayPoint) => (r.v! > hi ? 0 : 180), fill: COLORS.rule }));
   }
   if (o.unusable && o.reason) {
-    marks.push(Plot.text([o.reason], { frameAnchor: "middle", text: (d: string) => `Unusable: ${d}`, fill: "#374151",
-      fontSize: 12, stroke: "white", strokeWidth: 4, paintOrder: "stroke", lineWidth: 40 }));
+    marks.push(Plot.text([o.reason], { frameAnchor: "middle", text: (d: string) => `Unusable: ${d}`, fill: "var(--muted)",
+      fontSize: 12, stroke: "var(--bg)", strokeWidth: 4, paintOrder: "stroke", lineWidth: 40 }));
   }
   return panel({
     frame, height: 180, ariaLabel: o.aria[0], ariaDescription: o.aria[1],
@@ -175,7 +176,7 @@ export function dayCenter(date: string): Date {
 // ---------------------------------------------------------------- M3 chart types
 
 function svgPlot(o: Plot.PlotOptions & { ariaLabel: string; ariaDescription: string }): SVGSVGElement {
-  const svg = Plot.plot({ style: { fontSize: "12px", fontFamily: "inherit", background: "white", color: "#1f2937",
+  const svg = Plot.plot({ style: { fontSize: "12px", fontFamily: "inherit", background: "var(--bg)", color: "var(--fg)",
     overflow: "visible" }, ...o }) as SVGSVGElement;
   const el = svg.tagName.toLowerCase() === "svg" ? svg : (svg.querySelector("svg") as SVGSVGElement);
   el.setAttribute("role", "img");
@@ -219,12 +220,12 @@ export function heatmapChart(width: number, cells: HeatCell[], minN: number, ari
     y: { domain: rows, label: null, axis: narrow ? null : "left", tickSize: 0, paddingInner: narrow ? 0.38 : 0.1, paddingOuter: narrow ? 0.3 : 0.1 },
     color: { type: "linear", domain: [-0.6, 0.6], scheme: "PuOr", reverse: true, clamp: true },
     marks: [
-      Plot.cell(cells, { x: "lag", y: "label", fill: (c: HeatCell) => (c.rho === null ? "#eceef1" : c.rho), inset: 1 }),
+      Plot.cell(cells, { x: "lag", y: "label", fill: (c: HeatCell) => (c.rho === null ? "var(--rule)" : c.rho), inset: 1 }),
       Plot.text(cells, { x: "lag", y: "label", text: (c: HeatCell) => (c.rho === null ? `n<${minN}\nn=${c.n}`
-        : `${format(".2f")(c.rho)}\nn=${c.n}`), fill: (c: HeatCell) => (c.rho !== null && Math.abs(c.rho) > 0.4 ? "white" : "#111827"),
+        : `${format(".2f")(c.rho)}\nn=${c.n}`), fill: (c: HeatCell) => (c.rho !== null && Math.abs(c.rho) > 0.4 ? "var(--bg)" : "var(--fg)"),
         fontSize: 11, lineHeight: 1.1 }),
       ...(narrow ? [Plot.text(cells.filter((c) => c.lag === -2), { x: "lag", y: "label", text: "label", frameAnchor: "left",
-        dy: -21, dx: -20, textAnchor: "start", fontSize: 11, fill: "#374151" })] : []),
+        dy: -21, dx: -20, textAnchor: "start", fontSize: 11, fill: "var(--muted)" })] : []),
     ],
   });
 }
@@ -245,11 +246,11 @@ export function eventStudyChart(width: number, pts: StudyPoint[], aria: [string,
       Plot.ruleY([0], { stroke: COLORS.zero }),
       Plot.ruleX([0], { stroke: COLORS.rule, strokeDasharray: "3,3" }),
       Plot.text(whats, { fy: (d: string) => d, text: (d: string) => d, frameAnchor: "top-left", textAnchor: "start",
-        lineAnchor: "bottom", dy: -8, fontWeight: 600, fill: "#1f2937" }),
+        lineAnchor: "bottom", dy: -8, fontWeight: 600, fill: "var(--fg)" }),
       Plot.lineY(pts.filter((p) => p.mean !== null), { x: "offset", y: "mean", fy: "what", stroke: COLORS.line }),
       Plot.dot(pts.filter((p) => p.mean !== null), { x: "offset", y: "mean", fy: "what", fill: COLORS.line, r: 3 }),
       Plot.text(pts, { x: "offset", y: (p: StudyPoint) => p.mean ?? 0, fy: "what", text: (p: StudyPoint) => `n=${p.n}`, dy: -10,
-        fontSize: 10, fill: "#374151" }),
+        fontSize: 10, fill: "var(--muted)" }),
     ],
   });
 }
@@ -288,11 +289,11 @@ export function calendarChart(width: number, days: CalDay[], unit: string, aria:
       Plot.cell(days.filter((d) => d.excluded), { x: (d: CalDay) => wk(d.date), y: (d: CalDay) => weekday(d.date),
         fill: "none", stroke: COLORS.rule, strokeWidth: 1.5 }),
       Plot.cell(days.filter((d) => d.v === null), { x: (d: CalDay) => wk(d.date), y: (d: CalDay) => weekday(d.date),
-        fill: "#ffffff", stroke: "#9ca3af", strokeDasharray: "2,2" }),
+        fill: "var(--bg)", stroke: "var(--faint)", strokeDasharray: "2,2" }),
       Plot.text(days.filter((d) => d.excluded), { x: (d: CalDay) => wk(d.date), y: (d: CalDay) => weekday(d.date), text: () => "x",
         fill: COLORS.rule, fontWeight: 700 }),
       Plot.text(days.filter((d) => d.v === null), { x: (d: CalDay) => wk(d.date), y: (d: CalDay) => weekday(d.date), text: () => "-",
-        fill: "#374151" }),
+        fill: "var(--muted)" }),
     ],
   });
 }
@@ -314,7 +315,7 @@ export function linesChart(frame: Frame, series: LineSeries[], o: { label: strin
       Plot.dot(s.points, { x: "t", y: "v", r: 1.6, fill: color }));
     const last = [...s.points].reverse().find((p) => p.v !== null);
     if (last) marks.push(Plot.text([last], { x: "t", y: "v", text: () => `${k + 1}`, dx: 6, fill: color, fontWeight: 700,
-      textAnchor: "start", stroke: "white", strokeWidth: 3, paintOrder: "stroke" }));
+      textAnchor: "start", stroke: "var(--bg)", strokeWidth: 3, paintOrder: "stroke" }));
   });
   return panel({ frame, height: o.height ?? 220, ariaLabel: o.aria[0], ariaDescription: o.aria[1],
     y: { label: o.label, ...(o.percent || o.fraction ? { ticks: [0, 0.5, 1] } : { ticks: 4 }),
@@ -338,7 +339,7 @@ export function emptyChart(frame: Frame, message: string, aria: [string, string]
     y: { domain: [0, 1], ticks: [], label: null },
     // bottom left, clear of the election-day label in the top right corner
     marks: [Plot.text([message], { frameAnchor: "bottom-left", dx: 8, dy: -10, textAnchor: "start", lineAnchor: "bottom",
-      text: (d: string) => d, fill: "#374151", fontSize: 13, fontWeight: 600, stroke: "white", strokeWidth: 4,
+      text: (d: string) => d, fill: "var(--muted)", fontSize: 13, fontWeight: 600, stroke: "var(--bg)", strokeWidth: 4,
       paintOrder: "stroke", lineWidth: 24 })] });
 }
 
@@ -357,7 +358,7 @@ export function hbarChart(width: number, rows: BarRow[], o: { label: string; ari
       Plot.barX(rows, { x: "count", y: "label", fill: COLORS.bar }),
       Plot.text(rows, { x: "count", y: "label", text: (r: BarRow) => format(",")(r.count), dx: 4, textAnchor: "start", fontSize: 11 }),
       ...(narrow ? [Plot.text(rows, { x: 0, y: "label", text: "label", dy: -14, textAnchor: "start", fontSize: 11,
-        fill: "#1f2937", stroke: "white", strokeWidth: 3, paintOrder: "stroke" })] : []),
+        fill: "var(--fg)", stroke: "var(--bg)", strokeWidth: 3, paintOrder: "stroke" })] : []),
     ],
   });
 }

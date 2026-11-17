@@ -1,8 +1,8 @@
-// `npm run verify`: one command for every render check. Starts the Python dashboard server twice on free ports
-// (real data, and --demo), runs scripts/verify-dashboard.mjs (map plus line chart, demo label) against them, then
-// stops both servers. scripts/verify.mjs (race page) and scripts/verify-news.mjs (news view, empty state and demo)
-// run only when web/src/config.ts has SHOW_DETAILS = true, since those views are hidden otherwise.
-// Serves the existing web/dist (run `npm run build` first).
+// `npm run verify`: one command for every render check. Runs scripts/contrast.mjs, then starts the Python dashboard
+// server twice on free ports (real data, and --demo), runs scripts/verify-dashboard.mjs (map plus line chart, demo
+// label) against them, then stops both servers. scripts/verify.mjs (race page) and scripts/verify-news.mjs (news
+// view, empty state and demo) run only when web/src/config.ts has SHOW_DETAILS = true, since those views are
+// hidden otherwise. Serves the existing web/dist (run `npm run build` first).
 // The servers bind 127.0.0.1 only. Usage: npm run verify
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -39,6 +39,10 @@ function run(script, args) {
     p.on("exit", (code) => ok(code ?? 1));
   });
 }
+
+// color tokens first: WCAG contrast of text, series lines and map labels in both themes (scripts/contrast.mjs)
+const contrast = await run("contrast.mjs", []);
+if (contrast) { console.error("contrast.mjs failed"); process.exit(contrast); }
 
 const live = await startServer(false);
 const demo = await startServer(true);
