@@ -9,8 +9,14 @@
 // shadow or a gradient, 44 px touch targets at 390 px, and runs axe in the light and dark theme at 1280 and 390 px.
 // The Filters panel: the button right of the map heading, exactly five controls, disabled "coming soon" choices,
 // the URL hash, the count badge, Reset, Esc and outside click, the map and chart following the controls.
-// Writes docs/screenshots/style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png and
-// chart-{1280,390}-{light,dark}.png.
+// F3, hourly zoom: the "Kalshi: hourly / daily" label and the per day / per hour texts at the 14 / 15 day edge,
+// via the date inputs and the quick range buttons (keyboard too), about 24 points per day when hourly, hourly
+// price and volume against series.display_hourly, day totals against series.display_daily, the attention step
+// line (changes only at 00:00 UTC) and its note, the "no trades" readout of a filled hour, election shading,
+// ctrl + wheel and two finger pinch zoom (a plain wheel still scrolls the page), a hover frame check at 390 px,
+// and axe in hourly view.
+// Writes docs/screenshots/style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
+// chart-{1280,390}-{light,dark}.png and hourly-{1280,390}-{light,dark}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -34,7 +40,8 @@ const noNews = Object.keys(index.races).filter((id) => id !== "tx-senate-2026").
 mkdirSync(SHOTS, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
-const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], plotted: [], axe: {} };
+const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], plotted: [], hourly: [], totals: [],
+  frames: null, axe: {} };
 let failed = false;
 
 async function open(width, url = `${BASE}?race=tx-senate-2026`, touch = false, colorScheme = "light") {
@@ -161,6 +168,59 @@ const plotted = (page, k) => page.evaluate((key) => {
   }
   return out;
 }, k);
+
+// ---------------------------------------------------------------- F3 helpers
+const DAY = 86_400_000, HOUR = 3_600_000;
+const txh = tx.series.display_hourly;
+const hourRow = new Map(txh.rows.map((r) => [r[0], r]));
+const dayRow = new Map(tx.series.display_daily.rows.map((r) => [r.date, r]));
+const addDays = (d, n) => new Date(Date.parse(d + "T00:00:00Z") + n * DAY).toISOString().slice(0, 10);
+const gran = (page) => page.evaluate(() => ({ label: document.querySelector("#gran").textContent,
+  svg: document.querySelector("#chart svg.lc").dataset.granularity,
+  legend: document.querySelector("#lg-volume .lg-desc").textContent,
+  axis: document.querySelector("#chart .y-volume .atitle")?.textContent ?? null,
+  att: document.querySelector("#lg-news .lg-desc").textContent,
+  note: document.querySelector("#att-note").hidden ? null : document.querySelector("#att-note").textContent,
+  live: document.querySelector("#gran").getAttribute("aria-live") }));
+const isHourly = (g) => g.label === "Kalshi: hourly" && g.svg === "hour" && g.legend === "contracts traded per hour"
+  && g.axis === "Volume per hour" && g.att.includes("per day") && g.live === "polite";
+const isDaily = (g) => g.label === "Kalshi: daily" && g.svg === "day" && g.legend === "contracts traded per day"
+  && g.axis === "Volume per day" && g.note === null && g.live === "polite";
+/** Every point of a line's path, x inverted to epoch ms and y to a value. */
+const points = (page, k) => page.evaluate((key) => {
+  const svg = document.querySelector("#chart svg.lc"), p = document.querySelector(`#chart path.line-${key}`);
+  const [x0, x1] = svg.dataset.xdomain.split(",").map(Number), [r0, r1] = svg.dataset.xrange.split(",").map(Number);
+  const [d0, d1] = p.dataset.domain.split(",").map(Number), [y0, y1] = p.dataset.range.split(",").map(Number);
+  const pts = [...p.getAttribute("d").matchAll(/(-?[\d.]+(?:e-?\d+)?),(-?[\d.]+(?:e-?\d+)?)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+  return { tol: (0.001 * Math.abs(d1 - d0)) / Math.abs(y1 - y0), step: p.dataset.step === "true", d: p.getAttribute("d").slice(0, 80),
+    pts: pts.map(([px, py]) => ({ px, py, t: x0 + ((px - r0) / (r1 - r0)) * (x1 - x0), v: d0 + ((py - y0) / (y1 - y0)) * (d1 - d0) })) };
+}, k);
+/** Plotted hourly values by ts (each point's x rounded to the hour). */
+async function hourly(page, k) {
+  const p = await points(page, k);
+  const at = new Map(p.pts.map((q) => [new Date(Math.round(q.t / HOUR) * HOUR).toISOString().replace(".000Z", "Z"), q.v]));
+  return { tol: p.tol, at, n: p.pts.length };
+}
+const range = async (page) => `${await page.inputValue("#d-from")}..${await page.inputValue("#d-to")}`;
+const quickPressed = (page) => page.$$eval(".qbtn", (bs) => bs.filter((b) => b.getAttribute("aria-pressed") === "true").map((b) => b.id).join(","));
+/** Move the keyboard cursor to an hour: Home is the range start's 00:00Z hour, Shift + right steps a day, right an hour. */
+async function cursorTo(page, ts, from) {
+  await page.locator("#chart").focus();
+  await page.keyboard.press("Home");
+  const h = Math.round((Date.parse(ts) - Date.parse(from + "T00:00:00Z")) / HOUR);
+  for (let i = 0; i < Math.floor(h / 24); i++) await page.keyboard.press("Shift+ArrowRight");
+  for (let i = 0; i < h % 24; i++) await page.keyboard.press("ArrowRight");
+  return page.evaluate(() => ({ ts: document.querySelector("#readout .rdate")?.dataset.ts ?? null,
+    when: document.querySelector("#readout .rdate")?.textContent ?? null,
+    price: document.querySelector('#readout [data-v="price"]')?.textContent ?? null,
+    volume: document.querySelector('#readout [data-v="volume"]')?.textContent ?? null,
+    news: document.querySelector('#readout [data-v="news"]')?.textContent ?? null,
+    newsLabel: document.querySelector('#readout .rk[data-k="news"]')?.textContent ?? null,
+    note: document.querySelector("#readout .rnote")?.textContent ?? null }));
+}
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}, ${
+  String(d.getUTCHours()).padStart(2, "0")}:00 UTC`; };
 
 // ---------------------------------------------------------------- 1280 desktop, Texas
 {
@@ -570,6 +630,257 @@ const plotted = (page, k) => page.evaluate((key) => {
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- F3: hourly zoom, 1280
+{
+  const { ctx, page } = await open(1280);
+  const w = tx.series.display_daily.window;
+  const g0 = await gran(page);
+  check("full range: Kalshi: daily, volume per day in the legend and on the axis, no attention note", JSON.stringify(g0),
+    "Kalshi: daily, per day, note hidden", isDaily(g0));
+  check("full range: Full range button pressed", await quickPressed(page), "q-full", await quickPressed(page) === "q-full");
+  // the threshold edge through the date inputs: 14 days hourly, 15 days daily
+  await setDate(page, "#d-from", "2026-10-01");
+  await setDate(page, "#d-to", "2026-10-14");
+  const g14 = await gran(page);
+  check("14 days (2026-10-01..2026-10-14, date inputs): hourly", `${await range(page)} ${JSON.stringify(g14)}`, "Kalshi: hourly, per hour", isHourly(g14));
+  await setDate(page, "#d-to", "2026-10-15");
+  const g15 = await gran(page);
+  check("15 days (2026-10-01..2026-10-15): daily", `${await range(page)} ${JSON.stringify(g15)}`, "Kalshi: daily, per day", isDaily(g15));
+  await setDate(page, "#d-from", "2026-10-10");
+  await setDate(page, "#d-to", "2026-10-20");
+  const g11 = await gran(page);
+  const pts11 = (await hourly(page, "price")).n;
+  check("11 days via the date inputs: hourly, about 24 price points per day", `${JSON.stringify(g11)} ${pts11} points`, "hourly, 264 points",
+    isHourly(g11) && Math.abs(pts11 / 11 - 24) <= 1);
+  await page.locator("#d-reset").click();
+  check("Reset: full range and daily again", `${await range(page)} ${(await gran(page)).label}`, `${w.start}..${w.end} Kalshi: daily`,
+    await range(page) === `${w.start}..${w.end}` && isDaily(await gran(page)));
+
+  // quick buttons by keyboard: real buttons, Enter and Space
+  const qb = await page.$$eval(".qbtn", (bs) => bs.map((b) => `${b.tagName}|${b.type}|${b.textContent}`).join(" / "));
+  check("three quick range buttons", qb, "Last 7 days before the election / Last 14 days / Full range",
+    qb === "BUTTON|button|Last 7 days before the election / BUTTON|button|Last 14 days / BUTTON|button|Full range");
+  await page.locator("#q-election7").focus();
+  await page.keyboard.press("Enter");
+  const g7 = await gran(page);
+  const r7 = await range(page);
+  check("keyboard Enter on Last 7 days before the election: 2026-10-28..2026-11-03 (from the election date), hourly, pressed",
+    `${r7} ${JSON.stringify(g7)} pressed ${await quickPressed(page)}`, "2026-10-28..2026-11-03 hourly q-election7",
+    r7 === `${addDays(tx.race.election_date, -6)}..${tx.race.election_date}` && r7 === "2026-10-28..2026-11-03" && isHourly(g7)
+      && await quickPressed(page) === "q-election7");
+  const note = g7.note;
+  check("hourly: the attention note is visible", note, "Attention is daily: Media Cloud gives no time of day.",
+    note === "Attention is daily: Media Cloud gives no time of day." && await page.locator("#att-note").isVisible());
+  // about 24 points per day on price and volume
+  const hp = await hourly(page, "price"), hv = await hourly(page, "volume");
+  check("hourly 7 days: price and volume have about 24 points per day", `price ${hp.n}, volume ${hv.n} points over 7 days`, "168 each",
+    Math.abs(hp.n / 7 - 24) <= 1 && Math.abs(hv.n / 7 - 24) <= 1);
+  // hourly spot checks: plotted values and the readout against display_hourly
+  for (const ts of ["2026-10-29T15:00:00Z", "2026-11-01T03:00:00Z", "2026-11-03T20:00:00Z"]) {
+    const row = hourRow.get(ts);
+    const r = await cursorTo(page, ts, "2026-10-28");
+    const pp = hp.at.get(ts), pv = hv.at.get(ts);
+    const okP = Math.abs(pp - row[1] * 100) <= hp.tol + 1e-9, okV = Math.abs(pv - row[2]) <= hv.tol + 1e-9 * row[2];
+    const okR = r.ts === ts && r.when === whenText(ts) && r.price === fmt.price(row[1]) && r.volume === fmt.volume(row[2]);
+    const day = ts.slice(0, 10);
+    const okN = r.news === fmt.news(dayRow.get(day)[NEWS]) && /all of /.test(r.newsLabel);
+    report.hourly.push({ ts, json_price: row[1], plotted_price: pp, json_volume: row[2], plotted_volume: pv, readout: `${r.when}: ${r.price}; ${r.volume}; ${r.newsLabel} ${r.news}`,
+      ok: okP && okV && okR && okN });
+    if (!(okP && okV && okR && okN)) failed = true;
+  }
+  // day totals: sum of the plotted hours equals the daily volume; the day's last hourly price equals the daily close
+  for (const day of ["2026-10-30", "2026-11-02"]) {
+    const hrs = [...hv.at.keys()].filter((t) => t.slice(0, 10) === day).sort();
+    const sum = hrs.reduce((a, t) => a + hv.at.get(t), 0);
+    const jsonSum = txh.rows.filter((r) => r[0].slice(0, 10) === day).reduce((a, r) => a + r[2], 0);
+    const lastP = hp.at.get(hrs[hrs.length - 1]);
+    const d = dayRow.get(day);
+    const okV = hrs.length === 24 && Math.abs(sum - d.kalshi_volume) <= 24 * hv.tol + 1e-6 * d.kalshi_volume;
+    const okC = Math.abs(lastP - d.kalshi_price_close * 100) <= hp.tol + 1e-9;
+    report.totals.push({ day, hours: hrs.length, plotted_sum: sum, json_hourly_sum: jsonSum, daily_volume: d.kalshi_volume, sum_tol: 24 * hv.tol,
+      last_hour_price: lastP, daily_close: d.kalshi_price_close, ok: okV && okC });
+    if (!(okV && okC)) failed = true;
+  }
+  // attention is never hourly: a step path whose value changes only at 00:00 UTC
+  const an = await points(page, "news");
+  const changes = [];
+  for (let i = 1; i < an.pts.length; i++) {
+    const a = an.pts[i - 1], b = an.pts[i];
+    if (Math.abs(a.py - b.py) > 0.01) changes.push({ sameX: Math.abs(a.px - b.px) < 0.01, t: b.t });
+  }
+  const atMidnight = changes.every((c) => c.sameX && Math.abs(((c.t % DAY) + DAY) % DAY) < 60_000 || Math.abs((c.t % DAY) - DAY) < 60_000);
+  const ys = new Set(an.pts.map((q) => q.py.toFixed(2)));
+  check("hourly: attention is a step line: at most days + 1 distinct y values, every change vertical at 00:00 UTC",
+    `step ${an.step}; ${ys.size} distinct y over 7 days; ${changes.length} changes, all at midnight ${atMidnight}; ${an.pts.length} points`,
+    "step true, <= 8 distinct y, changes at midnight", an.step && ys.size <= 8 && changes.length > 0 && atMidnight
+      && changes.every((c) => c.sameX));
+  const stepVals = an.pts.filter((q, i) => i % 2 === 0).map((q) => q.v);
+  const days7 = Array.from({ length: 7 }, (_, i) => addDays("2026-10-28", i));
+  const stepOk = days7.every((d, i) => Math.abs(stepVals[i] - dayRow.get(d)[NEWS]) <= an.tol + 1e-9);
+  check("hourly: attention step values equal the daily news counts", stepVals.map((v) => v.toFixed(3)).join(","),
+    days7.map((d) => dayRow.get(d)[NEWS]).join(","), stepOk);
+  const eb = await page.locator('#chart g[data-mark="election"] rect').count();
+  const ebw = await page.$eval('#chart g[data-mark="election"] rect', (r) => Number(r.getAttribute("width")));
+  check("hourly: election day shading and label present", `${eb} band, width ${ebw.toFixed(1)}, ${await page.locator('#chart g[data-mark="election"] text').textContent()}`,
+    "1 band, label", eb === 1 && ebw > 20);
+  // axe in hourly view, light
+  await page.locator("#chart").blur();
+  await axe(page, "1280 hourly light");
+  await page.mouse.move(0, 0);
+  await cursorTo(page, "2026-10-29T12:00:00Z", "2026-10-28");  // the tooltip opens right of it, clear of the election label
+  await page.locator("#chart").blur();
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-1280-light.png") });
+  await toggleTheme(page);
+  await page.locator("#theme-btn").blur();
+  await axe(page, "1280 hourly dark");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-1280-dark.png") });
+  await toggleTheme(page);
+
+  // Space on Full range: back to daily
+  await page.locator("#q-full").focus();
+  await page.keyboard.press("Space");
+  check("keyboard Space on Full range: daily again", `${await range(page)} ${(await gran(page)).label} ${await quickPressed(page)}`,
+    `${w.start}..${w.end} Kalshi: daily q-full`, await range(page) === `${w.start}..${w.end}` && isDaily(await gran(page))
+      && await quickPressed(page) === "q-full");
+  await page.locator("#q-last14").click();
+  const r14 = await range(page);
+  check("Last 14 days: 2026-10-22..2026-11-04, hourly, through the last candle", `${r14} ${(await gran(page)).label}`,
+    `2026-10-22..${w.end} Kalshi: hourly`, r14 === `2026-10-22..${w.end}` && isHourly(await gran(page))
+      && (await hourly(page, "price")).at.has(txh.last_ts));
+  await page.locator("#q-full").click();
+
+  // a filled hour (no candle) shows the no trades readout
+  const filled = txh.filled_hours.hours[txh.filled_hours.hours.length - 1];
+  const fd = filled.slice(0, 10);
+  const ff = addDays(fd, -6) < w.start ? w.start : addDays(fd, -6);
+  await setDate(page, "#d-from", ff);
+  await setDate(page, "#d-to", addDays(ff, 13));
+  const fr = await cursorTo(page, filled, ff);
+  const frow = hourRow.get(filled);
+  check(`filled hour ${filled} (range ${ff}..${addDays(ff, 13)}): readout says no trades, volume 0, price carried`,
+    JSON.stringify(fr), "no trades this hour, last price carried forward", fr.ts === filled
+      && fr.note === "no trades this hour, last price carried forward" && fr.volume === "0 contracts" && fr.price === fmt.price(frow[1]));
+  await page.keyboard.press("ArrowRight");
+  const fr2 = await page.evaluate(() => document.querySelector("#readout .rnote")?.textContent ?? null);
+  check("the next hour (with trades) has no note", fr2, "null", fr2 === null);
+  await page.locator("#d-reset").click();
+
+  // zoom gestures: a plain wheel over the chart scrolls the page and keeps the range; ctrl + wheel zooms
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.locator("#chart").scrollIntoViewIfNeeded();
+  const hb = await page.locator("#chart svg rect.hit").boundingBox();
+  await page.mouse.move(hb.x + hb.width * 0.8, hb.y + hb.height / 2);
+  const y0 = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 120);
+  await page.waitForTimeout(200);
+  const y1 = await page.evaluate(() => scrollY);
+  check("plain wheel over the chart scrolls the page and does not zoom", `scrollY ${y0} -> ${y1}; ${await range(page)}`,
+    `scrolled, ${w.start}..${w.end}`, y1 > y0 && await range(page) === `${w.start}..${w.end}`);
+  const hb2 = await page.locator("#chart svg rect.hit").boundingBox();
+  await page.mouse.move(hb2.x + hb2.width * 0.8, hb2.y + hb2.height / 2);
+  const y2 = await page.evaluate(() => scrollY);
+  await page.keyboard.down("Control");
+  for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -100); await page.waitForTimeout(40); }
+  await page.keyboard.up("Control");
+  await page.waitForTimeout(100);
+  const zr = await range(page);
+  const [zf, zt] = zr.split("..");
+  const zd = (Date.parse(zt) - Date.parse(zf)) / DAY + 1;
+  check("ctrl + wheel over the chart zooms in around the pointer (page does not scroll)", `${zr} (${zd} days); scrollY ${y2} -> ${await page.evaluate(() => scrollY)}`,
+    "fewer days, later part of the window", zd < 92 && zf > w.start && await page.evaluate(() => scrollY) === y2);
+  await page.locator("#d-reset").click();
+  check("Reset after zoom restores the full range", await range(page), `${w.start}..${w.end}`, await range(page) === `${w.start}..${w.end}`);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- F3: hourly zoom, 390 phone
+{
+  const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
+  await page.locator("#q-election7").tap();
+  check("390: tap Last 7 days before the election: hourly", `${await range(page)} ${(await gran(page)).label}`, "2026-10-28..2026-11-03 Kalshi: hourly",
+    await range(page) === "2026-10-28..2026-11-03" && isHourly(await gran(page)));
+  const ticks = await page.$$eval("#chart svg .xaxis .tick text", (ts) => ts.map((t) => { const r = t.getBoundingClientRect(); return { s: t.textContent, l: r.left, r: r.right }; }));
+  const overlap = ticks.some((t, i) => i > 0 && t.l < ticks[i - 1].r + 4);
+  check("390 hourly: x axis tick labels do not crowd (no overlap, date labels)", ticks.map((t) => t.s).join(" | "), "no overlap",
+    !overlap && ticks.length >= 2 && ticks.every((t) => /^[A-Z][a-z]{2} \d+$/.test(t.s)));
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check("390 hourly: no horizontal page scroll", overflow, "0", overflow <= 0);
+  // a tap fills the text row with the hour
+  await page.locator("#chart").scrollIntoViewIfNeeded();
+  const box = await page.locator("#chart svg rect.hit").boundingBox();
+  await page.touchscreen.tap(box.x + box.width * 0.5, box.y + box.height / 2);
+  const tr = await page.evaluate(() => ({ ts: document.querySelector("#readout .rdate")?.dataset.ts, when: document.querySelector("#readout .rdate")?.textContent,
+    text: document.querySelector("#readout").innerText }));
+  const trow = hourRow.get(tr.ts);
+  check("390: a tap fills the readout row with the hour in UTC and its values", tr.text.replace(/\s+/g, " "), "the hour, UTC, price and volume",
+    !!trow && tr.when === whenText(tr.ts) && tr.text.includes(fmt.price(trow[1])) && tr.text.includes(fmt.volume(trow[2])));
+  await axe(page, "390 hourly light");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-390-light.png") });
+  await page.locator("#theme-btn").tap();
+  await page.locator("#theme-btn").blur();
+  await axe(page, "390 hourly dark");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-390-dark.png") });
+  await page.locator("#theme-btn").tap();
+
+  // two finger pinch (CDP touch events): fingers moving apart zoom the chart in
+  await page.locator("#q-full").tap();
+  const cdp = await ctx.newCDPSession(page);
+  await page.locator("#chart").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(100);  // let a ResizeObserver redraw settle before reading the plot box
+  const pb = await page.locator("#chart svg rect.hit").boundingBox();
+  const cy = pb.y + pb.height / 2, mid = pb.x + pb.width * 0.7;
+  const touch = (type, d) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [
+    { x: mid - d, y: cy, id: 1 }, { x: mid + d, y: cy, id: 2 }] });
+  await touch("touchStart", 15);
+  for (let d = 20; d <= 90; d += 10) { await touch("touchMove", d); await page.waitForTimeout(30); }
+  await touch("touchEnd", 0);
+  await page.waitForTimeout(100);
+  const pr = await range(page);
+  const [pf, pt] = pr.split("..");
+  const pdays = (Date.parse(pt) - Date.parse(pf)) / DAY + 1;
+  const vv = await page.evaluate(() => visualViewport.scale);
+  check("390: two finger pinch apart zooms the chart in, not the page", `${pr} (${pdays} days); page scale ${vv}`, "fewer than 92 days, scale 1",
+    pdays < 92 && vv === 1);
+  // one finger vertical swipe on the chart still scrolls the page
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.locator("#chart").scrollIntoViewIfNeeded();
+  const sb = await page.locator("#chart svg rect.hit").boundingBox();
+  const s0 = await page.evaluate(() => scrollY);
+  const one = (type, y) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x: sb.x + sb.width / 2, y, id: 3 }] });
+  await one("touchStart", sb.y + sb.height * 0.8);
+  for (let k = 1; k <= 8; k++) { await one("touchMove", sb.y + sb.height * 0.8 - k * 20); await page.waitForTimeout(16); }
+  await one("touchEnd", 0);
+  await page.waitForTimeout(300);
+  const s1 = await page.evaluate(() => scrollY);
+  check("390: one finger vertical swipe on the chart scrolls the page and keeps the range", `scrollY ${s0} -> ${s1}; ${await range(page)}`,
+    `scrolled, ${pr}`, s1 > s0 && await range(page) === pr);
+
+  // frame check: 60 pointer moves across the plot in the 14 day hourly view (after the swipe's fling has stopped)
+  await page.waitForFunction(() => new Promise((ok) => { const y = scrollY; setTimeout(() => ok(scrollY === y), 250); }), null, { polling: 300 });
+  await page.locator("#q-last14").tap();
+  const fb = await page.locator("#chart svg rect.hit").boundingBox();
+  const frames = await page.evaluate(async ({ x, y, w }) => {
+    const hit = document.querySelector("#chart svg rect.hit");
+    const out = [];
+    for (let i = 0; i < 60; i++) {
+      const cx = x + 1 + (w - 2) * (i / 59);
+      const t0 = performance.now();
+      hit.dispatchEvent(new PointerEvent("pointermove", { clientX: cx, clientY: y, bubbles: true, pointerType: "mouse" }));
+      void document.querySelector("#readout").offsetHeight;  // force the layout the update caused
+      out.push(performance.now() - t0);
+      await new Promise((r) => requestAnimationFrame(() => r()));
+    }
+    const s = [...out].sort((a, b) => a - b);
+    return { n: out.length, median: (s[29] + s[30]) / 2, max: s[s.length - 1],
+      hours: document.querySelectorAll("#chart path.line-price")[0].getAttribute("d").split("L").length,
+      readout: document.querySelector("#readout .rdate")?.dataset.ts };
+  }, { x: fb.x, y: fb.y + fb.height / 2, w: fb.width });
+  report.frames = frames;
+  check("390 hourly 14 days: pointermove handling, median under 16 ms", JSON.stringify(frames), "median < 16 ms",
+    frames.median < 16 && frames.hours > 300 && frames.readout?.slice(0, 10) >= "2026-11-03");
+  await ctx.close();
+}
+
 // ---------------------------------------------------------------- system setting fallback
 {
   const { ctx, page } = await open(1280, `${BASE}?race=tx-senate-2026`, false, "dark");
@@ -599,13 +910,13 @@ const plotted = (page, k) => page.evaluate((key) => {
     sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
   await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
   await axe(page, "390 filters open");
-  const targets = "#theme-btn, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
+  const targets = "#theme-btn, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #racesec .qbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
   check(`touch targets at least 44 px (theme, legend entries, why?, dates, Reset, chart, brush, Filters button and panel; ${nTargets} checked)`,
-    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 23);
+    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 26);
   await page.touchscreen.tap(195, 40);
   check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
     !(await page.locator("#filters-panel").isVisible()));
@@ -656,5 +967,13 @@ console.log("\nPlotted values (line path coordinates read back to values) vs dat
 console.log("| date | series | plotted | JSON value | tolerance (0.001 px) | ok |\n|---|---|---|---|---|---|");
 for (const s of report.plotted) console.log(`| ${s.date} | ${s.series} | ${s.plotted} | ${s.json} | ${s.tol.toPrecision(3)} | ${s.ok ? "yes" : "NO"} |`);
 if (report.plotted.length !== 9) { console.log("expected 9 plotted spot checks"); failed = true; }
+console.log("\nHourly spot check (7 day view, plotted values and readout vs series.display_hourly; price plotted x100):");
+console.log("| ts_utc | JSON price | plotted price | JSON volume | plotted volume | readout | ok |\n|---|---|---|---|---|---|---|");
+for (const s of report.hourly) console.log(`| ${s.ts} | ${s.json_price} | ${s.plotted_price.toFixed(4)} | ${s.json_volume} | ${s.plotted_volume.toFixed(2)} | ${s.readout} | ${s.ok ? "yes" : "NO"} |`);
+console.log("\nDay totals (plotted hourly volumes summed and the day's last hourly price vs series.display_daily):");
+console.log("| day | hours | plotted sum | JSON hourly sum | daily volume | sum tolerance | last hour price (x100) | daily close | ok |\n|---|---|---|---|---|---|---|---|---|");
+for (const s of report.totals) console.log(`| ${s.day} | ${s.hours} | ${s.plotted_sum.toFixed(2)} | ${s.json_hourly_sum.toFixed(2)} | ${s.daily_volume} | ${s.sum_tol.toFixed(2)} | ${s.last_hour_price.toFixed(4)} | ${s.daily_close} | ${s.ok ? "yes" : "NO"} |`);
+if (report.frames) console.log(`\nFrame check, 390 px, 14 day hourly view: ${report.frames.n} pointermove events, median ${report.frames.median.toFixed(2)} ms, max ${report.frames.max.toFixed(2)} ms`);
+if (report.hourly.length !== 3 || report.totals.length !== 2) { console.log("expected 3 hourly spot checks and 2 day totals"); failed = true; }
 console.log(failed ? "VERIFY FAILED" : "VERIFY OK");
 process.exit(failed ? 1 : 0);

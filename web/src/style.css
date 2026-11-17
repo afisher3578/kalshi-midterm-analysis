@@ -219,8 +219,13 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .lg-why[aria-expanded="true"] { color: var(--fg); }
 .lg-note { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--fg); }
 .lgbox .hint { margin: 0.25rem 0 0; }
+/* "Kalshi: hourly" or "Kalshi: daily": how the Kalshi lines are drawn at this zoom */
+.gran { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.gran[data-granularity="hour"] { color: var(--fg); font-weight: 600; }
+#att-note { margin: 0.25rem auto 0; font-size: 0.85rem; }
 .chartbox { position: relative; width: 100%; margin: 0 auto; }
-.chartsvg { width: 100%; }
+/* one finger scrolls the page vertically; two fingers zoom the chart (linechart.ts), not the page */
+.chartsvg { width: 100%; touch-action: pan-y; }
 .chartsvg svg, .brushbox svg { display: block; max-width: 100%; height: auto; }
 .lc { font-size: 12px; user-select: none; -webkit-user-select: none; }
 .lc .axis text, .brush-svg .axis text { font-size: 12px; fill: var(--muted); }
@@ -261,12 +266,15 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .range { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 1.5rem; }
 .range .f { flex: 0 1 170px; }
 .range button { min-width: 4rem; }
+.quick { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+.qbtn[aria-pressed="true"] { font-weight: 600; border-bottom: 2px solid var(--fg); }
 .range-msg { flex: 1 1 100%; margin: 0; font-weight: 600; }
 .range-msg:empty { display: none; }
 .readout { margin: 1.5rem auto 0; padding-top: 0.75rem; border-top: 1px solid var(--rule); font-size: 0.9rem;
   font-variant-numeric: tabular-nums; }
 .readout .rd { white-space: nowrap; }
 .readout .rdate { font-weight: 600; }
+.readout .rnote, .tip .tnote { color: var(--muted); font-style: italic; }
 
 /* ---- footer (only with SHOW_FUNDING_DISCLOSURE) */
 .foot { margin-top: 4rem; padding-top: 1.5rem; padding-bottom: 3rem; border-top: 1px solid var(--rule); color: var(--muted);
@@ -288,7 +296,8 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   .lg-item { width: 100%; }
   .lg-btn { min-height: 44px; }
   .lg-why { min-width: 44px; min-height: 44px; padding-top: 0; padding-bottom: 0; }
-  .readout .rd, .readout .rdate { white-space: normal; display: block; }
+  .readout .rd, .readout .rdate, .readout .rnote { white-space: normal; display: block; }
+  .quick { flex: 1 1 100%; gap: 0 1rem; }
   .readout .sep { display: none; }
   .tip { display: none; }  /* the readout row under the chart shows the same values */
 }

@@ -95,6 +95,21 @@ export interface DisplayDaily {
   note?: string;
 }
 
+// series.display_hourly (raceattn/display.py, F0): hourly Kalshi for charts only, one row per hour of the display
+// window, no gaps. ts_utc is the candle end_period_ts; the UTC day of an hour is ts_utc[:10].
+export interface DisplayHourly {
+  window: { start: string; end: string; days: number; inclusive?: boolean; timezone?: string; source?: string };
+  columns: string[];          // ["ts_utc", "kalshi/price_close", "kalshi/volume"]
+  rows: (string | number | null)[][];
+  first_ts?: string;
+  last_ts?: string;
+  n_rows?: number;
+  filled_hours?: { n: number; hours: string[]; rule?: string };
+  forward_filled_null_price?: { n: number; hours: string[]; rule?: string };
+  null_price_hours?: { n: number; hours: string[]; rule?: string };
+  note?: string;
+}
+
 export interface RaceData {
   project: string;
   version: string;
@@ -110,7 +125,8 @@ export interface RaceData {
   run_overrides?: { skip?: Record<string, string>; connectors?: Record<string, unknown>; note?: string };
   events_overlay?: { rows: OverlayEvent[]; n: number; n_confirmed: number; note: string; exists: boolean };
   queries: Record<string, QueryLog>;
-  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table; hourly_grid?: Table; display_daily?: DisplayDaily };
+  series: { meta: Record<string, SeriesMeta>; hourly: Table; daily: Table; hourly_grid?: Table; display_daily?: DisplayDaily;
+    display_hourly?: DisplayHourly; granularity?: Record<string, string> };
   quality: Record<string, Quality>;
   metrics: { daily: Record<string, MetricEntry>; hourly: Record<string, MetricEntry>; hourly_note?: string;
     events?: { status?: string; n_confirmed: number; n_needs_review_ignored: number; series: Record<string, EventSeries> } };

@@ -1,7 +1,7 @@
 import "./style.css";
 import { format } from "d3";
 import { DEFAULT_RACE, FUNDING_DISCLOSURE, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE, STATES } from "./config";
-import { chartSeries, coverageCount, NEWS_COL, WIKI_COL } from "./display";
+import { chartSeries, coverageCount, hourlySeries, NEWS_COL, WIKI_COL } from "./display";
 import { countChanged, DEFAULT_FILTERS, ENABLED_STATES, ENABLED_TYPES, type Filters, mapValue, METRICS, parseHash,
   passesPolls, pollClass, POLLS, RACE_TYPES, serializeHash, SOURCES } from "./filters";
 import { type ChartState, LineChart } from "./linechart";
@@ -384,7 +384,7 @@ async function demoNews(ui: Ui, raceId: string): Promise<DisplayDaily | null> {
 }
 
 /** The dashboard chart for one race (SHOW_DETAILS off): price, volume and attention (news or Wikipedia, from the
- * Sources control) from series.display_daily. */
+ * Sources control) from series.display_daily, and hourly Kalshi from series.display_hourly when zoomed in. */
 async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
   document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
   view = null;
@@ -410,9 +410,12 @@ async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
   const e = data.race.election_date;
   const election = [e, new Date(Date.parse(e + "T00:00:00Z") + 86_400_000).toISOString().slice(0, 10)]
     .filter((d) => d >= dd.window.start && d <= dd.window.end);
+  // hourly Kalshi (series.display_hourly) for ranges of 14 days or fewer; without it the chart stays daily
+  const dh = data.series.display_hourly;
+  const hourly = dh && dh.rows.length ? hourlySeries(dh) : null;
   chart = new LineChart(root, { series, title: raceTitle(data), window: { start: dd.window.start, end: dd.window.end },
-    election, news: { available, status }, demo: !!demo, attention: wiki ? "wikipedia" : "news",
-    granularity: "day" }, chartState);  // daily display_daily rows; hourly when zoomed in comes with F3
+    election, news: { available, status }, demo: !!demo, attention: wiki ? "wikipedia" : "news", hourly, electionDate: e },
+    chartState);
   chart.render();
   writeUrl(ui);
 }
