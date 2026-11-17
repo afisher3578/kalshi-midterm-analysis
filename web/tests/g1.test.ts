@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { format } from "d3";
 import { MAP_TITLE, MEDIA_ATTENTION_DEF, SUBTITLE, TITLE } from "../src/config";
 import { MAP_MIN_N, mapValue } from "../src/filters";
-import { MOON, SUN, themeIcon } from "../src/icons";
-import { binScale, FADED_FILL, fillOf, labelValue, legendEntries, RAMP, type StateCell } from "../src/map";
+import { FILTER, MOON_GLYPH, SUN_GLYPH, themeIcon } from "../src/icons";
+import { binScale, FADED_FILL, fillOf, fmtCompact, labelValue, legendEntries, RAMP, type StateCell } from "../src/map";
 
-const fmt = format(".3~s");
+const fmt = fmtCompact;
 const cell = (o: Partial<StateCell>): StateCell => ({ code: "TX", name: "Texas", value: 42959694.59, status: "ok",
   text: "43M contracts (n=92 days)", raceId: "tx-senate-2026", filteredOut: false, active: true, ...o });
 
@@ -65,12 +64,16 @@ describe("map fill and labels", () => {
   });
 });
 
-describe("theme icon", () => {
-  it("sun while dark (switches to light), moon while light (switches to dark)", () => {
-    expect(themeIcon("dark")).toEqual({ icon: "sun", svg: SUN, label: "Switch to light theme" });
-    expect(themeIcon("light")).toEqual({ icon: "moon", svg: MOON, label: "Switch to dark theme" });
-    expect(SUN).toContain('data-icon="sun"');
-    expect(MOON).toContain('data-icon="moon"');
-    expect(SUN).toContain('stroke="currentColor"');
+describe("theme glyph (as on alexfisher.co)", () => {
+  it("the current theme's glyph: moon U+263E while dark, sun U+263C while light", () => {
+    expect(SUN_GLYPH).toBe("\u263C");
+    expect(MOON_GLYPH).toBe("\u263E");
+    expect(themeIcon("dark")).toEqual({ icon: "moon", glyph: "\u263E", label: "Switch to light theme" });
+    expect(themeIcon("light")).toEqual({ icon: "sun", glyph: "\u263C", label: "Switch to dark theme" });
+  });
+  it("the filters icon is a thin currentColor funnel", () => {
+    expect(FILTER).toContain('data-icon="filter"');
+    expect(FILTER).toContain('stroke="currentColor"');
+    expect(FILTER).toContain('stroke-width="1.5"');
   });
 });

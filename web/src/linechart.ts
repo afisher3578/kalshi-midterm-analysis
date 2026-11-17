@@ -38,6 +38,7 @@ export interface ChartInput {
   series: ChartSeries;
   lines: PartyLines;                 // who the dem and rep lines are (candidates block); null: no such line
   title: string;
+  heading: string;                   // the line above the chart (config.ts CHART_TITLE)
   window: { start: string; end: string };
   election: string[];       // shaded days, e.g. election day and the day after
   news: { available: boolean };
@@ -158,13 +159,11 @@ export class LineChart {
         x1="1" y1="5" x2="29" y2="5"${s.dash ? ` stroke-dasharray="${s.dash}"` : ""}/></svg><span class="lg-text"><strong
         class="lg-name">${esc(t.name)}</strong>${val}<span class="vh">:</span> <span class="lg-desc">${esc(t.desc)}</span>${off}</span></button></li>`;
     };
-    const who = PRICE_KEYS.map((k) => (keys.includes(k) ? input.lines[k]?.name : null)).filter(Boolean).join(" and ");
     // the only status line left: News is the chosen source and the race has no news at all
     const status = !input.news.available && !this.wiki
       ? '<p class="status" id="news-status" data-news="no">No news data for this race yet.</p>' : "";
     this.root.innerHTML = `
-      <h2 id="chart-h" class="charttitle">${esc(input.title)}: Kalshi chance${who ? ` for ${esc(who)}` : ""}, volume and ${
-        this.wiki ? "Wikipedia" : "media"} attention</h2>
+      <h2 id="chart-h" class="charttitle">${esc(input.heading)}</h2>
       ${input.demo ? '<p class="demo-banner" id="demo-label">Demo data</p>' : ""}
       ${status}
       <div class="lgbox">

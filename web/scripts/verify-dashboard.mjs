@@ -23,9 +23,14 @@
 // axis on the right, end of line labels (latest value in view, no overlap, inside the svg at 390 px), the crosshair
 // tooltip against data/processed in daily and hourly view, the 1D 1W 1M 3M All range buttons, no "why" and no "News
 // data: live" text in either theme or source.
+// H1: the theme glyph of alexfisher.co (sun U+263C in light, moon U+263E in dark, muted, 0.9rem), the funnel filter
+// icon, no "News data:", "why?", "mirror image", "no data" or "insufficient data" in the visible DOM (svg titles
+// included), the exact News legend labels (and the Wikipedia and Kalshi volume ones, reported), a label, a tooltip
+// and a focus stop on Texas only, the solid faded fill and the state borders, the chart heading and the GitHub footer.
 // Writes docs/screenshots/g2-{1280,390}-{light,dark}.png, g2-1w-hourly.png, g2-crosshair-1280.png,
 // g1-{1280,390}-{light,dark}.png, g1-tooltip-{1280,390}.png, style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
-// chart-{1280,390}-{light,dark}.png and hourly-{1280,390}-{light,dark}.png.
+// chart-{1280,390}-{light,dark}.png, hourly-{1280,390}-{light,dark}.png, h1-{1280,390}-{light,dark}.png and
+// h1-header-{light,dark}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -78,7 +83,7 @@ function check(label, onPage, expected, ok) {
 
 async function axe(page, key) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
-  report.axe[key] = r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s): ${v.nodes.slice(0, 2).map((n) => n.target.join(" ")).join(" | ")}`);
+  report.axe[key] = r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s): ${v.nodes.slice(0, 2).map((n) => n.target.join(" ") + " " + n.any.map((a) => JSON.stringify(a.data)).join(" ")).join(" | ")}`);
 }
 
 // token values from web/src/style.css, as computed rgb
@@ -268,9 +273,9 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const buttons = await page.$$eval('svg.usmap path[role="button"]', (ps) => ps.map((p) => `${p.dataset.state}:${p.tabIndex}`));
   const greyed = await page.$$eval("svg.usmap path.st.greyed", (ps) => ps.length);
   const greyFocus = await page.$$eval("svg.usmap path.st.greyed", (ps) => ps.filter((p) => p.tabIndex >= 0 || p.getAttribute("role") === "button").length);
-  const opacity = await page.$eval('svg.usmap path[data-state="FL"]', (p) => getComputedStyle(p).opacity);
-  check("map: only Texas is a button; every other state is faded and takes no focus", `${buttons.join(",")}; ${greyed} greyed, ${greyFocus} focusable, FL opacity ${opacity}`,
-    "TX:0; 50 greyed, 0 focusable, opacity < 1", buttons.join(",") === "TX:0" && greyed >= 50 && greyFocus === 0 && Number(opacity) < 1);
+  const flFill = await page.$eval('svg.usmap path[data-state="FL"]', (p) => p.style.fill);
+  check("map: only Texas is a button; every other state is faded and takes no focus", `${buttons.join(",")}; ${greyed} greyed, ${greyFocus} focusable, FL fill ${flFill}`,
+    "TX:0; 50 greyed, 0 focusable, var(--map-faded)", buttons.join(",") === "TX:0" && greyed >= 50 && greyFocus === 0 && flFill === "var(--map-faded)");
   const txVol = index.races["tx-senate-2026"].display.kalshi_volume;
   const txRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
   const txLabel = await page.$eval('svg.usmap path[data-state="TX"]', (p) => `${p.getAttribute("aria-label")} | title ${p.querySelector("title")?.textContent}`);
@@ -278,11 +283,14 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     `${txRow} | ${txLabel}`, `43M contracts (n=${txVol.n_days} days)`,
     txRow === `43M contracts (n=${txVol.n_days} days)` && txLabel.includes(`43M contracts (n=${txVol.n_days} days)`)
       && txLabel.includes("title Texas: 43M contracts"));
-  const flLabel = await page.$eval('svg.usmap path[data-state="FL"]', (p) => p.getAttribute("aria-label"));
-  check("greyed state with a race keeps its value as text and says coming soon", flLabel, "Florida: ... contracts (n=92 days), coming soon",
-    /^Florida: .* contracts \(n=\d+ days\), coming soon$/.test(flLabel));
+  const flA11y = await page.$eval('svg.usmap path[data-state="FL"]', (p) => `${p.getAttribute("aria-label")} ${p.getAttribute("role")} ${
+    !!p.querySelector("title")} ${p.getAttribute("aria-hidden")}`);
+  const flRow = (await page.locator('#map-table tr[data-race="fl-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
+  check("greyed state with a race (Florida): no name, role or tooltip on the map; its value and coming soon are in the map table",
+    `${flA11y} | table ${flRow}`, "null null false true | table ... contracts (n=92 days), coming soon",
+    flA11y === "null null false true" && /^.* contracts \(n=\d+ days\), coming soon$/.test(flRow));
   const noData = await page.$eval('svg.usmap path[data-state="AL"]', (p) => `${p.style.fill} ${p.classList.contains("faded")}`);
-  check("map: states with no race are drawn in the faded coming soon style", noData, "var(--map-3) true", noData === "var(--map-3) true");
+  check("map: states with no race are drawn in the faded coming soon style", noData, "var(--map-faded) true", noData === "var(--map-faded) true");
   // a click on a greyed state does nothing
   await page.locator('svg.usmap path[data-state="FL"]').click({ force: true });
   await page.waitForTimeout(200);
@@ -333,16 +341,17 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const attRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
   const txNews = index.races["tx-senate-2026"].display["news/race_either/national"];
   const flAtt = await page.$eval('svg.usmap path[data-state="FL"]', (p) => `${p.style.fill} ${p.getAttribute("aria-label")}`);
-  check("Attention (News): TX stories with n; Florida has no news (faded, the reason in its label)", `${attRow} | ${flAtt}`,
-    `6.66k stories (n=${txNews.n_days} days) | var(--map-3) Florida: no news data, coming soon`,
-    attRow === `6.66k stories (n=${txNews.n_days} days)` && flAtt === "var(--map-3) Florida: no news data, coming soon");
+  const flAttRow = (await page.locator('#map-table tr[data-race="fl-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
+  check("Attention (News): TX stories with n; Florida has no news (faded, the reason only in the map table)", `${attRow} | ${flAtt} | ${flAttRow}`,
+    `6.66k stories (n=${txNews.n_days} days) | var(--map-faded) null | no news data, coming soon`,
+    attRow === `6.66k stories (n=${txNews.n_days} days)` && flAtt === "var(--map-faded) null" && flAttRow === "no news data, coming soon");
   // polling Few: Texas (53 polls) is outside and drawn faded, its label says so; Kentucky (1 poll) stays in
   await page.locator('#filters-panel label:has(input[name="f-polls"][value="few"])').click();
   const pf = await page.evaluate(() => { const st = (c) => document.querySelector(`svg.usmap path[data-state="${c}"]`);
     return { tx: `${st("TX").style.fill} ${st("TX").classList.contains("faded")}`, txLabel: st("TX").getAttribute("aria-label"),
-      ky: st("KY").getAttribute("aria-label") }; });
-  check("Polling Few: TX outside (faded, the label says outside the polling filter), KY inside", JSON.stringify(pf),
-    "TX var(--map-3) true, KY not outside", pf.tx === "var(--map-3) true" && pf.txLabel.includes("outside the polling filter")
+      ky: document.querySelector('#map-table tr[data-race="ky-senate-2026"] td[data-k="value"]').textContent }; });
+  check("Polling Few: TX outside (faded, the label says outside the polling filter), KY inside (map table)", JSON.stringify(pf),
+    "TX var(--map-faded) true, KY not outside", pf.tx === "var(--map-faded) true" && pf.txLabel.includes("outside the polling filter")
       && !pf.ky.includes("outside the polling filter"));
   const badge = (await page.locator("#filters-badge").innerText()).trim();
   const hash = await page.evaluate(() => location.hash);
@@ -418,8 +427,12 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     `wrapper <=1x1 overflow hidden; ${Object.keys(index.races).length} rows; named table true; 0 focusable`,
     wrap.w <= 1 && wrap.h <= 1 && wrap.overflow === "hidden" && tableRows === Object.keys(index.races).length
       && tableNamed && tableFocus === 0);
-  const footers = await page.locator("footer").count();
-  check("no footer while the funding disclosure is off", footers, "0", footers === 0);
+  const foot = await page.evaluate(() => [...document.querySelectorAll("footer")].map((f) => ({ text: f.innerText.trim(),
+    links: [...f.querySelectorAll("a")].map((a) => `${a.textContent}|${a.href}|${a.rel}|${a.target}`) })));
+  check("H1 footer: one footer, one link Code and data on GitHub, same tab, rel noopener noreferrer, no other copy", JSON.stringify(foot),
+    "Code and data on GitHub|https://github.com/afisher3578/kalshi-midterm-analysis|noopener noreferrer|",
+    foot.length === 1 && foot[0].text === "Code and data on GitHub" && foot[0].links.length === 1
+      && foot[0].links[0] === "Code and data on GitHub|https://github.com/afisher3578/kalshi-midterm-analysis|noopener noreferrer|");
   const elabel = await page.locator('#chart g[data-mark="election"] text').textContent();
   check("election days shaded and labeled", elabel, "Election, Nov 3 and 4", elabel === "Election, Nov 3 and 4"
     && await page.locator('#chart g[data-mark="election"] rect').count() === 1);
@@ -594,6 +607,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   check("dark: each legend swatch has its line's stroke color", JSON.stringify(swd), "swatch == line, the dark tokens",
     swd.every((x) => x.swatch === x.line && x.line === THEME.dark[x.k]));
   await page.locator("#theme-btn").blur();
+  await page.mouse.move(2, 450);  // the page margin: no control under the pointer once the screenshot scrolls
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-1280-dark.png") });
   await page.screenshot({ path: resolve(SHOTS, "style-dark-1280.png"), fullPage: true });
   await axe(page, "1280 Texas dark");
@@ -938,13 +952,13 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
   await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
   await axe(page, "390 filters open");
-  const targets = "#theme-btn, #ma-info, #racesec .lg-btn, #racesec input[type=date], #d-reset, #racesec .rbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
+  const targets = "#theme-btn, #ma-info, #racesec .lg-btn, #racesec input[type=date], #d-reset, #racesec .rbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close, footer a";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
-  check(`touch targets at least 44 px (theme, legend entries, dates, Reset, range buttons, chart, brush, Filters button and panel; ${nTargets} checked)`,
-    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 26);
+  check(`touch targets at least 44 px (theme, legend entries, dates, Reset, range buttons, chart, brush, Filters button and panel, footer link; ${nTargets} checked)`,
+    JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 27);
   await page.touchscreen.tap(195, 40);
   check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
     !(await page.locator("#filters-panel").isVisible()));
@@ -1023,23 +1037,23 @@ async function noForbidden(page, key) {
     map: document.querySelector("#map-h").textContent.trim(), h1s: document.querySelectorAll("h1").length }));
   check("G1: title, subtitle (a p) and map heading", JSON.stringify(titles), `${G1.title} / ${G1.subtitle} / ${G1.map}...`,
     titles.h1 === G1.title && titles.sub === G1.subtitle && titles.subTag === "P" && titles.map.startsWith(G1.map) && titles.h1s === 1);
-  // theme button: icon only, the moon in light, the sun in dark, keyboard
+  // theme button (H1, as on alexfisher.co): the current theme's glyph as text, the sun in light, the moon in dark, keyboard
   const tb = page.locator("#theme-btn");
-  const tstate = () => tb.evaluate((b) => ({ text: b.innerText.trim(), label: b.getAttribute("aria-label"), title: b.title,
-    icon: b.querySelector("svg")?.dataset.icon, n: b.querySelectorAll("svg").length, theme: document.documentElement.dataset.theme,
+  const tstate = () => tb.evaluate((b) => ({ text: b.textContent, label: b.getAttribute("aria-label"), title: b.title,
+    icon: b.dataset.icon, n: b.querySelectorAll("svg").length, theme: document.documentElement.dataset.theme,
     pressed: b.getAttribute("aria-pressed") }));
   const t0 = await tstate();
-  check("G1 theme button in light: no text, moon icon, Switch to dark theme", JSON.stringify(t0), "'' moon Switch to dark theme",
-    t0.text === "" && t0.icon === "moon" && t0.n === 1 && t0.label === "Switch to dark theme" && t0.title === t0.label && t0.pressed === "false");
+  check("H1 theme button in light: sun glyph U+263C, no svg, Switch to dark theme", JSON.stringify(t0), "\u263C sun Switch to dark theme",
+    t0.text === "\u263C" && t0.icon === "sun" && t0.n === 0 && t0.label === "Switch to dark theme" && t0.title === t0.label && t0.pressed === "false");
   await tb.focus();
   await page.keyboard.press("Enter");
   const t1 = await tstate();
-  check("G1 theme button: Enter switches to dark, sun icon, Switch to light theme", JSON.stringify(t1), "dark sun Switch to light theme",
-    t1.theme === "dark" && t1.text === "" && t1.icon === "sun" && t1.n === 1 && t1.label === "Switch to light theme" && t1.pressed === "true");
+  check("H1 theme button: Enter switches to dark, moon glyph U+263E, Switch to light theme", JSON.stringify(t1), "dark \u263E moon Switch to light theme",
+    t1.theme === "dark" && t1.text === "\u263E" && t1.icon === "moon" && t1.n === 0 && t1.label === "Switch to light theme" && t1.pressed === "true");
   await page.keyboard.press("Enter");
   const t2 = await tstate();
-  check("G1 theme button: Enter again, back to light and the moon", JSON.stringify(t2), "light moon",
-    t2.theme === "light" && t2.icon === "moon" && t2.label === "Switch to dark theme");
+  check("H1 theme button: Enter again, back to light and the sun", JSON.stringify(t2), "light \u263C",
+    t2.theme === "light" && t2.text === "\u263C" && t2.label === "Switch to dark theme");
   await tb.blur();
   // filters button: icon only (the badge digits at most), named, keyboard open, Esc closes and returns focus
   const fbtn = page.locator("#filters-btn");
@@ -1311,6 +1325,7 @@ async function labelsOk(page, key, from, to, hourlyMode) {
     `${THEME.dark.dem} / ${THEME.dark.rep}`, pd[0] === THEME.dark.dem && pd[1] === THEME.dark.rep
       && ed.ls.every((l) => l.fill === THEME.dark[l.k]));
   await noWhy(page, "1280 dark news");
+  await page.mouse.move(2, 450);
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-1280-dark.png") });
   await axe(page, "G2 1280 dark");
   // the Wikipedia source, both themes
@@ -1353,6 +1368,98 @@ async function labelsOk(page, key, from, to, hourlyMode) {
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- H1: header glyph, filter icon, map labels and colors, legend, heading, footer
+const H1_FORBIDDEN = ["News data:", "why?", "mirror image", "no data", "insufficient data"];
+const H1_NEWS_LEGEND = ["0 to 1.33k", "1.33k to 2.66k", "2.66k to 3.99k", "3.99k to 5.32k", "5.32k to 6.66k", "coming soon"];
+const H1_HEADING = "Texas Senate Race 2026: Kalshi price, Kalshi volume and media attention";
+const H1_COLORS = { light: { faded: "rgb(135, 133, 128)", edge: "rgb(87, 86, 83)", muted: "rgb(111, 110, 105)" },
+  dark: { faded: "rgb(111, 110, 105)", edge: "rgb(159, 157, 150)", muted: "rgb(135, 133, 128)" } };
+report.h1 = {};
+/** The visible DOM text: the body without the visually hidden (.vh) text alternatives, svg titles included. */
+const domText = (page) => page.evaluate(() => {
+  const c = document.body.cloneNode(true);
+  c.querySelectorAll(".vh, script, noscript").forEach((e) => e.remove());
+  return c.textContent;
+});
+/** What the map gives readers per state: on-map labels, svg titles, focus stops and named states. */
+const mapReaders = (page) => page.evaluate(() => {
+  const ps = [...document.querySelectorAll("svg.usmap path.st")];
+  return { labels: [...document.querySelectorAll("svg.usmap .stlabel")].map((t) => t.textContent),
+    titles: ps.filter((p) => p.querySelector("title")).map((p) => p.dataset.state),
+    focus: ps.filter((p) => p.hasAttribute("tabindex")).map((p) => p.dataset.state),
+    named: ps.filter((p) => p.hasAttribute("role") || p.hasAttribute("aria-label")).map((p) => p.dataset.state),
+    shown: ps.filter((p) => p.getAttribute("aria-hidden") !== "true").map((p) => p.dataset.state) };
+});
+async function setHash(page, h) {
+  await page.evaluate((x) => { location.hash = x; }, h);
+  await page.waitForFunction((x) => [...new URLSearchParams(location.hash.slice(1))].sort().join() === [...new URLSearchParams(x.slice(1))].sort().join(), h);
+  await page.waitForTimeout(150);
+}
+async function h1Page(page, theme, key) {
+  for (const h of ["#metric=volume", "#metric=attention", "#metric=attention&source=wikipedia", "#polls=few", "#metric=attention&polls=many"]) {
+    await setHash(page, h === "#metric=volume" ? "" : h);
+    const t = await domText(page);
+    const hits = H1_FORBIDDEN.filter((f) => t.toLowerCase().includes(f.toLowerCase()));
+    const m = await mapReaders(page);
+    check(`H1 ${key} ${h}: visible DOM has none of ${H1_FORBIDDEN.join(", ")}`, hits.join(" | ") || "none", "none", hits.length === 0);
+    check(`H1 ${key} ${h}: only Texas has a map label, a tooltip, a focus stop and a name`, JSON.stringify(m),
+      "labels TX..., titles TX, focus TX, named TX, shown TX", m.labels.length === 1 && m.labels[0].startsWith("TX")
+        && [m.titles, m.focus, m.named, m.shown].every((x) => x.join() === "TX"));
+    const lg = await legendItems(page);
+    if (theme === "light") report.h1[h] = lg.join(" | ");
+    if (h === "#metric=attention") {
+      check(`H1 ${key}: News legend reads exactly`, lg.join(" | "), H1_NEWS_LEGEND.join(" | "), lg.join(" | ") === H1_NEWS_LEGEND.join(" | "));
+      check(`H1 ${key}: Texas map label is TX 6.66k`, m.labels.join(), "TX6.66k", m.labels.join() === "TX6.66k");
+    }
+  }
+  await setHash(page, "#metric=attention");
+  const col = await page.evaluate(() => {
+    const cs = (sel) => getComputedStyle(document.querySelector(sel));
+    const fl = cs('svg.usmap path[data-state="FL"]'), al = cs('svg.usmap path[data-state="AL"]'), sw = cs("#map .legend li:last-child .sw");
+    const tb = cs("#theme-btn"), fb = cs("#filters-btn");
+    const svg = document.querySelector("#filters-btn svg");
+    return { fl: `${fl.fill}|${fl.opacity}`, al: `${al.fill}|${al.opacity}`, edge: fl.stroke, swatch: `${sw.backgroundColor}|${sw.opacity}`,
+      swBorder: sw.borderTopColor, themeColor: tb.color, themeSize: tb.fontSize, themeBorder: tb.borderTopStyle, themeBg: tb.backgroundColor,
+      filterColor: fb.color, filterIcon: svg?.dataset.icon, filterSize: `${svg?.getAttribute("width")}x${svg?.getAttribute("height")}`,
+      filterStroke: svg?.getAttribute("stroke"), filterWidth: svg?.getAttribute("stroke-width"),
+      heading: document.querySelector("#chart-h").textContent.trim(), glyph: document.querySelector("#theme-btn").textContent,
+      theme: document.documentElement.dataset.theme };
+  });
+  const want = H1_COLORS[theme];
+  check(`H1 ${key}: faded states (FL with a race, AL without) are solid --map-faded, borders --map-edge, the coming soon swatch matches`,
+    JSON.stringify(col), `${want.faded}|1, edge ${want.edge}`, col.theme === theme && col.fl === `${want.faded}|1` && col.al === col.fl
+      && col.edge === want.edge && col.swatch === col.fl && col.swBorder === want.edge);
+  check(`H1 ${key}: theme glyph ${theme === "dark" ? "moon U+263E" : "sun U+263C"}, muted, 0.9rem (15.3px), no border or background; filter funnel, muted, 20 px, thin currentColor stroke`,
+    JSON.stringify(col), "glyph, muted, 15.3px", col.glyph === (theme === "dark" ? "☾" : "☼") && col.themeColor === want.muted
+      && col.themeSize === "15.3px" && col.themeBorder === "none" && col.themeBg === "rgba(0, 0, 0, 0)" && col.filterColor === want.muted
+      && col.filterIcon === "filter" && col.filterSize === "20x20" && col.filterStroke === "currentColor" && col.filterWidth === "1.5");
+  check(`H1 ${key}: chart heading`, col.heading, H1_HEADING, col.heading === H1_HEADING);
+}
+
+for (const [w, theme] of [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]]) {
+  const { ctx, page } = await open(w, `${BASE}?race=tx-senate-2026`, w === 390, theme);
+  await page.evaluate(() => localStorage.removeItem("theme"));
+  const key = `${w} ${theme}`;
+  await h1Page(page, theme, key);
+  if (w === 1280) {
+    // hover turns the glyph and the funnel to the text color
+    await page.locator("#theme-btn").hover();
+    const hov = await page.$eval("#theme-btn", (b) => getComputedStyle(b).color);
+    await page.locator("#filters-btn").hover();
+    const fhov = await page.$eval("#filters-btn", (b) => getComputedStyle(b).color);
+    check(`H1 ${key}: hover colors the glyph and the funnel in --fg`, `${hov} ${fhov}`, `${THEME[theme].fg} x2`,
+      hov === THEME[theme].fg && fhov === THEME[theme].fg);
+    await page.mouse.move(5, 880);
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.locator("header").screenshot({ path: resolve(SHOTS, `h1-header-${theme}.png`) });
+  }
+  await axe(page, `H1 ${key}`);
+  await page.mouse.move(5, 880);
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, `h1-${w}-${theme}.png`) });
+  await ctx.close();
+}
+
 // ---------------------------------------------------------------- demo
 if (DEMO) {
   const { ctx, page } = await open(1280, `${DEMO}?race=tx-senate-2026&demo=1`);
@@ -1385,6 +1492,8 @@ console.log("\nG2 daily crosshair tooltip vs data/processed/tx-senate-2026.json 
 console.log("| date | tooltip | JSON | ok |\n|---|---|---|---|");
 for (const s of report.g2) console.log(`| ${s.at} | ${s.tooltip} | ${s.json} | ${s.ok ? "yes" : "NO"} |`);
 if (report.g2.length !== 3) { console.log("expected 3 G2 daily tooltip checks"); failed = true; }
+console.log("\nH1 map legend readings (light, 1280):");
+for (const [h, l] of Object.entries(report.h1 ?? {})) console.log(`| ${h} | ${l} |`);
 if (report.frames) console.log(`\nFrame check, 390 px, 14 day hourly view: ${report.frames.n} pointermove events, median ${report.frames.median.toFixed(2)} ms, max ${report.frames.max.toFixed(2)} ms`);
 if (report.hourly.length !== 3 || report.totals.length !== 2) { console.log("expected 3 hourly spot checks and 2 day totals"); failed = true; }
 console.log(failed ? "VERIFY FAILED" : "VERIFY OK");

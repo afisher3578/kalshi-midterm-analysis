@@ -2,6 +2,7 @@
    series colors are Flexoki 600 shades in the light theme and 400 shades in the dark theme (the dark Republican red
    is red 300, so the end of line label text in that color passes 4.5:1). The map ramp runs
    from near the background to the text color, so a higher value always means more contrast with the page.
+   --map-faded (coming soon states) and --map-edge (state borders) are 3:1 or more against the page in both themes.
    web/scripts/contrast.mjs reads these two blocks and checks WCAG contrast. */
 :root {
   color-scheme: light;
@@ -20,6 +21,8 @@
   --map-3: #6F6E69;
   --map-4: #403E3C;
   --map-5: #1C1B1A;
+  --map-faded: #878580;
+  --map-edge: #575653;
   --cat-1: #205EA6;
   --cat-2: #BC5215;
   --cat-3: #66800B;
@@ -46,6 +49,8 @@
   --map-3: #878580;
   --map-4: #B7B5AC;
   --map-5: #CECDC3;
+  --map-faded: #6F6E69;
+  --map-edge: #9F9D96;
   --cat-1: #4385BE;
   --cat-2: #DA702C;
   --cat-3: #879A39;
@@ -94,10 +99,11 @@ a, button, .tg, .toggle label { transition: opacity 120ms ease; }
 .head > .headrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .subtitle { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
 .icon { display: block; flex: none; }
-/* icon buttons: a 44 px target around a 20 px icon; the negative margin lines the icon up with the column edge */
+/* the theme switch as on alexfisher.co (.theme-toggle): a text glyph, muted, the text color on hover, no border or
+   background; a 44 px target, the negative margin lines the glyph up with the column edge */
 .theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px;
-  margin: -3px -12px 0 0; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; }
-.theme-toggle[aria-pressed="true"] { color: var(--fg); }
+  margin: -3px -15px 0 0; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: inherit; font-size: 0.9rem; line-height: 1; }
 .theme-toggle:hover { color: var(--fg); opacity: 1; }
 
 /* ---- controls: plain text, hairline underlines, no boxes */
@@ -171,15 +177,12 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 /* ---- map */
 .mapwrap { width: 100%; }
 .usmap { display: block; width: 100%; height: auto; }
-/* State borders are drawn in the page background color, not --rule: in the light theme --rule is almost the same as
-   the pale low bins and the page, so it would not separate states, while a background-colored gap does on every
-   fill in both themes. */
-.usmap .st { stroke: var(--bg); stroke-width: 1.2; }
+/* State borders in --map-edge, 3:1 or more against the page in both themes, so the outline of every state shows
+   on the page and the borders separate the faded states from each other. */
+.usmap .st { stroke: var(--map-edge); stroke-width: 1; }
 .usmap .st.active[role="button"] { cursor: pointer; }
 .usmap .st.active[role="button"]:hover { stroke: var(--muted); stroke-width: 2; }
-/* every state but Texas is faded for now (coming soon) and takes no clicks */
-.usmap .st.greyed, .usmap .st.faded { opacity: 0.4; }
-.usmap .stlabel.greyed { opacity: 0.55; }
+/* every state but Texas is faded for now (coming soon, the solid --map-faded fill) and takes no clicks */
 .usmap .st:focus { outline: none; }
 .usmap .st:focus-visible { stroke: var(--fg); stroke-width: 4; }
 /* selected state: a background halo under a 2.5px text-colored line, so the outline shows on any fill */
@@ -194,8 +197,8 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   max-width: min(912px, calc(100vw - 2.5rem)); display: flex; flex-wrap: wrap; justify-content: center;
   gap: 0.2rem 1rem; font-size: 0.85rem; color: var(--muted); }
 .legend li { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
-.legend .sw { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--faint); flex: none; }
-.legend .sw-greyed { opacity: 0.4; }
+/* swatches carry the state border, so the coming soon swatch looks like a faded state */
+.legend .sw { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--map-edge); flex: none; }
 #map-table td, #map-table th { text-align: left; font-size: 0.9rem; }
 #map-table { min-width: 680px; }
 @media (max-width: 560px) {
@@ -303,9 +306,13 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .readout .rdate { font-weight: 600; }
 .readout .rnote, .tip .tnote { color: var(--muted); font-style: italic; }
 
-/* ---- footer (only with SHOW_FUNDING_DISCLOSURE) */
-.foot { margin-top: 4rem; padding-top: 1.5rem; padding-bottom: 3rem; border-top: 1px solid var(--rule); color: var(--muted);
-  font-size: 0.8rem; }
+/* ---- footer: the GitHub link (and the funding disclosure with SHOW_FUNDING_DISCLOSURE) */
+.foot { padding-top: 1.5rem; padding-bottom: 3rem; color: var(--muted); font-size: 0.8rem; }
+.foot > .footin { border-top: 1px solid var(--rule); padding-top: 0.75rem; }
+.foot p { margin: 0 0 0.5rem; }
+/* a 44 px tall tap target around the small link text */
+.foot a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
+.foot a:hover { color: var(--fg); opacity: 1; }
 .foot ul { padding-left: 18px; }
 
 #main { padding-bottom: 4rem; }

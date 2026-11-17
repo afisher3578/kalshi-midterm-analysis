@@ -83,3 +83,12 @@ export const MAP_TITLE = "Kalshi volume by state and media attention";
 // The info button next to "media attention" in the map heading shows this sentence.
 export const MEDIA_ATTENTION_DEF =
   "Media attention is how often the race appears in the news each day, counted as stories that mention the candidates or race.";
+// The line above the chart. {state} is the state name, {office} the office ("Senate"), {year} the election year.
+export const CHART_TITLE = "{state} {office} Race {year}: Kalshi price, Kalshi volume and media attention";
+export function chartTitle(state: string, office: string, year: string): string {
+  return CHART_TITLE.replace("{state}", state).replace("{office}", office).replace("{year}", year);
+}
+
+// The page footer: one link to the code and data.
+export const REPO_URL = "https://github.com/afisher3578/kalshi-midterm-analysis";
+export const REPO_LINK_TEXT = "Code and data on GitHub";
