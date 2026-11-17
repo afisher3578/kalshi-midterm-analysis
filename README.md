@@ -131,6 +131,20 @@ to existing processed files without a full run, use `python -m raceattn display-
 plus `--refresh`, `--raw-dir`, `--out-dir`). It reads `series.hourly` from each file and the Kalshi cache and
 leaves every other key as it is.
 
+Republican contract and candidates. Next to the followed Democratic contract, `run` also adds the Republican
+contract of the same Kalshi event, read from the event's markets list (the market whose subtitle names the
+Republican party, not a ticker pattern). Its hourly candles for the display window use the same chunks, cache and
+pacing. `series.display_hourly` gets two columns at the end of every row, `kalshi_r/price_close` and
+`kalshi_r/volume`, on the existing grid (no rows added, forward fill and volume 0 for hours with no R candle,
+leading hours with no R close stay null). `series.display_daily` gets `kalshi_r_price_close` and `kalshi_r_volume`
+with the same daily definition as the Democratic columns. `series.display_hourly.opposing` records the ticker,
+candidate name, source, requests, leading null hours, a reconciliation of hourly R against daily R and a sum check
+(D close plus R close, flagged when the mean is more than 0.05 away from 1). A top-level `candidates` block lists the
+D and R candidates (names from the race config, matched to the Kalshi markets and checked against the Wikipedia
+infobox nominees) and any other market of the event under `left_out`. The chart still uses the Democratic volume, and
+the metrics never read any of this. To add it to existing processed files, use `python -m raceattn display-opposing
+--all` (or `--race ID`, plus `--refresh`, `--raw-dir`, `--out-dir`); a second run reads everything from the cache.
+
 Media Cloud pull for Texas, once the key is in `.env`:
 
 ```

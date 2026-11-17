@@ -246,10 +246,12 @@ def granularity(series: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-def reconcile(rows: list[list], daily: dict[str, Any] | None) -> dict[str, Any]:
-    """Hourly rows against series.display_daily: per UTC date of ts_utc, the sum of hourly volume against the
-    daily volume (abs diff > 1e-6 is a mismatch) and the last hourly price against the daily close (exact after
-    rounding to 6 places). Every mismatch is listed."""
+def reconcile(rows: list[list], daily: dict[str, Any] | None, price_col: str = COL_PRICE,
+              volume_col: str = COL_VOLUME) -> dict[str, Any]:
+    """Hourly rows [ts_utc, price, volume] against series.display_daily: per UTC date of ts_utc, the sum of hourly
+    volume against the daily volume (abs diff > 1e-6 is a mismatch) and the last hourly price against the daily
+    close (exact after rounding to 6 places). Every mismatch is listed. price_col and volume_col are the daily
+    columns compared (the Democratic contract by default)."""
     by_day: dict[str, list[list]] = {}
     for r in rows:
         by_day.setdefault(r[0][:10], []).append(r)
@@ -259,7 +261,7 @@ def reconcile(rows: list[list], daily: dict[str, Any] | None) -> dict[str, Any]:
     for date in sorted(drows):
         dr = drows[date]
         hrs = by_day.get(date)
-        dv, dc = dr.get(COL_VOLUME), dr.get(COL_PRICE)
+        dv, dc = dr.get(volume_col), dr.get(price_col)
         if dv is None or dc is None:
             null_days.append(date)
         if not hrs:

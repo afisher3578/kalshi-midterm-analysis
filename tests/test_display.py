@@ -20,7 +20,7 @@ from raceattn.config import ConfigError, Window, load_race, validate
 from raceattn.connectors.news import MediaCloudConnector
 from raceattn.pipeline import run
 from tests.conftest import FIXTURE_RAW, ROOT
-from tests.fakes import Resp, fake_http
+from tests.fakes import Resp, fake_http, is_r_candles, kalshi_event_body
 
 TX = os.path.join(ROOT, "config", "races", "tx-senate-2026.yaml")
 QDIR = os.path.join(ROOT, "config", "queries")
@@ -138,6 +138,8 @@ def mc_body(params):
 
 
 def route(method, url, params, headers, body):
+    if "kalshi" in url and "/events/" in url:
+        return Resp(200, kalshi_event_body(url))
     if "kalshi" in url:
         return Resp(200, kalshi_body(params))
     if "wikimedia" in url:
@@ -173,7 +175,8 @@ def test_display_block_shape_and_nulls(tx_runs):
     _, res, sess, _, _, _ = tx_runs
     b = res["series"]["display_daily"]
     assert b["window"]["start"] == "2026-08-05" and b["window"]["end"] == "2026-11-04" and b["window"]["days"] == 92
-    assert b["columns"] == ["date", "kalshi_price_close", "kalshi_volume", "wikipedia_pageviews_total"]
+    assert b["columns"] == ["date", "kalshi_price_close", "kalshi_volume", "wikipedia_pageviews_total",
+                            "kalshi_r_price_close", "kalshi_r_volume"]  # the opposing contract last
     assert len(b["rows"]) == 92 and b["rows"][0]["date"] == "2026-08-05" and b["rows"][-1]["date"] == "2026-11-04"
     assert [r["date"] for r in b["rows"]] == [d.isoformat() for d in days(D(2026, 8, 5), D(2026, 11, 4))]
     assert b["news"] == "not run"
@@ -191,8 +194,9 @@ def test_display_block_shape_and_nulls(tx_runs):
     new = [s for s in b["segments"] if s["from"] == "new segment"]
     assert {(s["source"], s["request_window"]["start"], s["request_window"]["end"]) for s in new} == {
         ("kalshi", "2026-08-05", "2026-08-31"), ("wikipedia", "2026-08-05", "2026-08-31")}
-    assert b["requests_made"] == len(sess.requests) == 2 + 3  # two 20-day Kalshi chunks, three pages
-    for r in sess.requests:
+    reqs = [r for r in sess.requests if not is_r_candles(r["url"])]  # the opposing contract has its own count
+    assert b["requests_made"] == len(reqs) == 2 + 3  # two 20-day Kalshi chunks, three pages
+    for r in reqs:
         if "kalshi" in r["url"]:
             assert r["params"]["end_ts"] <= int(dt.datetime(2026, 9, 1, tzinfo=dt.timezone.utc).timestamp())
         else:
@@ -250,10 +254,13 @@ def test_non_texas_race_has_no_news_columns(tmp_path):
               log=lambda *_: None, write=False)
     b = res["series"]["display_daily"]
     assert b["news"] == "not run"
-    assert b["columns"] == ["date", "kalshi_price_close", "kalshi_volume", "wikipedia_pageviews_total"]
+    assert b["columns"] == ["date", "kalshi_price_close", "kalshi_volume", "wikipedia_pageviews_total",
+                            "kalshi_r_price_close", "kalshi_r_volume"]
     assert not any(c.startswith("news") for c in b["coverage"])
     assert len(b["rows"]) == 92 and all(set(r) == set(b["columns"]) for r in b["rows"])
-    assert len(sess.requests) == (4 + 3) + (2 + 3)  # analysis: 4 Kalshi chunks, 3 pages; Aug 5 to 31: 2 chunks, 3 pages
+    # analysis: 4 Kalshi chunks, 3 pages; Aug 5 to 31: 2 chunks, 3 pages; opposing: the event body, 5 R chunks
+    assert len([r for r in sess.requests if not is_r_candles(r["url"])]) == (4 + 3) + (2 + 3) + 1
+    assert len([r for r in sess.requests if is_r_candles(r["url"])]) == 5
 
 
 # -- Media Cloud: slice the tuning cache, request only Aug 25 to 31, paced

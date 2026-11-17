@@ -94,6 +94,16 @@ def build_parser() -> argparse.ArgumentParser:
     dh.add_argument("--refresh", action="store_true", help="ignore the disk cache and re-fetch the Kalshi candles")
     dh.add_argument("--raw-dir", default=DEFAULT_RAW, help="raw response cache (default: data/raw)")
     dh.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, patched in place (default: data/processed)")
+    do = sub.add_parser("display-opposing",
+                        help="add the Republican contract columns and the candidates block to existing processed race "
+                             "JSONs")
+    og = do.add_mutually_exclusive_group(required=True)
+    og.add_argument("--race", help="race id (data/processed/<id>.json and config/races/<id>.yaml)")
+    og.add_argument("--all", action="store_true", help="every race in --out-dir except index.json")
+    do.add_argument("--refresh", action="store_true",
+                    help="ignore the disk cache and re-fetch the event body and the Republican candles")
+    do.add_argument("--raw-dir", default=DEFAULT_RAW, help="raw response cache (default: data/raw)")
+    do.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, patched in place (default: data/processed)")
     it = sub.add_parser("index-totals",
                         help="set index.json display totals (Kalshi volume, Wikipedia, news) from the processed JSONs")
     it.add_argument("--out-dir", default=DEFAULT_OUT, help="processed output dir, index.json patched in place")
@@ -310,6 +320,69 @@ def cmd_display_hourly(args) -> int:
     return 0
 
 
+def cmd_display_opposing(args) -> int:
+    """Patch existing processed JSONs in place: the Republican contract columns, the opposing blocks and the
+    candidates block, from the event body and the R candles (cached after the first run)."""
+    from raceattn import opposing
+    from raceattn.cache import Cache
+    from raceattn.discover import Fetcher
+    from raceattn.pipeline import make_connectors
+
+    if args.all:
+        rids = sorted(fn[:-5] for fn in os.listdir(args.out_dir) if fn.endswith(".json") and fn != "index.json")
+    else:
+        rids = [args.race]
+    if not rids:
+        print("error: no processed race JSON in %s" % args.out_dir, file=sys.stderr)
+        return 2
+    http, cache = HttpClient(), Cache(args.raw_dir)
+    fetcher = Fetcher(http, raw_dir=args.raw_dir, refresh=args.refresh)
+    total, bad, flagged = 0, [], []
+    for rid in rids:
+        path = os.path.join(args.out_dir, rid + ".json")
+        if not os.path.isfile(path):
+            print("error: %s not found (run the pipeline first)" % path, file=sys.stderr)
+            return 2
+        race = load_race(rid)
+        kalshi = make_connectors(["kalshi"], http, cache, args.refresh, load_settings())[0]
+        kalshi.log = print
+        print("== %s" % rid)
+        out = opposing.patch_processed(race, path, kalshi, fetcher)
+        b, dd, c = out["block"], out["daily"], out["candidates"]
+        made = b["requests_made"] + out["event_requests"]
+        total += made
+        print("   D %s, R %s (%s), from %s" % (race.kalshi.followed_market, b["ticker"], b["name"], b["source"]))
+        print("   candidates: %s" % "; ".join("%s (%s, %s)" % (m["name"], m["party"], m["kalshi_ticker"])
+                                            for m in c["major"]))
+        print("   left out: %s" % ("; ".join("%s %s" % (m["ticker"], m["name"]) for m in c["left_out"]) or "none"))
+        print("   candidates note: %s" % c["note"])
+        print("   requests made %d (candles %d, event body %d), cache hits %d" % (
+            made, b["requests_made"], out["event_requests"], b["cache_hits"]))
+        print("   R leading null hours %d, filled hours %d, candles after the grid %d" % (
+            b["leading_null_hours"]["n"], b["filled_hours"]["n"], b["candles_after_grid"]["n"]))
+        rec = b["reconciliation"]
+        print("   R reconciliation: %s (%d day(s) checked, %d volume mismatch(es), %d close mismatch(es), "
+              "daily null days: %s)" % (rec["status"], rec["days_checked"], len(rec["volume_mismatches"]),
+                                        len(rec["close_mismatches"]), ", ".join(rec["daily_null_days"]) or "none"))
+        for m in rec["volume_mismatches"]:
+            print("     volume %s: hourly sum %r, daily %r" % (m["date"], m["hourly_sum"], m["daily"]))
+        for m in rec["close_mismatches"]:
+            print("     close %s: hourly last %r, daily %r" % (m["date"], m["hourly_last"], m["daily"]))
+        for d in rec.get("days_without_hourly_rows", []):
+            print("     %s: daily values but no hourly rows" % d)
+        for name, s in (("daily", dd["sum_check"]), ("hourly", b["sum_check"])):
+            print("   sum check %s: n %d, mean %s, min %s, max %s, flag %s" % (
+                name, s["n"], s["mean"], s["min"], s["max"], s["flag"]))
+            if s["flag"]:
+                flagged.append("%s %s" % (rid, name))
+        print("   wrote %s (%d -> %d bytes)" % (path, out["size_before"], out["size_after"]))
+        if rec["status"] != "match":
+            bad.append(rid)
+    print("\ndisplay-opposing: %d race(s) patched, %d request(s) made in total, R reconciliation mismatch in: %s, "
+          "sum check flag in: %s" % (len(rids), total, ", ".join(bad) or "none", ", ".join(flagged) or "none"))
+    return 0
+
+
 def cmd_index_totals(args) -> int:
     """Patch index.json in place: races[*].display from each race's series.display_daily. No network."""
     from raceattn import display
@@ -369,6 +442,8 @@ def main(argv: list[str] | None = None) -> int:
                                  build=not args.no_build)
         if args.cmd == "display-hourly":
             return cmd_display_hourly(args)
+        if args.cmd == "display-opposing":
+            return cmd_display_opposing(args)
         if args.cmd == "index-totals":
             return cmd_index_totals(args)
         if args.cmd == "events":

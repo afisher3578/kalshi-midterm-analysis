@@ -19,7 +19,7 @@ from raceattn.connectors.kalshi import KalshiConnector
 from raceattn.metrics.surprise import daily_kalshi
 from raceattn.pipeline import run
 from tests.conftest import FIXTURE_RAW, ROOT
-from tests.fakes import Resp, fake_http
+from tests.fakes import Resp, fake_http, is_r_candles
 
 D = dt.date
 UTC = dt.timezone.utc
@@ -259,9 +259,14 @@ def test_run_adds_display_hourly_and_granularity(tmp_path):
         assert shown[k] == plain[k], k
     b = shown["series"]["display_hourly"]
     assert b["first_ts"] == "2026-08-05T00:00:00Z" and b["requests_made"] == 0  # display_daily pulled Aug 5 to 31
-    assert len(sess.requests) == 2  # two 20-day chunks for Aug 5 to 31, made once by display_daily
+    d_reqs = [r for r in sess.requests if not is_r_candles(r["url"])]
+    assert len(d_reqs) == 2  # two 20-day chunks for Aug 5 to 31, made once by display_daily
+    assert len(sess.requests) - len(d_reqs) == 5  # the opposing contract: 92 days in 20-day chunks
     assert b["reconciliation"]["status"] == "match", b["reconciliation"]
     assert set(shown["series"]["granularity"]) == {"kalshi", "note"}
+    # the opposing contract and the candidates block (see test_display_opposing.py)
+    assert b["columns"][-2:] == ["kalshi_r/price_close", "kalshi_r/volume"] and b["opposing"]["ticker"] == "SENATETX-26-R"
+    assert [m["kalshi_ticker"] for m in shown["candidates"]["major"]] == ["SENATETX-26-D", "SENATETX-26-R"]
 
 
 # -- the committed processed files
@@ -279,13 +284,13 @@ def test_committed_display_hourly(rid):
     res = load(rid)
     s = res["series"]
     b = s["display_hourly"]
-    assert b["columns"] == s["hourly"]["columns"]
+    assert b["columns"][:3] == s["hourly"]["columns"]  # then the opposing contract (test_display_opposing.py)
     assert b["first_ts"] == b["rows"][0][0] == "2026-08-05T00:00:00Z"
     assert b["last_ts"] == b["rows"][-1][0] == s["hourly"]["rows"][-1][0]
     t = [ts(r[0]) for r in b["rows"]]
     assert all(y - x == dt.timedelta(hours=1) for x, y in zip(t, t[1:]))
     assert b["n_rows"] == len(b["rows"])
-    rows = {r[0]: r for r in b["rows"]}
+    rows = {r[0]: r[:3] for r in b["rows"]}
     ffill = set(b["forward_filled_null_price"]["hours"])
     for r in s["hourly"]["rows"]:
         if r[1] is not None:

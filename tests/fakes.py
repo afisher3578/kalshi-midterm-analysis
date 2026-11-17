@@ -42,3 +42,19 @@ class FakeSession:
 def fake_http(route) -> tuple[HttpClient, FakeSession]:
     s = FakeSession(route)
     return HttpClient(sleep=0, max_retries=0, backoff=0, session=s), s
+
+
+def kalshi_event_body(url: str) -> dict[str, Any]:
+    """SYNTHETIC Kalshi event body for GET /events/<ticker>: a Democratic and a Republican party market named after
+    the event ticker (no real candidate names)."""
+    ev = url.rstrip("/").split("/")[-1]
+    return {"event": {"event_ticker": ev},
+            "markets": [{"ticker": ev + "-D", "subtitle": "Democratic party:: Democratic party",
+                         "yes_sub_title": "Synthetic Democrat", "status": "finalized"},
+                        {"ticker": ev + "-R", "subtitle": "Republican party:: Republican party",
+                         "yes_sub_title": "Synthetic Republican", "status": "finalized"}]}
+
+
+def is_r_candles(url: str) -> bool:
+    """A candlestick request for the Republican contract (the opposing columns), not the followed market."""
+    return url.endswith("-R/candlesticks")

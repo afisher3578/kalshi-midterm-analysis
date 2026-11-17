@@ -135,10 +135,14 @@ def test_metrics_skip_unusable_series(tmp_path):
     """A Wikipedia page with no data is unusable and its metrics are skipped with a reason."""
     import datetime as dt
 
+    from tests.fakes import kalshi_event_body
+
     race = load_race("tx-senate-2026")
 
     class FakeHttp:
         def get_json(self, url, params=None, ok_status=(200,)):
+            if "kalshi" in url and "/events/" in url:
+                return 200, kalshi_event_body(url)
             if "kalshi" in url:
                 out, t = [], params["start_ts"]
                 while t < params["end_ts"]:

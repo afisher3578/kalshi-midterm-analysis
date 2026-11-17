@@ -452,6 +452,11 @@ def run(race: Race, sources: list[str] | None = None, raw_dir: str = DEFAULT_RAW
                     race, kalshi, hourly_rows, refresh=False, log=log, daily=display_daily)
             finally:
                 kalshi.refresh = was
+            # the Republican contract next to it, and the candidates block (charts only, never the metrics)
+            from raceattn import opposing
+            from raceattn.discover import Fetcher
+
+            opposing.apply(race, result, kalshi, Fetcher(http, raw_dir=raw_dir, refresh=refresh, log=log), log=log)
         result["series"]["granularity"] = display_mod.granularity(result["series"])
     print_tables(result, log)
     if warning:
