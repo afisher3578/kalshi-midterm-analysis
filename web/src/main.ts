@@ -1,9 +1,11 @@
 import "./style.css";
 import { format } from "d3";
-import { DEFAULT_RACE, FUNDING_DISCLOSURE, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE, STATES } from "./config";
+import { DEFAULT_RACE, FUNDING_DISCLOSURE, MAP_TITLE, MEDIA_ATTENTION_DEF, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE,
+  STATES, SUBTITLE, TITLE } from "./config";
 import { chartSeries, coverageCount, hourlySeries, NEWS_COL, WIKI_COL } from "./display";
 import { countChanged, DEFAULT_FILTERS, ENABLED_STATES, ENABLED_TYPES, type Filters, mapValue, METRICS, parseHash,
   passesPolls, pollClass, POLLS, RACE_TYPES, serializeHash, SOURCES } from "./filters";
+import { FILTER, INFO, themeIcon } from "./icons";
 import { type ChartState, LineChart } from "./linechart";
 import { renderMap, type StateCell, stateText } from "./map";
 import { loadNewsModel, localServer, NewsView } from "./newsview";
@@ -121,11 +123,13 @@ async function main() {
 function renderShell(ui: Ui) {
   app.innerHTML = "";
   const header = el("header", { class: "wrap head" }, `
-    <div class="headrow"><h1>2026 races: market prices and attention</h1>
-      <button type="button" class="theme-toggle" id="theme-btn" aria-label="Dark theme">Dark</button></div>`);
+    <div class="headrow"><div class="titles"><h1>${esc(TITLE)}</h1><p class="subtitle">${esc(SUBTITLE)}</p></div>
+      <button type="button" class="theme-toggle" id="theme-btn"></button></div>`);
   const main = el("main", { class: "wrap", id: "main" });
   const mapSec = el("section", { "aria-labelledby": "map-h", id: "mapsec" }, `
-    <div class="maphead"><h2 id="map-h">Map</h2>${filtersPanel(ui.filters)}</div>
+    <div class="maphead"><h2 id="map-h">${esc(MAP_TITLE)}<button type="button" class="info-btn" id="ma-info"
+      aria-label="What is media attention?" aria-describedby="ma-tip">${INFO}</button></h2>
+      <div class="tip-pop" id="ma-tip" role="tooltip" hidden>${esc(MEDIA_ATTENTION_DEF)}</div>${filtersPanel(ui.filters)}</div>
     <div id="map"></div>
     <div class="vh" id="map-table-wrap"><table id="map-table" aria-label="Map values by state"><thead><tr><th scope="col">State</th><th scope="col">Race</th>
       <th scope="col">Value (n)</th><th scope="col">Polls in the window</th><th scope="col">Status</th></tr></thead>
@@ -142,6 +146,7 @@ function renderShell(ui: Ui) {
   app.append(header, main);
   if (SHOW_FUNDING_DISCLOSURE) app.append(footer());
   themeToggle(document.getElementById("theme-btn") as HTMLButtonElement);
+  infoTip(document.getElementById("ma-info") as HTMLButtonElement, document.getElementById("ma-tip")!);
   wireFilters(ui);
   if (!SHOW_DETAILS) return;
   const on = (id: string, f: (v: string, e: HTMLInputElement) => void) =>
@@ -166,8 +171,8 @@ function filtersPanel(f: Filters): string {
         off ? '<span class="soon-tag">soon</span>' : ""}</label>`;
     }).join("");
   return `<div class="fwrap" id="fwrap">
-    <button type="button" class="filters-btn" id="filters-btn" aria-expanded="false" aria-controls="filters-panel">Filters<span
-      class="fbadge" id="filters-badge" hidden></span></button>
+    <button type="button" class="filters-btn" id="filters-btn" aria-expanded="false" aria-controls="filters-panel"
+      aria-label="Filters" title="Filters">${FILTER}<span class="fbadge" id="filters-badge" hidden></span></button>
     <div class="fpanel" id="filters-panel" role="dialog" aria-labelledby="filters-h" hidden>
       <form id="filters" class="filters">
         <div class="fhead"><h3 id="filters-h">Filters</h3>
@@ -256,7 +261,14 @@ function applyFilters(ui: Ui, f: Filters, pick: boolean) {
  * before paint. All colors are CSS variables, so the map and chart follow without a redraw. */
 function themeToggle(btn: HTMLButtonElement) {
   const root = document.documentElement;
-  const sync = () => btn.setAttribute("aria-pressed", String(root.dataset.theme === "dark"));
+  const sync = () => {
+    const t = themeIcon(root.dataset.theme === "dark" ? "dark" : "light");
+    btn.innerHTML = t.svg;
+    btn.dataset.icon = t.icon;
+    btn.setAttribute("aria-label", t.label);
+    btn.title = t.label;
+    btn.setAttribute("aria-pressed", String(root.dataset.theme === "dark"));
+  };
   sync();
   btn.addEventListener("click", () => {
     const t = root.dataset.theme === "dark" ? "light" : "dark";
@@ -271,6 +283,50 @@ function themeToggle(btn: HTMLButtonElement) {
     if (saved) return;
     root.dataset.theme = e.matches ? "dark" : "light";
     sync();
+  });
+}
+
+/** The media attention tooltip: shows on hover (it stays open while the pointer is over it) and on focus, a click or
+ * tap pins it open or closes it, Esc, a click outside and blur close it. Placed under the button, inside the
+ * map heading's box, so it stays in the viewport on phones. */
+function infoTip(btn: HTMLButtonElement, tip: HTMLElement) {
+  const s = { hover: false, focus: false, pinned: false, off: false };
+  let leave = 0;
+  const sync = () => {
+    const open = !s.off && (s.hover || s.focus || s.pinned);
+    if (open === !tip.hidden) return;
+    tip.hidden = !open;
+    if (!open) return;
+    const box = tip.offsetParent?.getBoundingClientRect(), b = btn.getBoundingClientRect();
+    if (!box) return;
+    const w = tip.offsetWidth, mid = b.left + b.width / 2 - box.left;
+    tip.style.left = `${Math.max(0, Math.min(box.width - w, mid - w / 2))}px`;
+    tip.style.top = `${b.bottom - box.top}px`;
+  };
+  const hover = (on: boolean) => {
+    clearTimeout(leave);
+    if (on) { s.hover = true; s.off = false; sync(); return; }
+    leave = window.setTimeout(() => { s.hover = false; sync(); }, 120);  // time to move onto the tooltip
+  };
+  for (const e of [btn, tip]) {
+    e.addEventListener("pointerenter", (ev) => { if (ev.pointerType !== "touch") hover(true); });
+    e.addEventListener("pointerleave", (ev) => { if (ev.pointerType !== "touch") hover(false); });
+  }
+  btn.addEventListener("focus", () => { s.focus = true; s.off = false; sync(); });
+  btn.addEventListener("blur", () => { Object.assign(s, { focus: false, pinned: false, hover: false }); sync(); });
+  btn.addEventListener("click", () => {
+    if (s.pinned && !s.off) Object.assign(s, { pinned: false, off: true });
+    else Object.assign(s, { pinned: true, off: false });
+    sync();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !tip.hidden) { Object.assign(s, { pinned: false, off: true }); sync(); }
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (!btn.contains(e.target as Node) && !tip.contains(e.target as Node)) {
+      Object.assign(s, { pinned: false, hover: false, off: true });
+      sync();
+    }
   });
 }
 

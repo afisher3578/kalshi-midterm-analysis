@@ -35,7 +35,7 @@ const CHECKS = [
   ["fg", "text", 4.5],
   ["muted", "secondary text, axis text, legend", 4.5],
   ["link", "links", 4.5],
-  ["faint", "no-data hatch, off swatches (not text)", null],
+  ["faint", "swatch borders, off swatches (not text)", null],
   ["rule", "hairlines, gridlines (not text)", null],
   ["series-price", "Kalshi price line", 3],
   ["series-volume", "Kalshi volume line", 3],

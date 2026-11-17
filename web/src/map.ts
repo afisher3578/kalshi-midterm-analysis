@@ -33,9 +33,9 @@ const path = geoPath();
 // label nudges (px in the 975 x 610 Albers frame) where the centroid falls on a coastline or outside the shape
 const LABEL_NUDGE: Record<string, [number, number]> = { FL: [22, 12], LA: [-12, 0], MI: [12, 22], KY: [6, 2], VA: [6, 2] };
 
-export const INSUFFICIENT_FILL = "url(#hatch-insufficient)";
-export const NO_DATA_FILL = "var(--rule)";
-export const FILTERED_FILL = "url(#dots-filtered)";
+// The faded style of a state that is coming soon, has no race, no data, insufficient data (n under 20 days) or falls
+// outside the polling filter: one fill, drawn at the greyed opacity (style.css .faded), the same as the legend swatch.
+export const FADED_FILL = "var(--map-3)";
 
 // One ramp for both metrics, --map-1 (closest to the page) to --map-5 (closest to the text color), from style.css.
 export const RAMP = [1, 2, 3, 4, 5].map((i) => `var(--map-${i})`);
@@ -44,6 +44,34 @@ export const RAMP = [1, 2, 3, 4, 5].map((i) => `var(--map-${i})`);
 export function binScale(values: number[]) {
   const lo = Math.min(...values), hi = Math.max(...values);
   return scaleQuantize<string>().domain([Math.min(0, lo), hi === lo ? lo + 1 : hi]).range(RAMP);
+}
+
+type Scale = ReturnType<typeof binScale>;
+
+/** True when the state is drawn with its bin color: an open state with a value inside the polling filter. */
+export function isShown(c: StateCell | undefined, scale: Scale | null): boolean {
+  return !!c && !!scale && c.active && !c.filteredOut && c.status === "ok" && c.value !== null;
+}
+
+/** The fill of a state: its bin color, or the faded style. */
+export function fillOf(c: StateCell | undefined, scale: Scale | null): string {
+  return isShown(c, scale) ? scale!(c!.value as number) : FADED_FILL;
+}
+
+/** The value line of an on-map label, or null for the postal code only. A value from under 20 days has status
+ * "insufficient" and value null, so it never shows as a number. */
+export function labelValue(c: StateCell, fmt: (n: number) => string): string | null {
+  return c.status === "ok" && c.value !== null && !c.filteredOut ? fmt(c.value) : null;
+}
+
+/** The map legend: the five bins (labels from the data) and the faded "coming soon" entry; only that entry when
+ * there is no scale. */
+export function legendEntries(scale: Scale | null, fmt: (n: number) => string): { fill: string; label: string; faded: boolean }[] {
+  const out = scale ? scale.range().map((col) => {
+    const [a, b] = scale.invertExtent(col);
+    return { fill: col, label: `${fmt(a)} to ${fmt(b)}`, faded: false };
+  }) : [];
+  return [...out, { fill: FADED_FILL, label: "coming soon", faded: true }];
 }
 
 /** Labels on bins 3 to 5 use the background color, on bins 1 and 2 the text color (4.5:1 in both themes, see
@@ -70,13 +98,6 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
   svg.setAttribute("role", "group");
   svg.setAttribute("aria-label", `US map colored by ${opts.metricLabel}. Texas is a button; the other states are
     coming soon. The same values are in the table below the map.`.replace(/\s+/g, " "));
-  svg.innerHTML = `<defs>
-    <pattern id="hatch-insufficient" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-      <rect class="pat-bg" width="8" height="8"/><line class="pat-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern>
-    <pattern id="dots-filtered" patternUnits="userSpaceOnUse" width="7" height="7">
-      <rect class="pat-bg" width="7" height="7"/><circle class="pat-dot" cx="3.5" cy="3.5" r="1.1"/></pattern></defs>`;
-  const fillOf = (c: StateCell | undefined) => !c || c.status === "nodata" && !c.filteredOut ? NO_DATA_FILL
-    : c.filteredOut ? FILTERED_FILL : c.value === null || !scale ? INSUFFICIENT_FILL : scale(c.value);
   for (const f of states.features) {
     const code = FIPS[String(f.id).padStart(2, "0")];
     if (!code) continue;
@@ -85,11 +106,10 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     p.setAttribute("d", path(f) ?? "");
     p.setAttribute("data-state", code);
     if (c?.raceId) p.setAttribute("data-race", c.raceId);
-    const fill = fillOf(c);
-    // patterns as an attribute; tokens as inline style, since var() belongs in CSS, not in presentation attributes
-    if (fill.startsWith("url(")) p.setAttribute("fill", fill);
-    else p.style.fill = fill;
-    p.setAttribute("class", "st" + (c?.active ? " active" : " greyed") + (opts.selected === code ? " selected" : ""));
+    // tokens as inline style, since var() belongs in CSS, not in presentation attributes
+    p.style.fill = fillOf(c, scale);
+    p.setAttribute("class", "st" + (c?.active ? " active" : " greyed") + (isShown(c, scale) ? "" : " faded")
+      + (opts.selected === code ? " selected" : ""));
     const text = c ? stateText(c) : code;
     const title = document.createElementNS(NS, "title");
     title.textContent = text;
@@ -130,34 +150,23 @@ export function renderMap(root: HTMLElement, cells: Map<string, StateCell>, opts
     const [cx, cy] = path.centroid(f);
     const [dx, dy] = LABEL_NUDGE[code] ?? [0, 0];
     const x = cx + dx, y = cy + dy;
-    const fill = fillOf(c);
+    const fill = fillOf(c, scale);
+    const val = labelValue(c, opts.fmt);
     const t = document.createElementNS(NS, "text");
     t.setAttribute("x", String(x));
     t.setAttribute("y", String(y));
-    t.setAttribute("class", "stlabel" + (onDark(fill) ? " on-dark" : "") + (c.active ? "" : " greyed"));
+    t.setAttribute("class", "stlabel" + (isShown(c, scale) && onDark(fill) ? " on-dark" : "") + (c.active ? "" : " greyed"));
     t.setAttribute("aria-hidden", "true");
-    t.innerHTML = `<tspan x="${x}" dy="-0.2em">${code}</tspan><tspan x="${x}" dy="1.15em" class="stval">${
-      c.filteredOut ? "filtered" : c.status === "nodata" ? "no data" : c.value === null ? "n/a" : opts.fmt(c.value)}</tspan>`;
+    t.innerHTML = val === null ? `<tspan x="${x}" dy="0.35em">${code}</tspan>`
+      : `<tspan x="${x}" dy="-0.2em">${code}</tspan><tspan x="${x}" dy="1.15em" class="stval">${val}</tspan>`;
     svg.append(t);
   }
-  // legend: discrete bins plus the no data fill and the two patterns, each with text
+  // legend: the five bins and the faded "coming soon" entry, in one row that wraps
   const legend = document.createElement("ul");
   legend.className = "legend";
   legend.setAttribute("aria-label", `Legend for ${opts.metricLabel}`);
-  const items: string[] = [];
-  if (scale) {
-    for (const col of scale.range()) {
-      const [a, b] = scale.invertExtent(col);
-      items.push(`<li><span class="sw" style="background:${col}"></span>${opts.fmt(a)} to ${opts.fmt(b)}</li>`);
-    }
-  }
-  items.push(`<li><span class="sw" style="background:${NO_DATA_FILL}"></span>no data</li>`);
-  items.push(`<li><svg class="sw" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" fill="url(#hatch-insufficient)"/></svg>
-    insufficient data (n under 20 days)</li>`);
-  items.push(`<li><svg class="sw" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" fill="url(#dots-filtered)"/></svg>
-    outside the polling filter</li>`);
-  items.push(`<li><span class="sw sw-greyed" style="background:var(--map-3)"></span>faded: coming soon</li>`);
-  legend.innerHTML = items.join("");
+  legend.innerHTML = legendEntries(scale, opts.fmt).map((e) =>
+    `<li><span class="sw${e.faded ? " sw-greyed" : ""}" style="background:${e.fill}"></span>${e.label}</li>`).join("");
   root.innerHTML = "";
   const fig = document.createElement("div");
   fig.className = "mapwrap";

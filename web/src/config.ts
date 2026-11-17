@@ -75,3 +75,11 @@ export const STATES: Record<string, string> = {
 // The race detail views (race page charts, lag tables, drawers, the News (Media Cloud) view, breakdowns, top
 // sources, quality tables and downloads). Off: the page is the map plus one line chart. Turn on to bring them back.
 export const SHOW_DETAILS = false;
+
+// Page title block and the map heading.
+export const TITLE = "2026 U.S. Midterms";
+export const SUBTITLE = "Kalshi results and media attention";
+export const MAP_TITLE = "Kalshi volume by state and media attention";
+// The info button next to "media attention" in the map heading shows this sentence.
+export const MEDIA_ATTENTION_DEF =
+  "Media attention is how often the race appears in the news each day, counted as stories that mention the candidates or race.";

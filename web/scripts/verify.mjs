@@ -119,8 +119,8 @@ function closeOn(d, date) {
   const txTotal = index.races["tx-senate-2026"].metrics.attention_total;
   check("map table: TX total attention with n", txRow, `${txTotal.value} views, n ${txTotal.n_days}`,
     'index.races["tx-senate-2026"].metrics.attention_total', txRow.includes(`n=${txTotal.n_days} days`) && txRow.startsWith("3.08M"));
-  const hatched = await page.$$eval("svg.usmap path", (ps) => ps.filter((p) => p.getAttribute("fill") === "url(#hatch-insufficient)").length);
-  check("map: states with no race are drawn as insufficient data", String(hatched), "> 0", "n/a", hatched > 0);
+  const faded = await page.$$eval("svg.usmap path.st.faded", (ps) => ps.length);
+  check("map: states with no race are drawn in the faded coming soon style", String(faded), "> 0", "n/a", faded > 0);
   // the rho metric: every number carries n; a state with n < 20 would read insufficient data
   await page.selectOption("#f-metric", "attention_rho");
   const rhoRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();

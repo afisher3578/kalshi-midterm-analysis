@@ -15,7 +15,11 @@
 // line (changes only at 00:00 UTC) and its note, the "no trades" readout of a filled hour, election shading,
 // ctrl + wheel and two finger pinch zoom (a plain wheel still scrolls the page), a hover frame check at 390 px,
 // and axe in hourly view.
-// Writes docs/screenshots/style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
+// G1: the title and subtitle, the map heading, the sun / moon theme icon and the filter icon (keyboard), the media
+// attention tooltip (hover, focus, tap, Esc, outside click, blur, inside the viewport at 390 px), the six entry map
+// legend, the faded style for every state that is not an open state with a value, and no "no data", "insufficient
+// data" or "outside the polling filter" in the visible text under several filters, in both themes.
+// Writes docs/screenshots/g1-{1280,390}-{light,dark}.png, g1-tooltip-{1280,390}.png, style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
 // chart-{1280,390}-{light,dark}.png and hourly-{1280,390}-{light,dark}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
@@ -259,8 +263,8 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const flLabel = await page.$eval('svg.usmap path[data-state="FL"]', (p) => p.getAttribute("aria-label"));
   check("greyed state with a race keeps its value as text and says coming soon", flLabel, "Florida: ... contracts (n=92 days), coming soon",
     /^Florida: .* contracts \(n=\d+ days\), coming soon$/.test(flLabel));
-  const noData = await page.$eval('svg.usmap path[data-state="AL"]', (p) => p.style.fill);
-  check("map: states with no race are drawn as no data", noData, "var(--rule)", noData === "var(--rule)");
+  const noData = await page.$eval('svg.usmap path[data-state="AL"]', (p) => `${p.style.fill} ${p.classList.contains("faded")}`);
+  check("map: states with no race are drawn in the faded coming soon style", noData, "var(--map-3) true", noData === "var(--map-3) true");
   // a click on a greyed state does nothing
   await page.locator('svg.usmap path[data-state="FL"]').click({ force: true });
   await page.waitForTimeout(200);
@@ -311,15 +315,17 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const attRow = (await page.locator('#map-table tr[data-race="tx-senate-2026"] td[data-k="value"]').textContent()).replace(/\s+/g, " ").trim();
   const txNews = index.races["tx-senate-2026"].display["news/race_either/national"];
   const flAtt = await page.$eval('svg.usmap path[data-state="FL"]', (p) => `${p.style.fill} ${p.getAttribute("aria-label")}`);
-  check("Attention (News): TX stories with n; Florida has no news (no data)", `${attRow} | ${flAtt}`,
-    `6.66k stories (n=${txNews.n_days} days) | var(--rule) Florida: no news data, coming soon`,
-    attRow === `6.66k stories (n=${txNews.n_days} days)` && flAtt === "var(--rule) Florida: no news data, coming soon");
-  // polling Few: Texas (53 polls) is outside and greyed with the filtered pattern; Kentucky (1 poll) stays in
+  check("Attention (News): TX stories with n; Florida has no news (faded, the reason in its label)", `${attRow} | ${flAtt}`,
+    `6.66k stories (n=${txNews.n_days} days) | var(--map-3) Florida: no news data, coming soon`,
+    attRow === `6.66k stories (n=${txNews.n_days} days)` && flAtt === "var(--map-3) Florida: no news data, coming soon");
+  // polling Few: Texas (53 polls) is outside and drawn faded, its label says so; Kentucky (1 poll) stays in
   await page.locator('#filters-panel label:has(input[name="f-polls"][value="few"])').click();
-  const pf = await page.evaluate(() => ({ tx: document.querySelector('svg.usmap path[data-state="TX"]').getAttribute("fill"),
-    ky: document.querySelector('svg.usmap path[data-state="KY"]').getAttribute("fill") }));
-  check("Polling Few: TX outside (dots), KY inside", JSON.stringify(pf), "TX url(#dots-filtered), KY not",
-    pf.tx === "url(#dots-filtered)" && pf.ky !== "url(#dots-filtered)");
+  const pf = await page.evaluate(() => { const st = (c) => document.querySelector(`svg.usmap path[data-state="${c}"]`);
+    return { tx: `${st("TX").style.fill} ${st("TX").classList.contains("faded")}`, txLabel: st("TX").getAttribute("aria-label"),
+      ky: st("KY").getAttribute("aria-label") }; });
+  check("Polling Few: TX outside (faded, the label says outside the polling filter), KY inside", JSON.stringify(pf),
+    "TX var(--map-3) true, KY not outside", pf.tx === "var(--map-3) true" && pf.txLabel.includes("outside the polling filter")
+      && !pf.ky.includes("outside the polling filter"));
   const badge = (await page.locator("#filters-badge").innerText()).trim();
   const hash = await page.evaluate(() => location.hash);
   check("badge counts two changed controls; hash holds them", `${badge} | ${hash}`, "2 changed | #metric=attention&polls=few",
@@ -910,7 +916,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
   await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
   await axe(page, "390 filters open");
-  const targets = "#theme-btn, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #racesec .qbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
+  const targets = "#theme-btn, #ma-info, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #racesec .qbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
@@ -942,6 +948,218 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-390-dark.png") });
   await page.screenshot({ path: resolve(SHOTS, "style-dark-390.png"), fullPage: true });
   await axe(page, "390 Texas dark");
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- G1: title, icon buttons, media attention tooltip, map legend
+const G1 = { title: "2026 U.S. Midterms", subtitle: "Kalshi results and media attention", map: "Kalshi volume by state and media attention",
+  def: "Media attention is how often the race appears in the news each day, counted as stories that mention the candidates or race." };
+const FORBIDDEN = /no data|insufficient data|outside the polling filter/i;
+/** The page text a reader sees: body.innerText with the visually hidden (.vh, 1 x 1 px) text alternatives left out. */
+const visibleText = (page) => page.evaluate(() => {
+  const vh = [...document.querySelectorAll(".vh")];
+  vh.forEach((e) => { e.dataset.g1 = e.style.display; e.style.display = "none"; });
+  const t = document.body.innerText;
+  vh.forEach((e) => { e.style.display = e.dataset.g1; delete e.dataset.g1; });
+  return t;
+});
+/** Map fills: every state that is not an open state with a value must match a coming soon state and the legend's
+ * coming soon swatch; no pattern fills; the on-map labels. */
+const fades = (page) => page.evaluate(() => {
+  const ps = [...document.querySelectorAll("svg.usmap path.st")];
+  const cs = (e) => { const c = getComputedStyle(e); return `${c.fill}|${c.opacity}`; };
+  const want = cs(document.querySelector('svg.usmap path.st.greyed[data-race]'));
+  const sw = getComputedStyle(document.querySelector("#map .legend li:last-child .sw"));
+  return { want, swatch: `${sw.backgroundColor}|${sw.opacity}`,
+    bad: ps.filter((p) => p.classList.contains("faded") && cs(p) !== want).map((p) => p.dataset.state),
+    shown: ps.filter((p) => !p.classList.contains("faded")).map((p) => p.dataset.state),
+    shownOk: ps.filter((p) => !p.classList.contains("faded")).every((p) => p.classList.contains("active")),
+    patterns: ps.filter((p) => /url\(/.test(`${p.getAttribute("fill") ?? ""} ${p.style.fill} ${getComputedStyle(p).fill}`)).length,
+    defs: document.querySelectorAll("svg.usmap pattern").length,
+    labels: [...document.querySelectorAll("svg.usmap .stlabel")].map((t) => t.textContent) };
+});
+const legendItems = (page) => page.$$eval("#map .legend > li", (ls) => ls.map((l) => l.textContent.replace(/\s+/g, " ").trim()));
+const tipOpen = (page) => page.locator("#ma-tip").isVisible();
+const BAND = /^[\d.]+[kMGB]? to [\d.]+[kMGB]?$/;
+async function noForbidden(page, key) {
+  const t = await visibleText(page);
+  const f = await fades(page);
+  const hits = [...new Set((t.match(new RegExp(FORBIDDEN.source, "gi")) ?? []).map((x) => x.toLowerCase()))];
+  const badLabels = f.labels.filter((l) => /no data|filtered|n\/a|insufficient/i.test(l));
+  check(`G1 ${key}: visible text has no "no data", "insufficient data" or "outside the polling filter"; labels clean`,
+    `${hits.join(", ") || "none"}; labels ${badLabels.join(",") || "clean"}`, "none; clean", hits.length === 0 && badLabels.length === 0);
+  check(`G1 ${key}: every faded state matches the coming soon fill and the legend swatch; no pattern fills`,
+    JSON.stringify({ ...f, labels: undefined }), "bad [], swatch == want, 0 patterns, shown only open states",
+    f.bad.length === 0 && f.swatch === f.want && f.patterns === 0 && f.defs === 0 && f.shownOk);
+  return f;
+}
+
+{
+  const { ctx, page } = await open(1280);
+  const titles = await page.evaluate(() => ({ h1: document.querySelector("h1").textContent.trim(),
+    sub: document.querySelector(".head .subtitle")?.textContent.trim(), subTag: document.querySelector(".head .subtitle")?.tagName,
+    map: document.querySelector("#map-h").textContent.trim(), h1s: document.querySelectorAll("h1").length }));
+  check("G1: title, subtitle (a p) and map heading", JSON.stringify(titles), `${G1.title} / ${G1.subtitle} / ${G1.map}...`,
+    titles.h1 === G1.title && titles.sub === G1.subtitle && titles.subTag === "P" && titles.map.startsWith(G1.map) && titles.h1s === 1);
+  // theme button: icon only, the moon in light, the sun in dark, keyboard
+  const tb = page.locator("#theme-btn");
+  const tstate = () => tb.evaluate((b) => ({ text: b.innerText.trim(), label: b.getAttribute("aria-label"), title: b.title,
+    icon: b.querySelector("svg")?.dataset.icon, n: b.querySelectorAll("svg").length, theme: document.documentElement.dataset.theme,
+    pressed: b.getAttribute("aria-pressed") }));
+  const t0 = await tstate();
+  check("G1 theme button in light: no text, moon icon, Switch to dark theme", JSON.stringify(t0), "'' moon Switch to dark theme",
+    t0.text === "" && t0.icon === "moon" && t0.n === 1 && t0.label === "Switch to dark theme" && t0.title === t0.label && t0.pressed === "false");
+  await tb.focus();
+  await page.keyboard.press("Enter");
+  const t1 = await tstate();
+  check("G1 theme button: Enter switches to dark, sun icon, Switch to light theme", JSON.stringify(t1), "dark sun Switch to light theme",
+    t1.theme === "dark" && t1.text === "" && t1.icon === "sun" && t1.n === 1 && t1.label === "Switch to light theme" && t1.pressed === "true");
+  await page.keyboard.press("Enter");
+  const t2 = await tstate();
+  check("G1 theme button: Enter again, back to light and the moon", JSON.stringify(t2), "light moon",
+    t2.theme === "light" && t2.icon === "moon" && t2.label === "Switch to dark theme");
+  await tb.blur();
+  // filters button: icon only (the badge digits at most), named, keyboard open, Esc closes and returns focus
+  const fbtn = page.locator("#filters-btn");
+  const fstate = await fbtn.evaluate((b) => ({ text: b.innerText.trim(), label: b.getAttribute("aria-label"), title: b.title,
+    icon: b.querySelector("svg")?.dataset.icon }));
+  check("G1 filters button: filter icon, no visible word, aria-label and title Filters", JSON.stringify(fstate), "'' filter Filters",
+    /^\d*$/.test(fstate.text) && fstate.icon === "filter" && fstate.label === "Filters" && fstate.title === "Filters");
+  await fbtn.focus();
+  await page.keyboard.press("Enter");
+  const fo = await page.locator("#filters-panel").isVisible();
+  await page.keyboard.press("Escape");
+  const fe = `${fo} ${await page.locator("#filters-panel").isVisible()} ${await page.evaluate(() => document.activeElement?.id)}`;
+  check("G1 filters button: Enter opens, Esc closes, focus back on the button", fe, "true false filters-btn", fe === "true false filters-btn");
+  const fh = await page.locator("#filters-h").textContent();
+  check("G1 the panel heading still says Filters", fh, "Filters", fh === "Filters");
+  await fbtn.blur();
+  // the media attention tooltip
+  const info = page.locator("#ma-info");
+  const desc = await page.evaluate(() => {
+    const b = document.querySelector("#ma-info"), t = document.getElementById(b.getAttribute("aria-describedby"));
+    return { type: b.type, tag: b.tagName, label: b.getAttribute("aria-label"), role: t?.getAttribute("role"), text: t?.textContent,
+      inH2: !!document.querySelector("#map-h").contains(t), btnInH2: document.querySelector("#map-h").contains(b),
+      afterWords: document.querySelector("#map-h").textContent.trim().endsWith("media attention") };
+  });
+  check("G1 info button: a button named What is media attention?, described by the tooltip (outside the h2) with the exact text",
+    JSON.stringify(desc), "button, role tooltip, the definition", desc.tag === "BUTTON" && desc.type === "button"
+      && desc.label === "What is media attention?" && desc.role === "tooltip" && desc.text === G1.def && !desc.inH2 && desc.btnInH2 && desc.afterWords);
+  check("G1 tooltip closed at load", await tipOpen(page), "false", !(await tipOpen(page)));
+  await noForbidden(page, "1280 light default");
+  await axe(page, "G1 1280 light tooltip closed");
+  await info.hover();
+  const hov = await tipOpen(page);
+  const tb1 = await page.locator("#ma-tip").boundingBox();
+  await page.mouse.move(tb1.x + tb1.width / 2, tb1.y + tb1.height / 2, { steps: 4 });
+  await page.waitForTimeout(250);
+  const stay = await tipOpen(page);
+  await page.mouse.move(5, 600);
+  await page.waitForTimeout(250);
+  const gone = await tipOpen(page);
+  check("G1 tooltip: opens on hover, stays open over the tooltip, closes when the pointer leaves", `${hov} ${stay} ${gone}`, "true true false",
+    hov && stay && !gone);
+  await info.focus();
+  const foc = await tipOpen(page);
+  const tipText = await page.locator("#ma-tip").innerText();
+  check("G1 tooltip: opens on focus, text is the definition", `${foc} ${tipText}`, `true ${G1.def}`, foc && tipText === G1.def);
+  await axe(page, "G1 1280 light tooltip open");
+  await page.screenshot({ path: resolve(SHOTS, "g1-tooltip-1280.png") });
+  await page.keyboard.press("Escape");
+  const escd = await tipOpen(page);
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
+  const tabbed = `${await page.evaluate(() => document.activeElement?.id)} ${await tipOpen(page)}`;
+  await page.keyboard.press("Tab");
+  const blurred = await tipOpen(page);
+  check("G1 tooltip: Esc closes it, Tab back opens it, blur closes it", `${escd} | ${tabbed} | ${blurred}`, "false | ma-info true | false",
+    !escd && tabbed === "ma-info true" && !blurred);
+  await info.click();
+  const c1 = await tipOpen(page);
+  await page.mouse.move(5, 600);
+  await page.waitForTimeout(250);
+  const pinned = await tipOpen(page);
+  await page.mouse.click(5, 600);
+  const outside = await tipOpen(page);
+  check("G1 tooltip: a click pins it open (still open after the pointer leaves), a click outside closes it", `${c1} ${pinned} ${outside}`,
+    "true true false", c1 && pinned && !outside);
+  // legend: six entries, five bands from the data and coming soon
+  const items = await legendItems(page);
+  check("G1 map legend: six entries, five bands then coming soon", items.join(" | "), "a to b x5 | coming soon",
+    items.length === 6 && items.slice(0, 5).every((t) => BAND.test(t)) && items[5] === "coming soon");
+  const lgRow = await page.$$eval("#map .legend > li", (ls) => new Set(ls.map((l) => Math.round(l.getBoundingClientRect().top))).size);
+  check("G1 1280: the map legend is one row", lgRow, "1", lgRow === 1);
+  await page.mouse.move(5, 600);
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "g1-1280-light.png") });
+  await toggleTheme(page);
+  await tb.blur();
+  await page.mouse.move(5, 600);
+  await noForbidden(page, "1280 dark default");
+  await axe(page, "G1 1280 dark tooltip closed");
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "g1-1280-dark.png") });
+  await info.focus();
+  await axe(page, "G1 1280 dark tooltip open");
+  await info.blur();
+  // filters that leave states faded: polling Few (Texas outside), Many, the attention metric with each source
+  for (const h of ["#polls=few", "#polls=many", "#metric=attention", "#metric=attention&polls=few", "#metric=attention&source=wikipedia&polls=few"]) {
+    await page.evaluate((x) => { location.hash = x; }, h);
+    // the app writes the hash back in its own order, so compare the pairs
+    await page.waitForFunction((x) => [...new URLSearchParams(location.hash.slice(1))].sort().join() === [...new URLSearchParams(x.slice(1))].sort().join(), h);
+    await page.waitForTimeout(150);
+    for (const theme of ["dark", "light"]) {
+      if (await page.evaluate(() => document.documentElement.dataset.theme) !== theme) { await toggleTheme(page); await tb.blur(); }
+      const f = await noForbidden(page, `1280 ${theme} ${h}`);
+      if (h.includes("polls=few")) {
+        const tx = f.labels.find((l) => l.startsWith("TX"));
+        check(`G1 ${h}: Texas (outside the filter) is faded, its map label is the postal code only`, `${f.shown.join(",")} | ${tx}`, " | TX",
+          !f.shown.includes("TX") && tx === "TX");
+      }
+    }
+    const lg = await legendItems(page);
+    check(`G1 ${h}: legend is the bands then coming soon, or only coming soon`, lg.join(" | "), "bands + coming soon",
+      lg[lg.length - 1] === "coming soon" && (lg.length === 1 || (lg.length === 6 && lg.slice(0, 5).every((t) => BAND.test(t)))));
+  }
+  await ctx.close();
+}
+
+{
+  const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
+  const info = page.locator("#ma-info");
+  const items = await legendItems(page);
+  const lg = await page.$$eval("#map .legend > li", (ls) => ls.map((l) => { const r = l.getBoundingClientRect();
+    return { top: Math.round(r.top), left: r.left, right: r.right, h: Math.round(r.height) }; }));
+  check("G1 390: map legend wraps cleanly (six entries, all inside the viewport, no entry breaks onto two lines)", JSON.stringify(lg),
+    "inside 0..390, one line each", items.length === 6 && lg.every((r) => r.left >= 0 && r.right <= 390 && r.h <= 24));
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "g1-390-light.png") });
+  await noForbidden(page, "390 light");
+  await info.tap();
+  const tap1 = await tipOpen(page);
+  const bb = await page.locator("#ma-tip").boundingBox();
+  const inside = bb && bb.x >= 0 && bb.y >= 0 && bb.x + bb.width <= 390;
+  check("G1 390: a tap opens the tooltip, inside the viewport", `${tap1} ${JSON.stringify(bb)}`, "true, 0 <= x, x + w <= 390", tap1 && inside);
+  await axe(page, "G1 390 light tooltip open");
+  await page.screenshot({ path: resolve(SHOTS, "g1-tooltip-390.png") });
+  await info.tap();
+  const tap2 = await tipOpen(page);
+  await info.tap();
+  const tap3 = await tipOpen(page);
+  await page.touchscreen.tap(195, 860);
+  const tapOut = await tipOpen(page);
+  check("G1 390: tap toggles the tooltip (open, closed, open), a tap outside closes it", `${tap1} ${tap2} ${tap3} ${tapOut}`, "true false true false",
+    tap1 && !tap2 && tap3 && !tapOut);
+  await page.locator("#theme-btn").tap();
+  await page.locator("#theme-btn").blur();
+  await noForbidden(page, "390 dark");
+  await axe(page, "G1 390 dark tooltip closed");
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: resolve(SHOTS, "g1-390-dark.png") });
+  await info.tap();
+  await axe(page, "G1 390 dark tooltip open");
+  const bbd = await page.locator("#ma-tip").boundingBox();
+  check("G1 390 dark: the tooltip stays inside the viewport", JSON.stringify(bbd), "x + w <= 390", bbd && bbd.x >= 0 && bbd.x + bbd.width <= 390);
   await ctx.close();
 }
 

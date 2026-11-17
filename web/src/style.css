@@ -88,8 +88,12 @@ a, button, .tg, .toggle label { transition: opacity 120ms ease; }
 
 /* ---- header and theme toggle */
 .head { padding-top: 3rem; padding-bottom: 1rem; }
-.head > .headrow { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-.theme-toggle { font: inherit; font-size: 0.9rem; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; }
+.head > .headrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.subtitle { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+.icon { display: block; flex: none; }
+/* icon buttons: a 44 px target around a 20 px icon; the negative margin lines the icon up with the column edge */
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px;
+  margin: -3px -12px 0 0; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; }
 .theme-toggle[aria-pressed="true"] { color: var(--fg); }
 .theme-toggle:hover { color: var(--fg); opacity: 1; }
 
@@ -119,12 +123,21 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .f label { font-size: 0.9rem; color: var(--muted); }
 .f.fcheck { flex-direction: row; align-items: center; gap: 0.5rem; }
 .f.fcheck input { width: 18px; height: 18px; accent-color: var(--fg); margin: 0; flex: none; }
-.maphead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 3rem; margin-bottom: 0.75rem; }
+.maphead { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 3rem;
+  margin-bottom: 0.75rem; }
 .maphead h2 { margin: 0; }
+/* the "i" next to "media attention": visually 16 px, a 44 px hit area through padding and negative margins */
+.info-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -14px -12px -14px -10px;
+  padding: 0; vertical-align: middle; color: var(--muted); border: 0; }
+.info-btn:hover { color: var(--fg); opacity: 1; }
+.tip-pop { position: absolute; z-index: 20; width: max-content; max-width: min(20rem, 100%); padding: 0.5rem 0.7rem;
+  font-size: 0.85rem; font-weight: 400; line-height: 1.45; color: var(--fg); background: var(--bg); border: 1px solid var(--faint); }
+.tip-pop[hidden] { display: none; }
 .fwrap { position: relative; }
-.filters-btn { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; min-width: 44px; padding: 0 0.1rem;
-  font-size: 0.95rem; border-bottom: 1px solid var(--muted); }
-.filters-btn[aria-expanded="true"] { border-bottom-color: var(--fg); }
+.filters-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 44px; min-width: 44px;
+  margin-right: -12px; padding: 0 12px; font-size: 0.95rem; color: var(--muted); border: 0; }
+.filters-btn:has(.fbadge:not([hidden])) { padding-right: 0; margin-right: 0; }
+.filters-btn:hover, .filters-btn[aria-expanded="true"] { color: var(--fg); opacity: 1; }
 .fbadge { display: inline-flex; align-items: center; justify-content: center; min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
   font-size: 0.75rem; font-weight: 600; line-height: 1; color: var(--bg); background: var(--fg); border-radius: 0.625rem; }
 .fbadge[hidden] { display: none; }
@@ -162,22 +175,22 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .usmap .st.active[role="button"] { cursor: pointer; }
 .usmap .st.active[role="button"]:hover { stroke: var(--muted); stroke-width: 2; }
 /* every state but Texas is faded for now (coming soon) and takes no clicks */
-.usmap .st.greyed { opacity: 0.4; }
+.usmap .st.greyed, .usmap .st.faded { opacity: 0.4; }
 .usmap .stlabel.greyed { opacity: 0.55; }
 .usmap .st:focus { outline: none; }
 .usmap .st:focus-visible { stroke: var(--fg); stroke-width: 4; }
 /* selected state: a background halo under a 2.5px text-colored line, so the outline shows on any fill */
 .usmap .sel-halo { fill: none; stroke: var(--bg); stroke-width: 6; pointer-events: none; }
 .usmap .sel-line { fill: none; stroke: var(--fg); stroke-width: 2.5; pointer-events: none; }
-.usmap .pat-bg { fill: var(--bg); }
-.usmap .pat-hatch { stroke: var(--faint); stroke-width: 2; }
-.usmap .pat-dot { fill: var(--muted); }
 .usmap .stlabel { font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; fill: var(--fg); }
 .usmap .stlabel.on-dark { fill: var(--bg); }
 .usmap .stval { font-size: 13px; font-weight: 500; }
-.legend { list-style: none; padding: 0; margin: 0.75rem auto 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem;
-  font-size: 0.9rem; color: var(--muted); }
-.legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+/* the map legend may run wider than the map (up to the 960 px frame), centered under it, so its six entries share
+   one row on wide screens and wrap on phones */
+.legend { list-style: none; padding: 0; margin: 0.75rem 0 0 50%; transform: translateX(-50%); width: max-content;
+  max-width: min(912px, calc(100vw - 2.5rem)); display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 0.2rem 1rem; font-size: 0.85rem; color: var(--muted); }
+.legend li { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
 .legend .sw { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--faint); flex: none; }
 .legend .sw-greyed { opacity: 0.4; }
 #map-table td, #map-table th { text-align: left; font-size: 0.9rem; }
