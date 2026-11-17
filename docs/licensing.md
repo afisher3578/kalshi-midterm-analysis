@@ -1,5 +1,12 @@
 # Licensing and publishing (spec section 12)
 
+## Repository license
+
+The code and documentation are MIT licensed ([LICENSE](../LICENSE)), chosen Nov 17 2026. The data in
+`data/processed` is not covered by it; a data license follows once Kalshi's terms are confirmed
+([data/README.md](../data/README.md)). `licensing_confirmed` in `config/project.yaml` is about publishing data
+counts, not the code license, and stays false.
+
 Status: open. Nothing here is legal advice. Alex decides before anything is published.
 
 ## What we publish
@@ -28,6 +35,36 @@ Status: open. Nothing here is legal advice. Alex decides before anything is publ
   - `python -m raceattn publish` lists every processed race with such counts, prints the warning and exits 1.
     It uploads or sends nothing; it is a check to run before Alex copies files anywhere.
 - Set `licensing_confirmed: true` only after the questions above are answered for every source in the output.
+
+## Dependencies
+
+Licenses of the direct dependencies, read from installed package metadata on Nov 17 2026. All are compatible with
+MIT. Only the npm runtime dependencies end up in the dashboard build; the rest are dev tools or Python packages that
+are installed, not bundled.
+
+| Package | Version | License | Where |
+|---|---|---|---|
+| @observablehq/plot | 0.6.19 | ISC | npm, bundled |
+| d3 | 7.9.2 | ISC | npm, bundled |
+| topojson-client | 3.1.0 | ISC | npm, bundled |
+| us-atlas | 3.0.1 | ISC | npm, map shapes shipped with notice in `web/src/geo/LICENSE-us-atlas` |
+| @axe-core/playwright | 4.14.0 | MPL-2.0 | npm dev |
+| @types/d3 | 7.4.3 | MIT | npm dev |
+| @types/node | 22.20.5 | MIT | npm dev |
+| @types/topojson-client | 3.1.5 | MIT | npm dev |
+| lighthouse | 13.6.0 | Apache-2.0 | npm dev |
+| playwright | 1.65.0 | Apache-2.0 | npm dev |
+| typescript | 7.0.2 | Apache-2.0 | npm dev |
+| vite | 8.3.8 | MIT | npm dev |
+| vitest | 5.1.0 | MIT | npm dev |
+| certifi | 2026.10.23 | MPL-2.0 | Python, dependency (not bundled) |
+| charset-normalizer | 3.5.2 | MIT | Python |
+| idna | 3.20 | BSD-3-Clause | Python |
+| PyYAML | 6.0.3 | MIT | Python |
+| requests | 2.34.2 | Apache-2.0 | Python |
+| urllib3 | 2.8.0 | MIT | Python |
+
+Nothing is outside MIT, BSD, ISC, Apache-2.0 or MPL-2.0. The us-atlas notice must stay in `web/src/geo/`.
 
 ## Funding disclosure
 - The grant requires this line in the published deliverable: "This research was funded in part by a grant from

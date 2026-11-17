@@ -232,10 +232,13 @@ python scripts/check_secrets.py
 - Wikipedia pageviews: public data under the Wikimedia Terms of Use.
 - Map shapes: us-atlas 3.0.1 from US Census Bureau boundaries, ISC license, notice in `web/src/geo/LICENSE-us-atlas`.
 - Open questions and status for every source: [docs/licensing.md](docs/licensing.md).
+- What the processed data is and which terms apply to it: [data/README.md](data/README.md).
 
 ## License
 
-No license has been chosen yet. Until one is added, the code and data are all rights reserved.
+Code and documentation: MIT, see [LICENSE](LICENSE). Data in data/processed: not covered by the MIT license; source
+terms apply and a data license follows once Kalshi's terms are confirmed, see [data/README.md](data/README.md). Map
+shapes (us-atlas, ISC): notice in web/src/geo/LICENSE-us-atlas.
 
 ## Author
 
@@ -243,3 +246,5 @@ Alex Fisher, independent media researcher, Brooklyn, NY. [alexfisher.co](https:/
 
 Suggested citation, until a release exists: Fisher, A. (2026). *kalshi-midterm-analysis* [software and data]. GitHub.
 https://github.com/afisher3578/kalshi-midterm-analysis
+
+Licensed under the MIT License.
