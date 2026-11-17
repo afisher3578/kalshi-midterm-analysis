@@ -7,8 +7,6 @@ Live version: planned at alexfisher.co/kalshi-midterm-analysis.
 Status: pilot. The pipeline and dashboard run for six races; news counts exist for Texas Senate only. No findings
 are reported yet.
 
-![The dashboard: Texas Senate, Kalshi chance for each candidate, volume and media attention](docs/screenshots/g2-1280-light.png)
-
 ## Research questions
 
 1. When news coverage of a Senate race rises, does the Kalshi market for that race change?
