@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { DisplayHourly, RaceData } from "../src/types";
 import { addDays, attentionNote, axisTitle, CARRIED, chartSeries, dailyToSteps, dayTotals, fmtHour, granularityFor,
-  HOURLY_MAX_DAYS, hourlyRange, hourlySeries, hourNote, kalshiLabel, legendText, NO_TRADES, quickRanges, rangeDays,
+  HOURLY_MAX_DAYS, hourlyRange, hourlySeries, hourNote, kalshiLabel, legendText, NO_TRADES, rangeDays,
   zoomRange } from "../src/display";
 
 const load = (id: string): RaceData =>
@@ -37,7 +37,7 @@ const tiny: DisplayHourly = {
 describe("hourly rows for a range", () => {
   it("takes the start date's 00:00Z hour through the end date's last hour (UTC day = ts[:10])", () => {
     const h = hourlySeries(tiny);
-    expect(h.price[0]).toBeCloseTo(40);
+    expect(h.dem[0]).toBeCloseTo(40);
     expect(hourlyRange(h.ts, "2026-08-06", "2026-08-06")).toEqual([3, 5]);
     expect(hourlyRange(h.ts, "2026-08-05", "2026-08-06")).toEqual([0, 5]);
     expect(hourlyRange(h.ts, "2026-08-07", "2026-08-07")).toEqual([6, 6]);
@@ -72,7 +72,7 @@ describe("dayTotals", () => {
     s.dates.forEach((d, i) => {
       const t = dayTotals(h, d);
       expect(t.volume).toBeCloseTo(s.volume[i]!, 4);
-      expect(t.close).toBeCloseTo(s.price[i]!, 6);
+      expect(t.close).toBeCloseTo(s.dem[i]!, 6);
     });
   });
 });
@@ -121,7 +121,7 @@ describe("readout and labels", () => {
     const i = h.ts.indexOf(ts);
     expect(hourNote(ts, h)).toBe(NO_TRADES);
     expect(h.volume[i]).toBe(0);
-    expect(h.price[i]).toBe(h.price[i - 1]);
+    expect(h.dem[i]).toBe(h.dem[i - 1]);
   });
 
   it("legend and axis say per hour for volume when hourly; attention stays per day", () => {
@@ -138,15 +138,8 @@ describe("readout and labels", () => {
   });
 });
 
-describe("quick ranges and zoom", () => {
+describe("zoom", () => {
   const w = { start: "2026-08-05", end: "2026-11-04" };
-
-  it("derives the election week from the election date and the last 14 days from the window", () => {
-    const q = quickRanges(w, "2026-11-03");
-    expect(q.map((r) => `${r.id} ${r.from}..${r.to}`)).toEqual(["election7 2026-10-28..2026-11-03",
-      "last14 2026-10-22..2026-11-04", "full 2026-08-05..2026-11-04"]);
-    expect(quickRanges(w, "2026-08-06")[0]).toMatchObject({ from: "2026-08-05", to: "2026-08-06" });
-  });
 
   it("zooms in whole days around the anchor and stays inside the window", () => {
     expect(zoomRange("2026-08-05", "2026-11-04", w.start, w.end, 0.5, 0.5)).toEqual({ from: "2026-08-28", to: "2026-10-12" });

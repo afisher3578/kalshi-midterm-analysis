@@ -7,7 +7,7 @@ import { DAY_MS, HOUR_MS } from "./transforms";
 
 // All colors are CSS variables from style.css, so the panels follow the theme without a redraw.
 export const COLORS = {
-  line: "var(--series-price)",
+  line: "var(--series-dem)",
   bar: "var(--muted)",
   grey: "var(--faint)",
   rule: "var(--series-volume)",

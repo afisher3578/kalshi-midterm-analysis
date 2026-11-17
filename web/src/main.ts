@@ -2,7 +2,7 @@ import "./style.css";
 import { format } from "d3";
 import { DEFAULT_RACE, FUNDING_DISCLOSURE, MAP_TITLE, MEDIA_ATTENTION_DEF, PROJECT_NAME, SHOW_DETAILS, SHOW_FUNDING_DISCLOSURE,
   STATES, SUBTITLE, TITLE } from "./config";
-import { chartSeries, coverageCount, hourlySeries, NEWS_COL, WIKI_COL } from "./display";
+import { chartSeries, hasData, hourlySeries, NEWS_COL, partyLines, WIKI_COL } from "./display";
 import { countChanged, DEFAULT_FILTERS, ENABLED_STATES, ENABLED_TYPES, type Filters, mapValue, METRICS, parseHash,
   passesPolls, pollClass, POLLS, RACE_TYPES, serializeHash, SOURCES } from "./filters";
 import { FILTER, INFO, themeIcon } from "./icons";
@@ -32,7 +32,7 @@ let view: RaceView | null = null;
 let newsView: NewsView | null = null;
 let chart: LineChart | null = null;
 // the chart's line toggles and dates carry over when another race is opened
-const chartState: ChartState = { visible: { price: true, volume: true, news: true }, from: "", to: "" };
+const chartState: ChartState = { visible: { dem: true, rep: true, volume: true, news: true }, from: "", to: "" };
 let demoDisplay: { race: string; dd: DisplayDaily } | null | undefined;
 
 async function getJson<T>(url: string): Promise<T> {
@@ -439,7 +439,7 @@ async function demoNews(ui: Ui, raceId: string): Promise<DisplayDaily | null> {
   return demoDisplay && demoDisplay.race === raceId ? demoDisplay.dd : null;
 }
 
-/** The dashboard chart for one race (SHOW_DETAILS off): price, volume and attention (news or Wikipedia, from the
+/** The dashboard chart for one race (SHOW_DETAILS off): both candidates' Kalshi prices, volume and attention (news or Wikipedia, from the
  * Sources control) from series.display_daily, and hourly Kalshi from series.display_hourly when zoomed in. */
 async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
   document.title = `${raceTitle(data)} | ${PROJECT_NAME}`;
@@ -456,21 +456,20 @@ async function openChart(ui: Ui, data: RaceData, root: HTMLElement) {
   }
   const wiki = ui.filters.source === "wikipedia";
   const demo = wiki ? null : await demoNews(ui, data.race.race_id);
-  const series = chartSeries(dd, demo, wiki ? WIKI_COL : NEWS_COL);
-  const { n, m } = coverageCount(series.news);
-  const available = n > 0;
-  const status = !available ? `No ${wiki ? "Wikipedia" : "news"} data for this race yet.`
-    : wiki ? `Wikipedia pageviews: ${n} of ${m} days`
-    : demo ? `News data: demo (synthetic counts, not real), ${n} of ${m} days`
-    : `News data: live, ${n} of ${m} days`;
+  // the Democratic and Republican lines: party and name from the candidates block, columns from the tickers (kalshi_*
+  // is the followed market, kalshi_r_* the opposing contract named in display_hourly.opposing)
+  const opposing = data.series.display_hourly?.opposing?.ticker ?? dd.opposing?.ticker ?? null;
+  const lines = partyLines(data.candidates, data.race.kalshi.followed_market, opposing);
+  const series = chartSeries(dd, demo, wiki ? WIKI_COL : NEWS_COL, lines);
+  const available = hasData(series.news);
   const e = data.race.election_date;
   const election = [e, new Date(Date.parse(e + "T00:00:00Z") + 86_400_000).toISOString().slice(0, 10)]
     .filter((d) => d >= dd.window.start && d <= dd.window.end);
   // hourly Kalshi (series.display_hourly) for ranges of 14 days or fewer; without it the chart stays daily
   const dh = data.series.display_hourly;
-  const hourly = dh && dh.rows.length ? hourlySeries(dh) : null;
-  chart = new LineChart(root, { series, title: raceTitle(data), window: { start: dd.window.start, end: dd.window.end },
-    election, news: { available, status }, demo: !!demo, attention: wiki ? "wikipedia" : "news", hourly, electionDate: e },
+  const hourly = dh && dh.rows.length ? hourlySeries(dh, lines) : null;
+  chart = new LineChart(root, { series, lines, title: raceTitle(data), window: { start: dd.window.start, end: dd.window.end },
+    election, news: { available }, demo: !!demo, attention: wiki ? "wikipedia" : "news", hourly, electionDate: e },
     chartState);
   chart.render();
   writeUrl(ui);

@@ -1,6 +1,7 @@
 // WCAG 2 contrast check for the color tokens in web/src/style.css (the :root block is the light theme, the
 // [data-theme="dark"] block the dark theme). Prints a Markdown table per theme. Exits 1 if fg, muted or link is
-// under 4.5:1, or any series color or the map selected outline (fg) is under 3:1, against bg. faint and rule are
+// under 4.5:1, or any series color or the map selected outline (fg) is under 3:1, against bg. The candidate colors
+// (series-dem, series-rep) also color the end of line label text (surname and percent), so they need 4.5:1. faint and rule are
 // report only: they are never used for essential text. Also reports the map labels on each ramp bin.
 // Usage: node scripts/contrast.mjs   (or npm run contrast)
 import { readFileSync } from "node:fs";
@@ -37,7 +38,10 @@ const CHECKS = [
   ["link", "links", 4.5],
   ["faint", "swatch borders, off swatches (not text)", null],
   ["rule", "hairlines, gridlines (not text)", null],
-  ["series-price", "Kalshi price line", 3],
+  ["series-dem", "Democratic candidate line", 3],
+  ["series-rep", "Republican candidate line", 3],
+  ["series-dem", "Democratic end of line label text", 4.5],
+  ["series-rep", "Republican end of line label text", 4.5],
   ["series-volume", "Kalshi volume line", 3],
   ["series-news", "media attention line", 3],
 ];

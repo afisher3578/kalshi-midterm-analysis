@@ -1,5 +1,6 @@
 /* Tokens: every color on the page comes from here. Base tokens match alexfisher.co (Flexoki base scale);
-   series colors are Flexoki 600 shades in the light theme and 400 shades in the dark theme. The map ramp runs
+   series colors are Flexoki 600 shades in the light theme and 400 shades in the dark theme (the dark Republican red
+   is red 300, so the end of line label text in that color passes 4.5:1). The map ramp runs
    from near the background to the text color, so a higher value always means more contrast with the page.
    web/scripts/contrast.mjs reads these two blocks and checks WCAG contrast. */
 :root {
@@ -10,8 +11,9 @@
   --faint: #B7B5AC;
   --rule: #E6E4D9;
   --link: #100F0F;
-  --series-price: #205EA6;
-  --series-volume: #AF3029;
+  --series-dem: #205EA6;
+  --series-rep: #AF3029;
+  --series-volume: #5E409D;
   --series-news: #66800B;
   --map-1: #DAD8CE;
   --map-2: #B7B5AC;
@@ -35,8 +37,9 @@
   --faint: #575653;
   --rule: #343331;
   --link: #CECDC3;
-  --series-price: #4385BE;
-  --series-volume: #D14D41;
+  --series-dem: #4385BE;
+  --series-rep: #E8705F;
+  --series-volume: #8B7EC8;
   --series-news: #879A39;
   --map-1: #343331;
   --map-2: #575653;
@@ -65,7 +68,7 @@ body {
 /* the page is a 960px frame; text sits in the centered 640px column, the chart may use the full frame */
 .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
 .head > *, #mapsec > *, #race > *, .foot > * { max-width: 640px; margin-left: auto; margin-right: auto; }
-#race > .chartbox, #race > .brushbox, #race > .lgbox { max-width: none; }
+#race > .chartbox, #race > .brushbox, #race > .lgbox, #race > .ranges { max-width: none; }
 
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
 h2 { font-size: 1.1rem; font-weight: 600; margin: 3rem auto 0.75rem; }
@@ -215,10 +218,12 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   border: 0; text-align: left; color: var(--fg); }
 .lg-btn .swatch { flex: none; margin-top: 0.3em; }
 .lg-btn .swatch line { stroke-width: 3; }
-.lg-item[data-key="price"] .swatch line { stroke: var(--series-price); }
+.lg-item[data-key="dem"] .swatch line { stroke: var(--series-dem); }
+.lg-item[data-key="rep"] .swatch line { stroke: var(--series-rep); }
 .lg-item[data-key="volume"] .swatch line { stroke: var(--series-volume); }
 .lg-item[data-key="news"] .swatch line { stroke: var(--series-news); }
 .lg-name { font-weight: 600; }
+.lg-val { font-weight: 600; font-variant-numeric: tabular-nums; }
 .lg-desc, .lg-off { color: var(--muted); }
 .lg-btn[aria-pressed="false"] { color: var(--muted); }
 .lg-btn[aria-pressed="false"] .lg-name, .lg-btn[aria-pressed="false"] .lg-desc { text-decoration: line-through;
@@ -226,11 +231,6 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .lg-btn[aria-pressed="false"] .swatch { opacity: 0.35; }
 .lg-btn[aria-disabled="true"] { cursor: not-allowed; }
 .lg-btn[aria-disabled="true"]:hover { opacity: 1; }
-.lg-why { flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--muted);
-  padding: 0.4rem 0.2rem; border: 0; line-height: 1.35; text-decoration: underline; text-decoration-thickness: 1px;
-  text-underline-offset: 3px; }
-.lg-why[aria-expanded="true"] { color: var(--fg); }
-.lg-note { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--fg); }
 .lgbox .hint { margin: 0.25rem 0 0; }
 /* "Kalshi: hourly" or "Kalshi: daily": how the Kalshi lines are drawn at this zoom */
 .gran { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--muted); }
@@ -244,27 +244,38 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .lc .axis text, .brush-svg .axis text { font-size: 12px; fill: var(--muted); }
 .lc .axis line, .lc .axis path, .brush-svg .axis line, .brush-svg .axis path { stroke: var(--rule); }
 .lc .yaxis path.domain { stroke-width: 2; }
-.lc .y-price path.domain { stroke: var(--series-price); }
+.lc .y-price path.domain { display: none; }
 .lc .y-volume path.domain { stroke: var(--series-volume); stroke-dasharray: 7, 4; }
 .lc .y-news path.domain { stroke: var(--series-news); stroke-dasharray: 2, 3; }
 .lc .atitle { font-size: 12px; font-weight: 600; fill: var(--muted); }
-.lc .grid line { stroke: var(--rule); stroke-width: 1; }
+/* Kalshi style gridlines: light, dotted, horizontal only */
+.lc .grid line { stroke: var(--faint); stroke-width: 1; stroke-dasharray: 1, 3; }
 .lc .eband { fill: var(--rule); }
 .lc .elabel { font-size: 12px; fill: var(--muted); paint-order: stroke; stroke: var(--bg); stroke-width: 3; }
 .lc .line { fill: none; stroke-width: 2.4; stroke-linejoin: round; }
-.lc .line-price, .lc .cdot-price { stroke: var(--series-price); }
+.lc .line-dem, .lc .cdot-dem { stroke: var(--series-dem); }
+.lc .line-rep, .lc .cdot-rep { stroke: var(--series-rep); }
 .lc .line-volume, .lc .cdot-volume { stroke: var(--series-volume); }
 .lc .line-news, .lc .cdot-news { stroke: var(--series-news); }
-.lc .lone-price { fill: var(--series-price); }
+.lc .lone-dem, .lc .enddot-dem, .lc .endlabel-dem text { fill: var(--series-dem); }
+.lc .lone-rep, .lc .enddot-rep, .lc .endlabel-rep text { fill: var(--series-rep); }
+.lc .line-dem, .lc .line-rep { stroke-width: 2.2; }
+/* end of line labels: the surname small, the latest percent larger and bold, both in the line color */
+.lc .el-name { font-weight: 500; }
+.lc .el-pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+.lc .enddot { stroke: var(--bg); stroke-width: 1.5; }
 .lc .lone-volume { fill: var(--series-volume); }
 .lc .lone-news { fill: var(--series-news); }
 .lc .cursor line { stroke: var(--muted); stroke-width: 1; }
 .lc .cursor circle { fill: var(--bg); stroke-width: 2.5; }
 .tip { position: absolute; z-index: 2; pointer-events: none; background: var(--bg); color: var(--fg); border: 1px solid var(--faint);
-  padding: 0.4rem 0.6rem; font-size: 0.85rem; line-height: 1.4; max-width: 240px; }
+  padding: 0.4rem 0.6rem; font-size: 0.85rem; line-height: 1.4; max-width: 340px; }
 .tip strong { display: block; margin-bottom: 2px; font-weight: 600; }
+.tip .trow { white-space: nowrap; }
+.tip .tv { font-weight: 600; font-variant-numeric: tabular-nums; }
 .rk { border-bottom: 3px solid; }
-.rk[data-k="price"] { border-color: var(--series-price); }
+.rk[data-k="dem"] { border-color: var(--series-dem); }
+.rk[data-k="rep"] { border-color: var(--series-rep); }
 .rk[data-k="volume"] { border-color: var(--series-volume); }
 .rk[data-k="news"] { border-color: var(--series-news); }
 .brushbox { width: 100%; margin: 0.5rem auto 0; touch-action: none; }
@@ -279,8 +290,11 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
 .range { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 1.5rem; }
 .range .f { flex: 0 1 170px; }
 .range button { min-width: 4rem; }
-.quick { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
-.qbtn[aria-pressed="true"] { font-weight: 600; border-bottom: 2px solid var(--fg); }
+/* range buttons under the chart, Kalshi style: a quiet text row at the right, the pressed one bold in the text color */
+.ranges { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0 0.25rem; margin: 0.25rem auto 0; }
+.rbtn { min-width: 44px; min-height: 44px; padding: 0 0.6rem; border: 0; background: none; font-size: 0.9rem;
+  color: var(--muted); font-variant-numeric: tabular-nums; }
+.rbtn[aria-pressed="true"] { color: var(--fg); font-weight: 700; }
 .range-msg { flex: 1 1 100%; margin: 0; font-weight: 600; }
 .range-msg:empty { display: none; }
 .readout { margin: 1.5rem auto 0; padding-top: 0.75rem; border-top: 1px solid var(--rule); font-size: 0.9rem;
@@ -308,9 +322,8 @@ input[aria-invalid="true"] { border-bottom: 2px solid var(--fg); }
   .lg { flex-wrap: wrap; gap: 0; }
   .lg-item { width: 100%; }
   .lg-btn { min-height: 44px; }
-  .lg-why { min-width: 44px; min-height: 44px; padding-top: 0; padding-bottom: 0; }
   .readout .rd, .readout .rdate, .readout .rnote { white-space: normal; display: block; }
-  .quick { flex: 1 1 100%; gap: 0 1rem; }
+  .ranges { justify-content: space-between; }
   .readout .sep { display: none; }
   .tip { display: none; }  /* the readout row under the chart shows the same values */
 }

@@ -19,7 +19,12 @@
 // attention tooltip (hover, focus, tap, Esc, outside click, blur, inside the viewport at 390 px), the six entry map
 // legend, the faded style for every state that is not an open state with a value, and no "no data", "insufficient
 // data" or "outside the polling filter" in the visible text under several filters, in both themes.
-// Writes docs/screenshots/g1-{1280,390}-{light,dark}.png, g1-tooltip-{1280,390}.png, style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
+// G2: the Kalshi style chart: a Democratic (blue) and a Republican (red) line named after the candidates, the percent
+// axis on the right, end of line labels (latest value in view, no overlap, inside the svg at 390 px), the crosshair
+// tooltip against data/processed in daily and hourly view, the 1D 1W 1M 3M All range buttons, no "why" and no "News
+// data: live" text in either theme or source.
+// Writes docs/screenshots/g2-{1280,390}-{light,dark}.png, g2-1w-hourly.png, g2-crosshair-1280.png,
+// g1-{1280,390}-{light,dark}.png, g1-tooltip-{1280,390}.png, style-{light,dark}-{1280,390}.png, filt-{closed,open}-{1280,390}.png,
 // chart-{1280,390}-{light,dark}.png and hourly-{1280,390}-{light,dark}.png.
 // Usage: node scripts/verify-dashboard.mjs <live base url> [demo base url]   (CHROME_PATH may point at Chromium)
 import { readFileSync, mkdirSync } from "node:fs";
@@ -44,7 +49,7 @@ const noNews = Object.keys(index.races).filter((id) => id !== "tx-senate-2026").
 mkdirSync(SHOTS, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
-const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], plotted: [], hourly: [], totals: [],
+const report = { blocked: [], consoleErrors: [], pageErrors: [], checks: [], spot: [], plotted: [], hourly: [], totals: [], g2: [],
   frames: null, axe: {} };
 let failed = false;
 
@@ -78,21 +83,23 @@ async function axe(page, key) {
 
 // token values from web/src/style.css, as computed rgb
 const THEME = {
-  light: { bg: "rgb(255, 252, 240)", fg: "rgb(16, 15, 15)", price: "rgb(32, 94, 166)", volume: "rgb(175, 48, 41)", news: "rgb(102, 128, 11)" },
-  dark: { bg: "rgb(16, 15, 15)", fg: "rgb(206, 205, 195)", price: "rgb(67, 133, 190)", volume: "rgb(209, 77, 65)", news: "rgb(135, 154, 57)" },
+  light: { bg: "rgb(255, 252, 240)", fg: "rgb(16, 15, 15)", dem: "rgb(32, 94, 166)", rep: "rgb(175, 48, 41)", volume: "rgb(94, 64, 157)",
+    news: "rgb(102, 128, 11)" },
+  dark: { bg: "rgb(16, 15, 15)", fg: "rgb(206, 205, 195)", dem: "rgb(67, 133, 190)", rep: "rgb(232, 112, 95)", volume: "rgb(139, 126, 200)",
+    news: "rgb(135, 154, 57)" },
 };
 /** The colors the page actually draws with, to compare against THEME. */
 const drawn = (page) => page.evaluate(() => {
   const cs = (sel, prop) => { const e = document.querySelector(sel); return e ? getComputedStyle(e)[prop] : null; };
   return { theme: document.documentElement.dataset.theme, bg: cs("body", "backgroundColor"), fg: cs("body", "color"),
-    price: cs("#chart path.line-price", "stroke"), volume: cs("#chart path.line-volume", "stroke"),
+    dem: cs("#chart path.line-dem", "stroke"), rep: cs("#chart path.line-rep", "stroke"), volume: cs("#chart path.line-volume", "stroke"),
     news: cs("#chart path.line-news", "stroke"), selected: cs("svg.usmap .sel-line", "stroke"),
     pressed: document.querySelector("#theme-btn")?.getAttribute("aria-pressed"),
     stored: localStorage.getItem("theme") };
 });
 function themeOk(d, name) {
   const t = THEME[name];
-  return d.theme === name && d.bg === t.bg && d.fg === t.fg && d.price === t.price && d.volume === t.volume
+  return d.theme === name && d.bg === t.bg && d.fg === t.fg && d.dem === t.dem && d.rep === t.rep && d.volume === t.volume
     && d.news === t.news && d.selected === t.fg && d.pressed === String(name === "dark");
 }
 /** Elements with a box shadow or a gradient background (the style allows neither). */
@@ -104,21 +111,31 @@ async function toggleTheme(page) {
   await page.locator("#theme-btn").click();
 }
 
+const pctText = (v) => v == null ? "no data" : `${(v * 100).toFixed(1)}%`;
 const fmt = {
-  price: (v) => v == null ? "no data" : `${(v * 100).toFixed(1)}%`,
+  dem: pctText,
+  rep: pctText,
   volume: (v) => v == null ? "no data" : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(v)} contracts`,
   news: (v) => v == null ? "no data" : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(v)} stories`,
 };
-const COL = { price: "kalshi_price_close", volume: "kalshi_volume", news: NEWS };
+const COL = { dem: "kalshi_price_close", rep: "kalshi_r_price_close", volume: "kalshi_volume", news: NEWS };
+const KEYS = ["dem", "rep", "volume", "news"];
 
 const lines = (page) => page.$$eval("#chart svg path.line", (ps) => ps.map((p) => p.dataset.series).sort().join(","));
 const axes = (page) => page.$$eval("#chart svg g[data-axis]", (gs) => gs.map((g) => g.dataset.axis).sort().join(","));
 const readout = (page) => page.evaluate(() => ({
   date: document.querySelector("#readout .rdate")?.dataset.date ?? null,
-  price: document.querySelector('#readout [data-v="price"]')?.textContent ?? null,
+  dem: document.querySelector('#readout [data-v="dem"]')?.textContent ?? null,
+  rep: document.querySelector('#readout [data-v="rep"]')?.textContent ?? null,
   volume: document.querySelector('#readout [data-v="volume"]')?.textContent ?? null,
   news: document.querySelector('#readout [data-v="news"]')?.textContent ?? null,
 }));
+/** The crosshair tooltip: its timestamp and each line's value. */
+const tooltip = (page) => page.evaluate(() => {
+  const t = document.querySelector("#chart .tip");
+  const v = (k) => t.querySelector(`[data-v="${k}"]`)?.textContent ?? null;
+  return { hidden: t.hidden, when: t.querySelector(".twhen")?.textContent ?? null, dem: v("dem"), rep: v("rep"), volume: v("volume"), news: v("news") };
+});
 const msg = (page) => page.locator("#range-msg").innerText();
 
 /** Type a date into an input and fire change, the way a user commits a typed date. */
@@ -153,7 +170,7 @@ const legendBox = (page) => page.evaluate(() => {
     vw: innerWidth, aboveChart: lg.getBoundingClientRect().bottom <= chart.top };
 });
 /** Swatch stroke vs line stroke for every series, as computed colors. */
-const swatches = (page) => page.evaluate(() => ["price", "volume", "news"].map((k) => ({ k,
+const swatches = (page) => page.evaluate(() => ["dem", "rep", "volume", "news"].map((k) => ({ k,
   swatch: getComputedStyle(document.querySelector(`#lg-${k} .swatch line`)).stroke,
   line: getComputedStyle(document.querySelector(`#chart path.line-${k}`)).stroke })));
 /** The values a line actually plots, read back from its path: each point's x is inverted to a UTC day with the
@@ -186,9 +203,9 @@ const gran = (page) => page.evaluate(() => ({ label: document.querySelector("#gr
   att: document.querySelector("#lg-news .lg-desc").textContent,
   note: document.querySelector("#att-note").hidden ? null : document.querySelector("#att-note").textContent,
   live: document.querySelector("#gran").getAttribute("aria-live") }));
-const isHourly = (g) => g.label === "Kalshi: hourly" && g.svg === "hour" && g.legend === "contracts traded per hour"
+const isHourly = (g) => g.label === "Kalshi: hourly" && g.svg === "hour" && g.legend === "contracts traded per hour in the Talarico contract"
   && g.axis === "Volume per hour" && g.att.includes("per day") && g.live === "polite";
-const isDaily = (g) => g.label === "Kalshi: daily" && g.svg === "day" && g.legend === "contracts traded per day"
+const isDaily = (g) => g.label === "Kalshi: daily" && g.svg === "day" && g.legend === "contracts traded per day in the Talarico contract"
   && g.axis === "Volume per day" && g.note === null && g.live === "polite";
 /** Every point of a line's path, x inverted to epoch ms and y to a value. */
 const points = (page, k) => page.evaluate((key) => {
@@ -206,7 +223,7 @@ async function hourly(page, k) {
   return { tol: p.tol, at, n: p.pts.length };
 }
 const range = async (page) => `${await page.inputValue("#d-from")}..${await page.inputValue("#d-to")}`;
-const quickPressed = (page) => page.$$eval(".qbtn", (bs) => bs.filter((b) => b.getAttribute("aria-pressed") === "true").map((b) => b.id).join(","));
+const quickPressed = (page) => page.$$eval(".rbtn", (bs) => bs.filter((b) => b.getAttribute("aria-pressed") === "true").map((b) => b.id).join(","));
 /** Move the keyboard cursor to an hour: Home is the range start's 00:00Z hour, Shift + right steps a day, right an hour. */
 async function cursorTo(page, ts, from) {
   await page.locator("#chart").focus();
@@ -216,7 +233,8 @@ async function cursorTo(page, ts, from) {
   for (let i = 0; i < h % 24; i++) await page.keyboard.press("ArrowRight");
   return page.evaluate(() => ({ ts: document.querySelector("#readout .rdate")?.dataset.ts ?? null,
     when: document.querySelector("#readout .rdate")?.textContent ?? null,
-    price: document.querySelector('#readout [data-v="price"]')?.textContent ?? null,
+    dem: document.querySelector('#readout [data-v="dem"]')?.textContent ?? null,
+    rep: document.querySelector('#readout [data-v="rep"]')?.textContent ?? null,
     volume: document.querySelector('#readout [data-v="volume"]')?.textContent ?? null,
     news: document.querySelector('#readout [data-v="news"]')?.textContent ?? null,
     newsLabel: document.querySelector('#readout .rk[data-k="news"]')?.textContent ?? null,
@@ -350,14 +368,13 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   check("Reset: defaults, empty hash, no badge", afterReset, "|false|volume|all", afterReset === "|false|volume|all");
   // Sources: Wikipedia switches the chart's attention line
   await page.locator('#filters-panel label:has(input[name="f-source"][value="wikipedia"])').click();
-  await page.waitForFunction(() => document.querySelector("#news-status")?.textContent.startsWith("Wikipedia"));
-  const wst = (await page.locator("#news-status").innerText()).trim();
+  await page.waitForFunction(() => document.querySelector("#lg-news .lg-desc")?.textContent.startsWith("Wikipedia"));
   const wdd = tx.series.display_daily;
-  const wn = wdd.rows.filter((r) => r.wikipedia_pageviews_total != null).length;
+  const wst = await page.locator("#news-status").count();
   const wlabel = (await page.locator("#lg-news").textContent()).replace(/\s+/g, " ").trim();
-  check("Sources Wikipedia: chart plots Wikipedia pageviews", `${wst} | ${wlabel} | lines ${await lines(page)}`,
-    `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`, wst === `Wikipedia pageviews: ${wn} of ${wdd.rows.length} days`
-      && wlabel === "Attention: Wikipedia pageviews per day (race and candidate pages)" && await lines(page) === "news,price,volume");
+  check("Sources Wikipedia: chart plots Wikipedia pageviews, no status line", `status lines ${wst} | ${wlabel} | lines ${await lines(page)}`,
+    "0 | Attention: Wikipedia pageviews per day (race and candidate pages) | dem,news,rep,volume", wst === 0
+      && wlabel === "Attention: Wikipedia pageviews per day (race and candidate pages)" && await lines(page) === "dem,news,rep,volume");
   await page.locator("#chart").focus();
   await page.keyboard.press("Home");
   const wr = await readout(page);
@@ -369,15 +386,15 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await page.keyboard.press("Escape");
   await fb.click();
   await page.locator('#filters-panel label:has(input[name="f-source"][value="news"])').click();
-  await page.waitForFunction(() => document.querySelector("#news-status")?.textContent.startsWith("News data"));
+  await page.waitForFunction(() => document.querySelector("#lg-news .lg-desc")?.textContent.startsWith("news stories"));
   await page.keyboard.press("Escape");
 
-  // status line
+  // G2: no news status line when the race has news (the "News data: live, N of M days" line is gone)
   const dd = tx.series.display_daily;
-  const n = dd.rows.filter((r) => r[NEWS] != null).length;
-  const status = (await page.locator("#news-status").innerText()).trim();
-  check("status line: live news N of M days", status, `News data: live, ${n} of ${dd.rows.length} days`,
-    status === `News data: live, ${n} of ${dd.rows.length} days`);
+  const status = await page.locator("#news-status").count();
+  const liveText = (await page.evaluate(() => document.body.innerText)).includes("News data");
+  check("G2: no status line for a race with news, no \"News data\" text", `status lines ${status}, text ${liveText}`, "0, false",
+    status === 0 && !liveText);
   // the explanatory copy removed in R1 (docs/dashboard-copy-removed.md) is not on the page; the map table stays as a
   // visually hidden text alternative for the map
   const REMOVED = ["on one UTC clock", "races with committed data", "Colored by", "The map's values as a table",
@@ -406,8 +423,8 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const elabel = await page.locator('#chart g[data-mark="election"] text').textContent();
   check("election days shaded and labeled", elabel, "Election, Nov 3 and 4", elabel === "Election, Nov 3 and 4"
     && await page.locator('#chart g[data-mark="election"] rect').count() === 1);
-  check("three lines and three axes by default", `${await lines(page)} | ${await axes(page)}`, "news,price,volume twice",
-    await lines(page) === "news,price,volume" && await axes(page) === "news,price,volume");
+  check("four lines and three axes by default (one percent axis for both candidates)", `${await lines(page)} | ${await axes(page)}`,
+    "dem,news,rep,volume | news,price,volume", await lines(page) === "dem,news,rep,volume" && await axes(page) === "news,price,volume");
   const old = await noOldControls(page);
   check("no race type switch and no scale switch in the chart area (no radios, checkboxes or selects, no such labels)",
     JSON.stringify(old), '{"found":[],"radios":0,"words":[]}', old.found.length === 0 && old.radios === 0 && old.words.length === 0);
@@ -415,45 +432,35 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   // legend: one entry per line, one row above the chart, the texts, real buttons with aria-pressed
   const lt = await page.$$eval("#legend .lg-btn", (bs) => bs.map((b) => `${b.tagName}|${b.type}|${b.getAttribute("aria-pressed")}|${
     b.textContent.replace(/\s+/g, " ").trim()}`));
-  const wantLt = ["BUTTON|button|true|Price: Kalshi chance that Democrats win (%)", "BUTTON|button|true|Volume: contracts traded per day",
+  const last = (col) => [...dd.rows].reverse().find((r) => r[col] != null)[col];
+  const wantLt = [`BUTTON|button|true|James Talarico (D) ${pctText(last("kalshi_price_close"))}: Kalshi chance that James Talarico wins (%)`,
+    `BUTTON|button|true|Ken Paxton (R) ${pctText(last("kalshi_r_price_close"))}: Kalshi chance that Ken Paxton wins (%)`,
+    "BUTTON|button|true|Volume: contracts traded per day in the Talarico contract",
     "BUTTON|button|true|Attention: news stories per day mentioning the race (Media Cloud)"];
-  check("legend: three button entries, pressed, with name and description", lt.join(" / "), wantLt.join(" / "),
+  check("legend: four button entries, pressed, with name, latest value and description", lt.join(" / "), wantLt.join(" / "),
     JSON.stringify(lt) === JSON.stringify(wantLt));
   const lb = await legendBox(page);
-  const oneRow = lb.items.length === 3 && lb.items.every((i) => Math.abs(i.top - lb.items[0].top) <= 2)
-    && lb.items[0].right <= lb.items[1].left && lb.items[1].right <= lb.items[2].left;
+  const oneRow = lb.items.length === 4 && lb.items.every((i) => Math.abs(i.top - lb.items[0].top) <= 2)
+    && lb.items.every((it, i) => i === 0 || lb.items[i - 1].right <= it.left);
   check("1280: legend entries share one row, above the chart, no overflow", JSON.stringify(lb), "same top, left to right, above chart",
     oneRow && lb.aboveChart && lb.lgOverflow <= 0 && lb.pageOverflow <= 0);
   const sw = await swatches(page);
   check("light: each legend swatch has its line's stroke color", JSON.stringify(sw), "swatch == line, the light tokens",
     sw.every((x) => x.swatch === x.line && x.line === THEME.light[x.k]));
-  // the why? note: a separate button with aria-expanded and aria-controls, opened and closed by keyboard
-  const why = page.locator("#lg-why");
-  const whyAttrs = await why.evaluate((b) => `${b.tagName} ${b.closest(".lg-btn") ? "nested" : "separate"} ${b.getAttribute("aria-expanded")} ${
-    b.getAttribute("aria-controls")} ${document.querySelector("#lg-note").hidden}`);
-  check("why? is a separate button, aria-expanded false, controls the hidden note", whyAttrs, "BUTTON separate false lg-note true",
-    whyAttrs === "BUTTON separate false lg-note true");
-  await why.focus();
-  await page.keyboard.press("Enter");
-  const nEnter = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()} ${(await page.locator("#lg-note").innerText()).trim()}`;
-  await page.keyboard.press("Space");
-  const nSpace = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()}`;
-  await page.keyboard.press("Space");
-  const nSpace2 = `${await why.getAttribute("aria-expanded")} ${await page.locator("#lg-note").isVisible()}`;
-  const NOTE = "The Republican contract is the mirror image: its price is about 100% minus this line.";
-  check("why? opens with Enter, closes and opens with Space; the note text", `${nEnter} | ${nSpace} | ${nSpace2}`,
-    `true true ${NOTE} | false false | true true`, nEnter === `true true ${NOTE}` && nSpace === "false false" && nSpace2 === "true true");
-  check("no Republican line is drawn", await lines(page), "news,price,volume", await lines(page) === "news,price,volume");
-  await axe(page, "1280 legend and note open");
+  // G2: no why? control or note any more, and a Republican line is drawn
+  const whyGone = await page.evaluate(() => ({ btn: !!document.querySelector("#lg-why"), note: !!document.querySelector("#lg-note") }));
+  check("G2: the why? button and its note are gone; the Republican line is drawn", `${JSON.stringify(whyGone)} | ${await lines(page)}`,
+    "no button, no note | dem,news,rep,volume", !whyGone.btn && !whyGone.note && await lines(page) === "dem,news,rep,volume");
+  await axe(page, "1280 legend");
   await page.mouse.move(0, 0);
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-1280-light.png") });
 
   // plotted values: each line's path coordinates, read back to values, against the JSON on three days
-  for (const k of ["price", "volume", "news"]) {
+  for (const k of KEYS) {
     const got = await plotted(page, k);
     for (const d of ["2026-08-05", "2026-09-15", "2026-11-03"]) {
       const raw = dd.rows.find((r) => r.date === d)[COL[k]];
-      const exp = raw == null ? null : k === "price" ? raw * 100 : raw;
+      const exp = raw == null ? null : k === "dem" || k === "rep" ? raw * 100 : raw;
       const v = got.at[d] ?? null;
       const ok = exp === null ? v === null : v !== null && Math.abs(v - exp) <= got.tol + 1e-9 * Math.abs(exp);
       report.plotted.push({ date: d, series: k, plotted: v, json: raw, tol: got.tol, ok });
@@ -472,7 +479,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     while (at < target) { await page.keyboard.press("ArrowRight"); at++; }
     const r = await readout(page);
     const row = dd.rows[target];
-    for (const k of ["price", "volume", "news"]) {
+    for (const k of KEYS) {
       const exp = fmt[k](row[COL[k]]);
       report.spot.push({ date: d, series: k, readout: r[k], json: row[COL[k]], expected_text: exp, ok: r.date === d && r[k] === exp });
       if (!(r.date === d && r[k] === exp)) failed = true;
@@ -486,10 +493,10 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const hr = await readout(page);
   const hrow = dd.rows.find((r) => r.date === hr.date);
   const tip = await page.locator("#chart .tip").innerText();
-  check("hover: readout and tooltip show the day's values", `${hr.date} ${hr.price} ${hr.volume} ${hr.news} | tip ${tip.replace(/\s+/g, " ")}`,
-    hrow ? `${fmt.price(hrow.kalshi_price_close)} ${fmt.volume(hrow.kalshi_volume)} ${fmt.news(hrow[NEWS])}` : "a date",
-    hrow && hr.price === fmt.price(hrow.kalshi_price_close) && hr.volume === fmt.volume(hrow.kalshi_volume)
-      && hr.news === fmt.news(hrow[NEWS]) && tip.includes(hr.price));
+  check("hover: readout and tooltip show the day's values", `${hr.date} ${hr.dem} ${hr.rep} ${hr.volume} ${hr.news} | tip ${tip.replace(/\s+/g, " ")}`,
+    hrow ? `${fmt.dem(hrow.kalshi_price_close)} ${fmt.rep(hrow.kalshi_r_price_close)} ${fmt.volume(hrow.kalshi_volume)} ${fmt.news(hrow[NEWS])}` : "a date",
+    hrow && hr.dem === fmt.dem(hrow.kalshi_price_close) && hr.rep === fmt.rep(hrow.kalshi_r_price_close) && hr.volume === fmt.volume(hrow.kalshi_volume)
+      && hr.news === fmt.news(hrow[NEWS]) && tip.includes(hr.dem) && tip.includes(hr.rep));
   const live = await page.locator("#readout").getAttribute("aria-live");
   check("readout row is aria-live polite", live, "polite", live === "polite");
 
@@ -497,12 +504,16 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const pressed = (k) => page.locator(`#lg-${k}`).getAttribute("aria-pressed");
   await page.locator("#lg-volume").click();
   check("legend: Volume off: line and axis gone, aria-pressed false", `${await lines(page)} | ${await axes(page)} | ${await pressed("volume")}`,
-    "news,price | news,price | false", await lines(page) === "news,price" && await axes(page) === "news,price" && await pressed("volume") === "false");
+    "dem,news,rep | news,price | false", await lines(page) === "dem,news,rep" && await axes(page) === "news,price" && await pressed("volume") === "false");
   await page.locator("#lg-volume").click();
-  check("legend: Volume on: line and axis back", `${await lines(page)} | ${await axes(page)} | ${await pressed("volume")}`, "news,price,volume | true",
-    await lines(page) === "news,price,volume" && await axes(page) === "news,price,volume" && await pressed("volume") === "true");
-  await page.locator("#lg-price").click();
-  check("legend: Price off: left axis gone", `${await lines(page)} | ${await axes(page)}`, "news,volume",
+  check("legend: Volume on: line and axis back", `${await lines(page)} | ${await axes(page)} | ${await pressed("volume")}`, "dem,news,rep,volume | true",
+    await lines(page) === "dem,news,rep,volume" && await axes(page) === "news,price,volume" && await pressed("volume") === "true");
+  await page.locator("#lg-dem").click();
+  check("legend: Talarico off: his line and end label gone, the percent axis stays for Paxton", `${await lines(page)} | ${await axes(page)} | ${
+    await page.locator(".endlabel").count()} label`, "news,rep,volume | news,price,volume | 1",
+    await lines(page) === "news,rep,volume" && await axes(page) === "news,price,volume" && await page.locator(".endlabel").count() === 1);
+  await page.locator("#lg-rep").click();
+  check("legend: both candidates off: the percent axis goes too", `${await lines(page)} | ${await axes(page)}`, "news,volume",
     await lines(page) === "news,volume" && await axes(page) === "news,volume");
   // keyboard: Enter and Space on a focused entry
   await page.locator("#lg-news").focus();
@@ -516,10 +527,11 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     `aria-disabled ${lastLocked}; pressed ${await pressed("volume")}; lines ${await lines(page)}; note "${note}"`,
     "true, true, volume, note", lastLocked === "true" && await pressed("volume") === "true" && await lines(page) === "volume"
       && note.includes("cannot be switched off"));
-  await page.locator("#lg-price").click();
+  await page.locator("#lg-dem").click();
+  await page.locator("#lg-rep").click();
   await page.locator("#lg-news").click();
-  check("all three lines back; nothing locked", `${await lines(page)} | ${await page.locator('.lg-btn[aria-disabled="true"]').count()} locked`,
-    "news,price,volume | 0 locked", await lines(page) === "news,price,volume" && await page.locator('.lg-btn[aria-disabled="true"]').count() === 0);
+  check("all four lines back; nothing locked", `${await lines(page)} | ${await page.locator('.lg-btn[aria-disabled="true"]').count()} locked`,
+    "dem,news,rep,volume | 0 locked", await lines(page) === "dem,news,rep,volume" && await page.locator('.lg-btn[aria-disabled="true"]').count() === 0);
 
   // date range: inputs carry min and max; out-of-range and start-after-end are rejected with a visible message
   const mm = await page.$eval("#d-from", (i) => `${i.min}..${i.max}`);
@@ -607,20 +619,20 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     const nd = await page.locator("#lg-news").getAttribute("aria-disabled") === "true", nc = await pressed("news") === "true";
     await page.locator("#lg-news").click({ force: true });
     const legNews = (await page.locator("#lg-news").textContent()).replace(/\s+/g, " ").trim();
-    check(`?race=${id}: no news: status line, Attention entry off and disabled (a click does nothing), price and volume drawn`,
+    check(`?race=${id}: no news: the one status line, Attention entry off and disabled (a click does nothing), both candidates and volume drawn`,
       `${st} | disabled ${nd} pressed ${nc} | ${legNews} | lines ${await lines(page)}`, "No news data for this race yet.",
       st === "No news data for this race yet." && nd && !nc && legNews.includes("(no news data for this race yet)")
-        && await lines(page) === "price,volume");
+        && await lines(page) === "dem,rep,volume");
     const miss = noNews.series.display_daily.coverage.kalshi_price_close.missing_days;
-    const segs = await page.$eval("#chart svg path.line-price", (p) => (p.getAttribute("d").match(/M/g) || []).length);
+    const segs = await page.$eval("#chart svg path.line-dem", (p) => (p.getAttribute("d").match(/M/g) || []).length);
     check(`${id}: missing Kalshi days break the price line (not drawn as zero)`, `${segs} segment(s); missing ${miss.join(", ")}`,
       "more than one segment when a missing day is inside the window", miss.length === 0 || segs > 1);
     await axe(page, `1280 ${id}`);
     await page.locator('svg.usmap path[data-state="TX"]').click();
     await page.waitForFunction(() => document.querySelector("#race")?.getAttribute("data-race")?.startsWith("tx-"));
     check("Texas on the map opens Texas Senate; Attention entry on again", `${await page.locator("#race").getAttribute("data-race")} ${await pressed("news")} ${await lines(page)}`,
-      "tx-senate-2026 true news,price,volume", await page.locator("#race").getAttribute("data-race") === "tx-senate-2026"
-        && await pressed("news") === "true" && await lines(page) === "news,price,volume");
+      "tx-senate-2026 true dem,news,rep,volume", await page.locator("#race").getAttribute("data-race") === "tx-senate-2026"
+        && await pressed("news") === "true" && await lines(page) === "dem,news,rep,volume");
   }
   // the hash on load: known values apply, unknown or disabled values fall back to the default
   await page.goto(`${BASE}#state=FL&type=governor&metric=attention&polls=many&source=bluesky`, { waitUntil: "networkidle" });
@@ -643,7 +655,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const g0 = await gran(page);
   check("full range: Kalshi: daily, volume per day in the legend and on the axis, no attention note", JSON.stringify(g0),
     "Kalshi: daily, per day, note hidden", isDaily(g0));
-  check("full range: Full range button pressed", await quickPressed(page), "q-full", await quickPressed(page) === "q-full");
+  check("full range: All pressed", await quickPressed(page), "r-All", await quickPressed(page) === "r-All");
   // the threshold edge through the date inputs: 14 days hourly, 15 days daily
   await setDate(page, "#d-from", "2026-10-01");
   await setDate(page, "#d-to", "2026-10-14");
@@ -655,43 +667,47 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await setDate(page, "#d-from", "2026-10-10");
   await setDate(page, "#d-to", "2026-10-20");
   const g11 = await gran(page);
-  const pts11 = (await hourly(page, "price")).n;
+  const pts11 = (await hourly(page, "dem")).n;
   check("11 days via the date inputs: hourly, about 24 price points per day", `${JSON.stringify(g11)} ${pts11} points`, "hourly, 264 points",
     isHourly(g11) && Math.abs(pts11 / 11 - 24) <= 1);
   await page.locator("#d-reset").click();
   check("Reset: full range and daily again", `${await range(page)} ${(await gran(page)).label}`, `${w.start}..${w.end} Kalshi: daily`,
     await range(page) === `${w.start}..${w.end}` && isDaily(await gran(page)));
 
-  // quick buttons by keyboard: real buttons, Enter and Space
-  const qb = await page.$$eval(".qbtn", (bs) => bs.map((b) => `${b.tagName}|${b.type}|${b.textContent}`).join(" / "));
-  check("three quick range buttons", qb, "Last 7 days before the election / Last 14 days / Full range",
-    qb === "BUTTON|button|Last 7 days before the election / BUTTON|button|Last 14 days / BUTTON|button|Full range");
-  await page.locator("#q-election7").focus();
+  // range buttons by keyboard: real buttons, Enter and Space. 1W is the 7 days ending on the window's last day.
+  await page.locator("#r-1W").focus();
   await page.keyboard.press("Enter");
   const g7 = await gran(page);
   const r7 = await range(page);
-  check("keyboard Enter on Last 7 days before the election: 2026-10-28..2026-11-03 (from the election date), hourly, pressed",
-    `${r7} ${JSON.stringify(g7)} pressed ${await quickPressed(page)}`, "2026-10-28..2026-11-03 hourly q-election7",
-    r7 === `${addDays(tx.race.election_date, -6)}..${tx.race.election_date}` && r7 === "2026-10-28..2026-11-03" && isHourly(g7)
-      && await quickPressed(page) === "q-election7");
+  const W1 = `${addDays(w.end, -6)}..${w.end}`;
+  check("keyboard Enter on 1W: the 7 days ending on the window's last day, hourly, pressed",
+    `${r7} ${JSON.stringify(g7)} pressed ${await quickPressed(page)}`, `${W1} hourly r-1W`,
+    r7 === W1 && r7 === "2026-10-29..2026-11-04" && isHourly(g7) && await quickPressed(page) === "r-1W");
   const note = g7.note;
   check("hourly: the attention note is visible", note, "Attention is daily: Media Cloud gives no time of day.",
     note === "Attention is daily: Media Cloud gives no time of day." && await page.locator("#att-note").isVisible());
-  // about 24 points per day on price and volume
-  const hp = await hourly(page, "price"), hv = await hourly(page, "volume");
-  check("hourly 7 days: price and volume have about 24 points per day", `price ${hp.n}, volume ${hv.n} points over 7 days`, "168 each",
-    Math.abs(hp.n / 7 - 24) <= 1 && Math.abs(hv.n / 7 - 24) <= 1);
+  // one point per hour on the candidate lines and volume: every display_hourly row of the 7 days (the last day ends at
+  // the last candle)
+  const hp = await hourly(page, "dem"), hpr = await hourly(page, "rep"), hv = await hourly(page, "volume");
+  const nRows = txh.rows.filter((r) => r[0].slice(0, 10) >= "2026-10-29").length;
+  check("hourly 1W: each Kalshi line has one point per display_hourly row", `dem ${hp.n}, rep ${hpr.n}, volume ${hv.n}; JSON ${nRows} rows`,
+    `${nRows} each`, hp.n === nRows && hpr.n === nRows && hv.n === nRows);
   // hourly spot checks: plotted values and the readout against display_hourly
   for (const ts of ["2026-10-29T15:00:00Z", "2026-11-01T03:00:00Z", "2026-11-03T20:00:00Z"]) {
     const row = hourRow.get(ts);
-    const r = await cursorTo(page, ts, "2026-10-28");
-    const pp = hp.at.get(ts), pv = hv.at.get(ts);
-    const okP = Math.abs(pp - row[1] * 100) <= hp.tol + 1e-9, okV = Math.abs(pv - row[2]) <= hv.tol + 1e-9 * row[2];
-    const okR = r.ts === ts && r.when === whenText(ts) && r.price === fmt.price(row[1]) && r.volume === fmt.volume(row[2]);
+    const r = await cursorTo(page, ts, "2026-10-29");
+    const tp = await tooltip(page);
+    const pp = hp.at.get(ts), pr = hpr.at.get(ts), pv = hv.at.get(ts);
+    const okP = Math.abs(pp - row[1] * 100) <= hp.tol + 1e-9 && Math.abs(pr - row[3] * 100) <= hpr.tol + 1e-9
+      && Math.abs(pv - row[2]) <= hv.tol + 1e-9 * row[2];
+    const okV = !tp.hidden && tp.when === whenText(ts) && tp.dem === fmt.dem(row[1]) && tp.rep === fmt.rep(row[3])
+      && tp.volume === fmt.volume(row[2]) && tp.news === fmt.news(dayRow.get(ts.slice(0, 10))[NEWS]);
+    const okR = r.ts === ts && r.when === whenText(ts) && r.dem === fmt.dem(row[1]) && r.rep === fmt.rep(row[3]) && r.volume === fmt.volume(row[2]);
     const day = ts.slice(0, 10);
     const okN = r.news === fmt.news(dayRow.get(day)[NEWS]) && /all of /.test(r.newsLabel);
-    report.hourly.push({ ts, json_price: row[1], plotted_price: pp, json_volume: row[2], plotted_volume: pv, readout: `${r.when}: ${r.price}; ${r.volume}; ${r.newsLabel} ${r.news}`,
-      ok: okP && okV && okR && okN });
+    report.hourly.push({ ts, json_price: row[1], plotted_price: pp, json_r_price: row[3], plotted_r_price: pr, json_volume: row[2],
+      plotted_volume: pv, json_news: dayRow.get(day)[NEWS], tooltip: `${tp.when}: ${tp.dem}; ${tp.rep}; ${tp.volume}; ${tp.news}`,
+      readout: `${r.when}: ${r.dem}; ${r.rep}; ${r.volume}; ${r.newsLabel} ${r.news}`, ok: okP && okV && okR && okN });
     if (!(okP && okV && okR && okN)) failed = true;
   }
   // day totals: sum of the plotted hours equals the daily volume; the day's last hourly price equals the daily close
@@ -721,7 +737,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     "step true, <= 8 distinct y, changes at midnight", an.step && ys.size <= 8 && changes.length > 0 && atMidnight
       && changes.every((c) => c.sameX));
   const stepVals = an.pts.filter((q, i) => i % 2 === 0).map((q) => q.v);
-  const days7 = Array.from({ length: 7 }, (_, i) => addDays("2026-10-28", i));
+  const days7 = Array.from({ length: 7 }, (_, i) => addDays("2026-10-29", i));
   const stepOk = days7.every((d, i) => Math.abs(stepVals[i] - dayRow.get(d)[NEWS]) <= an.tol + 1e-9);
   check("hourly: attention step values equal the daily news counts", stepVals.map((v) => v.toFixed(3)).join(","),
     days7.map((d) => dayRow.get(d)[NEWS]).join(","), stepOk);
@@ -733,7 +749,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await page.locator("#chart").blur();
   await axe(page, "1280 hourly light");
   await page.mouse.move(0, 0);
-  await cursorTo(page, "2026-10-29T12:00:00Z", "2026-10-28");  // the tooltip opens right of it, clear of the election label
+  await cursorTo(page, "2026-10-30T12:00:00Z", "2026-10-29");  // the tooltip opens right of it, clear of the election label
   await page.locator("#chart").blur();
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-1280-light.png") });
   await toggleTheme(page);
@@ -742,18 +758,19 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-1280-dark.png") });
   await toggleTheme(page);
 
-  // Space on Full range: back to daily
-  await page.locator("#q-full").focus();
+  // Space on All: back to daily
+  await page.locator("#r-All").focus();
   await page.keyboard.press("Space");
-  check("keyboard Space on Full range: daily again", `${await range(page)} ${(await gran(page)).label} ${await quickPressed(page)}`,
-    `${w.start}..${w.end} Kalshi: daily q-full`, await range(page) === `${w.start}..${w.end}` && isDaily(await gran(page))
-      && await quickPressed(page) === "q-full");
-  await page.locator("#q-last14").click();
+  check("keyboard Space on All: daily again", `${await range(page)} ${(await gran(page)).label} ${await quickPressed(page)}`,
+    `${w.start}..${w.end} Kalshi: daily r-All`, await range(page) === `${w.start}..${w.end}` && isDaily(await gran(page))
+      && await quickPressed(page) === "r-All");
+  await setDate(page, "#d-from", "2026-10-22");
   const r14 = await range(page);
-  check("Last 14 days: 2026-10-22..2026-11-04, hourly, through the last candle", `${r14} ${(await gran(page)).label}`,
-    `2026-10-22..${w.end} Kalshi: hourly`, r14 === `2026-10-22..${w.end}` && isHourly(await gran(page))
-      && (await hourly(page, "price")).at.has(txh.last_ts));
-  await page.locator("#q-full").click();
+  check("14 days 2026-10-22..2026-11-04 (date inputs): hourly, through the last candle, no range button pressed",
+    `${r14} ${(await gran(page)).label} pressed "${await quickPressed(page)}"`, `2026-10-22..${w.end} Kalshi: hourly, none`,
+    r14 === `2026-10-22..${w.end}` && isHourly(await gran(page)) && (await hourly(page, "dem")).at.has(txh.last_ts)
+      && await quickPressed(page) === "");
+  await page.locator("#r-All").click();
 
   // a filled hour (no candle) shows the no trades readout
   const filled = txh.filled_hours.hours[txh.filled_hours.hours.length - 1];
@@ -763,12 +780,16 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await setDate(page, "#d-to", addDays(ff, 13));
   const fr = await cursorTo(page, filled, ff);
   const frow = hourRow.get(filled);
-  check(`filled hour ${filled} (range ${ff}..${addDays(ff, 13)}): readout says no trades, volume 0, price carried`,
-    JSON.stringify(fr), "no trades this hour, last price carried forward", fr.ts === filled
-      && fr.note === "no trades this hour, last price carried forward" && fr.volume === "0 contracts" && fr.price === fmt.price(frow[1]));
+  check(`filled hour ${filled} (range ${ff}..${addDays(ff, 13)}): readout says the Talarico contract had no trades, volume 0, price carried`,
+    JSON.stringify(fr), "Talarico contract: no trades this hour, last price carried forward", fr.ts === filled
+      && fr.note.startsWith("Talarico contract: no trades this hour, last price carried forward") && fr.volume === "0 contracts"
+      && fr.dem === fmt.dem(frow[1]));
   await page.keyboard.press("ArrowRight");
   const fr2 = await page.evaluate(() => document.querySelector("#readout .rnote")?.textContent ?? null);
-  check("the next hour (with trades) has no note", fr2, "null", fr2 === null);
+  const nextTs = new Date(Date.parse(filled) + HOUR).toISOString().replace(".000Z", "Z");
+  const rFilled = new Set(txh.opposing.filled_hours.hours);
+  check("the next hour (Talarico trades) has no Talarico note", fr2, rFilled.has(nextTs) ? "Paxton note only" : "null",
+    rFilled.has(nextTs) ? fr2 === "Paxton contract: no trades this hour, last price carried forward" : fr2 === null);
   await page.locator("#d-reset").click();
 
   // zoom gestures: a plain wheel over the chart scrolls the page and keeps the range; ctrl + wheel zooms
@@ -802,9 +823,9 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
 // ---------------------------------------------------------------- F3: hourly zoom, 390 phone
 {
   const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
-  await page.locator("#q-election7").tap();
-  check("390: tap Last 7 days before the election: hourly", `${await range(page)} ${(await gran(page)).label}`, "2026-10-28..2026-11-03 Kalshi: hourly",
-    await range(page) === "2026-10-28..2026-11-03" && isHourly(await gran(page)));
+  await page.locator("#r-1W").tap();
+  check("390: tap 1W: hourly", `${await range(page)} ${(await gran(page)).label}`, "2026-10-29..2026-11-04 Kalshi: hourly",
+    await range(page) === "2026-10-29..2026-11-04" && isHourly(await gran(page)));
   const ticks = await page.$$eval("#chart svg .xaxis .tick text", (ts) => ts.map((t) => { const r = t.getBoundingClientRect(); return { s: t.textContent, l: r.left, r: r.right }; }));
   const overlap = ticks.some((t, i) => i > 0 && t.l < ticks[i - 1].r + 4);
   check("390 hourly: x axis tick labels do not crowd (no overlap, date labels)", ticks.map((t) => t.s).join(" | "), "no overlap",
@@ -819,7 +840,8 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     text: document.querySelector("#readout").innerText }));
   const trow = hourRow.get(tr.ts);
   check("390: a tap fills the readout row with the hour in UTC and its values", tr.text.replace(/\s+/g, " "), "the hour, UTC, price and volume",
-    !!trow && tr.when === whenText(tr.ts) && tr.text.includes(fmt.price(trow[1])) && tr.text.includes(fmt.volume(trow[2])));
+    !!trow && tr.when === whenText(tr.ts) && tr.text.includes(fmt.dem(trow[1])) && tr.text.includes(fmt.rep(trow[3]))
+      && tr.text.includes(fmt.volume(trow[2])));
   await axe(page, "390 hourly light");
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "hourly-390-light.png") });
   await page.locator("#theme-btn").tap();
@@ -829,7 +851,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   await page.locator("#theme-btn").tap();
 
   // two finger pinch (CDP touch events): fingers moving apart zoom the chart in
-  await page.locator("#q-full").tap();
+  await page.locator("#r-All").tap();
   const cdp = await ctx.newCDPSession(page);
   await page.locator("#chart").scrollIntoViewIfNeeded();
   await page.waitForTimeout(100);  // let a ResizeObserver redraw settle before reading the plot box
@@ -863,7 +885,8 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
 
   // frame check: 60 pointer moves across the plot in the 14 day hourly view (after the swipe's fling has stopped)
   await page.waitForFunction(() => new Promise((ok) => { const y = scrollY; setTimeout(() => ok(scrollY === y), 250); }), null, { polling: 300 });
-  await page.locator("#q-last14").tap();
+  await setDate(page, "#d-to", "2026-11-04");  // the end first: the pinch left a range that may end before Oct 22
+  await setDate(page, "#d-from", "2026-10-22");
   const fb = await page.locator("#chart svg rect.hit").boundingBox();
   const frames = await page.evaluate(async ({ x, y, w }) => {
     const hit = document.querySelector("#chart svg rect.hit");
@@ -878,7 +901,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     }
     const s = [...out].sort((a, b) => a - b);
     return { n: out.length, median: (s[29] + s[30]) / 2, max: s[s.length - 1],
-      hours: document.querySelectorAll("#chart path.line-price")[0].getAttribute("d").split("L").length,
+      hours: document.querySelectorAll("#chart path.line-dem")[0].getAttribute("d").split("L").length,
       readout: document.querySelector("#readout .rdate")?.dataset.ts };
   }, { x: fb.x, y: fb.y + fb.height / 2, w: fb.width });
   report.frames = frames;
@@ -905,7 +928,6 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   check("390: legend wraps (entries on more than one row), every entry inside the viewport, no overflow", JSON.stringify(lb),
     "rows > 1, right <= 390, overflow 0", rows > 1 && lb.items.every((i) => i.left >= 0 && i.right <= lb.vw) && lb.lgOverflow <= 0
       && lb.pageOverflow <= 0);
-  await page.locator("#lg-why").tap();
   await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "chart-390-light.png") });
   await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: resolve(SHOTS, "filt-closed-390.png") });
@@ -916,12 +938,12 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
     sheet.pos === "fixed" && sheet.left === 0 && sheet.right === 0 && sheet.bottom === 0 && sheet.h < 900);
   await page.screenshot({ path: resolve(SHOTS, "filt-open-390.png") });
   await axe(page, "390 filters open");
-  const targets = "#theme-btn, #ma-info, #racesec .lg-btn, #lg-why, #racesec input[type=date], #d-reset, #racesec .qbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
+  const targets = "#theme-btn, #ma-info, #racesec .lg-btn, #racesec input[type=date], #d-reset, #racesec .rbtn, #chart, #racesec .brushbox svg, #filters-btn, #filters-panel label.tg, #filters-panel select, #f-reset, #f-close";
   const nTargets = await page.locator(targets).count();
   const small = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
     .map((e) => { const r = e.getBoundingClientRect(); return { e: e.id || e.className?.baseVal || e.className || e.tagName, w: Math.round(r.width), h: Math.round(r.height) }; })
     .filter((r) => r.w < 44 || r.h < 44), targets);
-  check(`touch targets at least 44 px (theme, legend entries, why?, dates, Reset, chart, brush, Filters button and panel; ${nTargets} checked)`,
+  check(`touch targets at least 44 px (theme, legend entries, dates, Reset, range buttons, chart, brush, Filters button and panel; ${nTargets} checked)`,
     JSON.stringify(small), "none smaller", small.length === 0 && nTargets >= 26);
   await page.touchscreen.tap(195, 40);
   check("390: a tap outside the sheet closes it", await page.locator("#filters-panel").isVisible(), "false",
@@ -930,7 +952,7 @@ const whenText = (ts) => { const d = new Date(ts); return `${MON[d.getUTCMonth()
   const box = await page.locator("#chart svg rect.hit").boundingBox();
   await page.touchscreen.tap(box.x + box.width * 0.25, box.y + box.height / 2);
   const r = await readout(page);
-  check("tap on the chart fills the readout row", JSON.stringify(r), "date and three values", r.date && r.price && r.volume && r.news);
+  check("tap on the chart fills the readout row", JSON.stringify(r), "date and four values", r.date && r.dem && r.rep && r.volume && r.news);
   const deco = await decorated(page);
   check("390 light: no box shadow or gradient", deco.join(", ") || "none", "none", deco.length === 0);
   await page.screenshot({ path: resolve(SHOTS, "style-light-390.png"), fullPage: true });
@@ -1146,7 +1168,7 @@ async function noForbidden(page, key) {
   const tap2 = await tipOpen(page);
   await info.tap();
   const tap3 = await tipOpen(page);
-  await page.touchscreen.tap(195, 860);
+  await page.touchscreen.tap(3, 860);  // the page margin: a tap that lands on no control
   const tapOut = await tipOpen(page);
   check("G1 390: tap toggles the tooltip (open, closed, open), a tap outside closes it", `${tap1} ${tap2} ${tap3} ${tapOut}`, "true false true false",
     tap1 && !tap2 && tap3 && !tapOut);
@@ -1163,13 +1185,181 @@ async function noForbidden(page, key) {
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- G2: Kalshi style chart, both candidates
+/** End of line labels: key, the shown percent and the svg-relative box of each, and whether any two overlap. */
+const endLabels = (page) => page.evaluate(() => {
+  const svg = document.querySelector("#chart svg.lc").getBoundingClientRect();
+  const ls = [...document.querySelectorAll("#chart .endlabel")].map((g) => {
+    const r = g.getBoundingClientRect();
+    return { k: g.dataset.k, name: g.querySelector(".el-name").textContent, pct: g.querySelector(".el-pct").textContent,
+      fill: getComputedStyle(g.querySelector(".el-pct")).fill, top: r.top, bottom: r.bottom, left: r.left, right: r.right,
+      inside: r.left >= svg.left - 0.5 && r.right <= svg.right + 0.5 && r.top >= svg.top - 0.5 && r.bottom <= svg.bottom + 0.5 };
+  });
+  const overlap = ls.some((a, i) => ls.some((b, j) => j > i && a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom));
+  return { ls, overlap };
+});
+/** The last non-null value in [from, to] of a daily or an hourly column, as the label prints it. */
+function lastInView(from, to, hourlyMode, k) {
+  if (hourlyMode) {
+    const i = k === "dem" ? 1 : 3;
+    const r = [...txh.rows].reverse().find((x) => x[0].slice(0, 10) >= from && x[0].slice(0, 10) <= to && x[i] != null);
+    return pctText(r[i]);
+  }
+  const r = [...tx.series.display_daily.rows].reverse().find((x) => x.date >= from && x.date <= to && x[COL[k]] != null);
+  return pctText(r[COL[k]]);
+}
+const BODY_BAD = /\bwhy\b|News data: live/i;
+async function noWhy(page, key) {
+  const t = await page.evaluate(() => document.body.innerText);
+  const hits = t.match(new RegExp(BODY_BAD.source, "gi")) ?? [];
+  check(`G2 ${key}: page text has no "why" (whole word) and no "News data: live"`, hits.join(", ") || "none", "none", hits.length === 0);
+}
+async function labelsOk(page, key, from, to, hourlyMode) {
+  const e = await endLabels(page);
+  const want = { dem: lastInView(from, to, hourlyMode, "dem"), rep: lastInView(from, to, hourlyMode, "rep") };
+  const leg = await page.evaluate(() => ({ dem: document.querySelector('.lg-val[data-k="dem"]').textContent.trim(),
+    rep: document.querySelector('.lg-val[data-k="rep"]').textContent.trim() }));
+  const ok = e.ls.length === 2 && e.ls.every((l) => l.pct === want[l.k] && l.inside) && !e.overlap
+    && e.ls.find((l) => l.k === "dem").name === "Talarico" && e.ls.find((l) => l.k === "rep").name === "Paxton"
+    && leg.dem === want.dem && leg.rep === want.rep;
+  check(`G2 ${key}: end labels Talarico and Paxton show the last value in view (${from}..${to}), the legend the same, inside the svg, no overlap`,
+    JSON.stringify({ labels: e.ls.map((l) => `${l.k} ${l.name} ${l.pct} inside ${l.inside} y ${Math.round(l.top)}..${Math.round(l.bottom)}`), overlap: e.overlap, legend: leg }),
+    JSON.stringify(want), ok);
+  return e;
+}
+
+{
+  const { ctx, page } = await open(1280);
+  const w = tx.series.display_daily.window;
+  // two price paths, blue and red, named after the candidates
+  const paths = await page.evaluate(() => ["dem", "rep"].map((k) => { const p = document.querySelector(`#chart path.line-${k}`);
+    return { k, stroke: p && getComputedStyle(p).stroke, dash: p && p.getAttribute("stroke-dasharray"), dom: p?.dataset.domain, rng: p?.dataset.range }; }));
+  const names = await page.$$eval("#legend .lg-name", (ns) => ns.map((n) => n.textContent));
+  check("G2 1280 light: a Democratic (blue) and a Republican (red) price path, solid, with data-domain and data-range; legend names",
+    `${JSON.stringify(paths)} | ${names.join(" / ")}`, "rgb(32, 94, 166) / rgb(175, 48, 41) | James Talarico (D) / Ken Paxton (R) / Volume / Attention",
+    paths[0].stroke === THEME.light.dem && paths[1].stroke === THEME.light.rep && paths.every((p) => !p.dash && p.dom === "0,100" && p.rng)
+      && names.join(" / ") === "James Talarico (D) / Ken Paxton (R) / Volume / Attention");
+  const pax = await page.$eval("#chart .y-price", (g) => ({ ticks: [...g.querySelectorAll(".tick text")].map((t) => t.textContent).join(" "),
+    right: g.getBoundingClientRect().left > document.querySelector("#chart svg rect.hit").getBoundingClientRect().right }));
+  check("G2: the percent axis is on the right of the plot with ticks 0% 25% 50% 75% 100%", JSON.stringify(pax), "0% 25% 50% 75% 100%, right",
+    pax.ticks === "0% 25% 50% 75% 100%" && pax.right);
+  await labelsOk(page, "1280 All", w.start, w.end, false);
+  const elFill = await endLabels(page);
+  check("G2 light: end label text in the line colors", elFill.ls.map((l) => `${l.k} ${l.fill}`).join(", "), "dem blue, rep red",
+    elFill.ls.every((l) => l.fill === THEME.light[l.k]));
+  // range buttons: exactly 1D 1W 1M 3M All; each click sets the dates and the zoom; aria-pressed follows
+  const rb = await page.$$eval("#racesec .rbtn", (bs) => bs.map((b) => b.textContent));
+  check("G2 range buttons are exactly 1D 1W 1M 3M All", rb.join(" "), "1D 1W 1M 3M All", rb.join(" ") === "1D 1W 1M 3M All");
+  const want = { "1D": [w.end, w.end, "hour"], "1W": [addDays(w.end, -6), w.end, "hour"], "1M": [addDays(w.end, -29), w.end, "day"],
+    "3M": [addDays(w.end, -89), w.end, "day"], All: [w.start, w.end, "day"] };
+  for (const [id, [f, t, g]] of Object.entries(want)) {
+    await page.locator(`#r-${id}`).click();
+    const got = `${await range(page)} ${(await gran(page)).svg} ${await quickPressed(page)}`;
+    check(`G2 range ${id}: ${f}..${t}, ${g === "hour" ? "hourly" : "daily"}, pressed`, got, `${f}..${t} ${g} r-${id}`, got === `${f}..${t} ${g} r-${id}`);
+    await labelsOk(page, `1280 ${id}`, f, t, g === "hour");
+  }
+  // close lines: end labels nudged apart (Aug 5 to Sep 2 ends at 48% and 52%)
+  await setDate(page, "#d-from", "2026-08-05");
+  await setDate(page, "#d-to", "2026-09-02");
+  await labelsOk(page, "1280 close values", "2026-08-05", "2026-09-02", false);
+  await page.locator("#chart").screenshot({ path: resolve(SHOTS, "g2-nudge-1280.png") });
+  await page.locator("#r-All").click();
+  // daily crosshair: the tooltip against the JSON on three days (keyboard), then a pointer hover
+  await page.locator("#chart").focus();
+  await page.keyboard.press("Home");
+  const dates = tx.series.display_daily.rows.map((r) => r.date);
+  let at = 0;
+  for (const d of ["2026-08-20", "2026-10-01", "2026-11-03"]) {
+    while (at < dates.indexOf(d)) { await page.keyboard.press("ArrowRight"); at++; }
+    const tp = await tooltip(page), row = dayRow.get(d);
+    const ok = !tp.hidden && tp.when.endsWith(", UTC") && KEYS.every((k) => tp[k] === fmt[k](row[COL[k]]));
+    report.g2.push({ mode: "daily", at: d, tooltip: `${tp.when}: ${KEYS.map((k) => tp[k]).join("; ")}`,
+      json: KEYS.map((k) => `${k} ${row[COL[k]]}`).join("; "), ok });
+    if (!ok) failed = true;
+  }
+  await page.locator("#chart").blur();
+  const hb = await page.locator("#chart svg rect.hit").boundingBox();
+  for (const fx of [0.1, 0.97]) {
+    await page.mouse.move(hb.x + hb.width * fx, hb.y + hb.height / 2);
+    const geo = await page.evaluate(() => { const t = document.querySelector("#chart .tip").getBoundingClientRect(),
+      c = document.querySelector("#chart").getBoundingClientRect(), x = document.querySelector("#chart .cursor line").getBoundingClientRect();
+      return { left: t.left, right: t.right, cl: c.left, cr: c.right, cx: x.left, vw: innerWidth }; });
+    const side = geo.left >= geo.cx ? "right" : "left";
+    check(`G2 hover at ${fx * 100}% across: one tooltip next to the crosshair (${fx < 0.5 ? "right" : "left"} of it), inside the chart and the viewport`,
+      JSON.stringify({ ...geo, side }), fx < 0.5 ? "right" : "left", side === (fx < 0.5 ? "right" : "left") && geo.left >= geo.cl - 0.5
+        && geo.right <= geo.cr + 0.5 && geo.right <= geo.vw && await page.locator("#chart .cursor circle").count() === 4);
+  }
+  await page.mouse.move(hb.x + hb.width * 0.62, hb.y + hb.height * 0.4);
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-crosshair-1280.png") });
+  await page.mouse.move(0, 0);
+  await noWhy(page, "1280 light news");
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-1280-light.png") });
+  await axe(page, "G2 1280 light");
+  // hourly 1W: tooltip spot checks were done in the F3 block; here the screenshot
+  await page.locator("#r-1W").click();
+  await page.mouse.move(hb.x + hb.width * 0.4, hb.y + hb.height * 0.45);
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-1w-hourly.png") });
+  await page.mouse.move(0, 0);
+  await noWhy(page, "1280 light news 1W");
+  await page.locator("#r-All").click();
+  await toggleTheme(page);
+  await page.locator("#theme-btn").blur();
+  const pd = await page.evaluate(() => ["dem", "rep"].map((k) => getComputedStyle(document.querySelector(`#chart path.line-${k}`)).stroke));
+  const ed = await endLabels(page);
+  check("G2 dark: blue and red lines and end labels in the dark tokens", `${pd.join(" / ")} | ${ed.ls.map((l) => l.fill).join(" / ")}`,
+    `${THEME.dark.dem} / ${THEME.dark.rep}`, pd[0] === THEME.dark.dem && pd[1] === THEME.dark.rep
+      && ed.ls.every((l) => l.fill === THEME.dark[l.k]));
+  await noWhy(page, "1280 dark news");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-1280-dark.png") });
+  await axe(page, "G2 1280 dark");
+  // the Wikipedia source, both themes
+  await page.evaluate(() => { location.hash = "#source=wikipedia"; });
+  await page.waitForFunction(() => document.querySelector("#lg-news .lg-desc")?.textContent.startsWith("Wikipedia"));
+  await noWhy(page, "1280 dark wikipedia");
+  await toggleTheme(page);
+  await noWhy(page, "1280 light wikipedia");
+  await ctx.close();
+}
+
+{
+  const { ctx, page } = await open(390, `${BASE}?race=tx-senate-2026`, true);
+  const w = tx.series.display_daily.window;
+  const g = await page.evaluate(() => {
+    const h = (sel) => [...document.querySelectorAll(sel)].map((e) => Math.round(e.getBoundingClientRect().height));
+    return { overflow: document.documentElement.scrollWidth, ranges: h("#racesec .rbtn"), legend: h("#legend .lg-btn"),
+      rows: new Set([...document.querySelectorAll("#legend .lg-item")].map((e) => Math.round(e.getBoundingClientRect().top))).size };
+  });
+  check("G2 390: no horizontal overflow, range buttons and legend toggles at least 44 px tall, legend wraps", JSON.stringify(g),
+    "scrollWidth <= 390, all >= 44, rows > 1", g.overflow <= 390 && g.ranges.length === 5 && g.ranges.every((x) => x >= 44)
+      && g.legend.length === 4 && g.legend.every((x) => x >= 44) && g.rows > 1);
+  await labelsOk(page, "390 All", w.start, w.end, false);
+  const small = await page.$eval("#chart .el-pct", (t) => getComputedStyle(t).fontSize);
+  check("G2 390: compact end labels (surname and percent, smaller font)", small, "12px", small === "12px");
+  await page.locator("#r-1W").tap();
+  await labelsOk(page, "390 1W", addDays(w.end, -6), w.end, true);
+  await setDate(page, "#d-from", "2026-08-05");
+  await setDate(page, "#d-to", "2026-09-02");
+  await labelsOk(page, "390 close values", "2026-08-05", "2026-09-02", false);
+  await page.locator("#r-All").tap();
+  await noWhy(page, "390 light");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-390-light.png") });
+  await axe(page, "G2 390 light");
+  await page.locator("#theme-btn").tap();
+  await page.locator("#theme-btn").blur();
+  await noWhy(page, "390 dark");
+  await page.locator("#racesec").screenshot({ path: resolve(SHOTS, "g2-390-dark.png") });
+  await axe(page, "G2 390 dark");
+  await ctx.close();
+}
+
 // ---------------------------------------------------------------- demo
 if (DEMO) {
   const { ctx, page } = await open(1280, `${DEMO}?race=tx-senate-2026&demo=1`);
   const label = (await page.locator("#demo-label").innerText().catch(() => "")).trim();
-  const st = (await page.locator("#news-status").innerText()).trim();
-  check("--demo: chart shows a visible Demo data label and the status says demo", `${label} | ${st}`, "Demo data",
-    label === "Demo data" && await page.locator("#demo-label").isVisible() && st.includes("demo"));
+  const st = await page.locator("#news-status").count();
+  check("--demo: chart shows a visible Demo data label (and no News data status line)", `${label} | status lines ${st}`, "Demo data | 0",
+    label === "Demo data" && await page.locator("#demo-label").isVisible() && st === 0);
   await axe(page, "1280 demo");
   await ctx.close();
 }
@@ -1184,13 +1374,17 @@ for (const s of report.spot) console.log(`| ${s.date} | ${s.series} | ${s.readou
 console.log("\nPlotted values (line path coordinates read back to values) vs data/processed/tx-senate-2026.json (price x100):");
 console.log("| date | series | plotted | JSON value | tolerance (0.001 px) | ok |\n|---|---|---|---|---|---|");
 for (const s of report.plotted) console.log(`| ${s.date} | ${s.series} | ${s.plotted} | ${s.json} | ${s.tol.toPrecision(3)} | ${s.ok ? "yes" : "NO"} |`);
-if (report.plotted.length !== 9) { console.log("expected 9 plotted spot checks"); failed = true; }
+if (report.plotted.length !== 12) { console.log("expected 12 plotted spot checks"); failed = true; }
 console.log("\nHourly spot check (7 day view, plotted values and readout vs series.display_hourly; price plotted x100):");
-console.log("| ts_utc | JSON price | plotted price | JSON volume | plotted volume | readout | ok |\n|---|---|---|---|---|---|---|");
-for (const s of report.hourly) console.log(`| ${s.ts} | ${s.json_price} | ${s.plotted_price.toFixed(4)} | ${s.json_volume} | ${s.plotted_volume.toFixed(2)} | ${s.readout} | ${s.ok ? "yes" : "NO"} |`);
+console.log("| ts_utc | JSON D price | plotted D | JSON R price | plotted R | JSON volume | plotted volume | JSON attention | tooltip | ok |\n|---|---|---|---|---|---|---|---|---|---|");
+for (const s of report.hourly) console.log(`| ${s.ts} | ${s.json_price} | ${s.plotted_price.toFixed(4)} | ${s.json_r_price} | ${s.plotted_r_price.toFixed(4)} | ${s.json_volume} | ${s.plotted_volume.toFixed(2)} | ${s.json_news} | ${s.tooltip} | ${s.ok ? "yes" : "NO"} |`);
 console.log("\nDay totals (plotted hourly volumes summed and the day's last hourly price vs series.display_daily):");
 console.log("| day | hours | plotted sum | JSON hourly sum | daily volume | sum tolerance | last hour price (x100) | daily close | ok |\n|---|---|---|---|---|---|---|---|---|");
 for (const s of report.totals) console.log(`| ${s.day} | ${s.hours} | ${s.plotted_sum.toFixed(2)} | ${s.json_hourly_sum.toFixed(2)} | ${s.daily_volume} | ${s.sum_tol.toFixed(2)} | ${s.last_hour_price.toFixed(4)} | ${s.daily_close} | ${s.ok ? "yes" : "NO"} |`);
+console.log("\nG2 daily crosshair tooltip vs data/processed/tx-senate-2026.json (display_daily; prices x100):");
+console.log("| date | tooltip | JSON | ok |\n|---|---|---|---|");
+for (const s of report.g2) console.log(`| ${s.at} | ${s.tooltip} | ${s.json} | ${s.ok ? "yes" : "NO"} |`);
+if (report.g2.length !== 3) { console.log("expected 3 G2 daily tooltip checks"); failed = true; }
 if (report.frames) console.log(`\nFrame check, 390 px, 14 day hourly view: ${report.frames.n} pointermove events, median ${report.frames.median.toFixed(2)} ms, max ${report.frames.max.toFixed(2)} ms`);
 if (report.hourly.length !== 3 || report.totals.length !== 2) { console.log("expected 3 hourly spot checks and 2 day totals"); failed = true; }
 console.log(failed ? "VERIFY FAILED" : "VERIFY OK");

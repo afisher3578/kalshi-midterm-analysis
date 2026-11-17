@@ -1,7 +1,7 @@
 # Dashboard style: tokens and contrast (R2)
 
 The dashboard uses the alexfisher.co tokens (Flexoki base scale). All colors are CSS variables at the top of
-`web/src/style.css`; the TypeScript only names them (`var(--series-price)` and so on).
+`web/src/style.css`; the TypeScript only names them (`var(--series-dem)` and so on).
 
 ## Tokens
 
@@ -13,8 +13,9 @@ The dashboard uses the alexfisher.co tokens (Flexoki base scale). All colors are
 | --faint | #B7B5AC | #575653 | no-data hatch, off swatches (not text) |
 | --rule | #E6E4D9 | #343331 | hairlines, gridlines, election band |
 | --link | #100F0F | #CECDC3 | links |
-| --series-price | #205EA6 (blue-600) | #4385BE (blue-400) | Kalshi price line |
-| --series-volume | #AF3029 (red-600) | #D14D41 (red-400) | Kalshi volume line |
+| --series-dem | #205EA6 (blue-600) | #4385BE (blue-400) | Democratic candidate line and end of line label |
+| --series-rep | #AF3029 (red-600) | #E8705F (red-300) | Republican candidate line and end of line label |
+| --series-volume | #5E409D (purple-600) | #8B7EC8 (purple-400) | Kalshi volume line |
 | --series-news | #66800B (green-600) | #879A39 (green-400) | media attention line |
 | --map-1 to --map-5 | #DAD8CE, #B7B5AC, #6F6E69, #403E3C, #1C1B1A | #343331, #575653, #878580, #B7B5AC, #CECDC3 | map ramp, low to high |
 
@@ -23,7 +24,8 @@ The `--cat-1` to `--cat-7` variables (Flexoki hues) color the hidden detail view
 ## Contrast
 
 Output of `cd web && npm run contrast` (web/scripts/contrast.mjs). It exits 1 if text is under 4.5:1, or a series
-line or the selected outline is under 3:1, against --bg. Map rows give the label color against the bin fill.
+line or the selected outline is under 3:1, against --bg. The two candidate colors also color label text, so they
+must reach 4.5:1 (the dark red is red-300 for that: red-400 is 4.42:1). Map rows give the label color against the bin fill.
 
 ### Light theme (bg #FFFCF0)
 
@@ -32,10 +34,13 @@ line or the selected outline is under 3:1, against --bg. Map rows give the label
 | --fg | #100F0F | text | 18.62:1 | 4.5:1 | pass |
 | --muted | #6F6E69 | secondary text, axis text, legend | 4.97:1 | 4.5:1 | pass |
 | --link | #100F0F | links | 18.62:1 | 4.5:1 | pass |
-| --faint | #B7B5AC | no-data hatch, off swatches (not text) | 2.00:1 | report only | n/a |
+| --faint | #B7B5AC | swatch borders, off swatches (not text) | 2.00:1 | report only | n/a |
 | --rule | #E6E4D9 | hairlines, gridlines (not text) | 1.24:1 | report only | n/a |
-| --series-price | #205EA6 | Kalshi price line | 6.36:1 | 3:1 | pass |
-| --series-volume | #AF3029 | Kalshi volume line | 6.23:1 | 3:1 | pass |
+| --series-dem | #205EA6 | Democratic candidate line | 6.36:1 | 3:1 | pass |
+| --series-rep | #AF3029 | Republican candidate line | 6.23:1 | 3:1 | pass |
+| --series-dem | #205EA6 | Democratic end of line label text | 6.36:1 | 4.5:1 | pass |
+| --series-rep | #AF3029 | Republican end of line label text | 6.23:1 | 4.5:1 | pass |
+| --series-volume | #5E409D | Kalshi volume line | 7.58:1 | 3:1 | pass |
 | --series-news | #66800B | media attention line | 4.39:1 | 3:1 | pass |
 | --fg | #100F0F | map selected-state outline | 18.62:1 | 3:1 | pass |
 | --map-1 | #DAD8CE | map fill, label in --fg | 13.39:1 (label vs fill) | 4.5:1 | pass |
@@ -51,10 +56,13 @@ line or the selected outline is under 3:1, against --bg. Map rows give the label
 | --fg | #CECDC3 | text | 11.98:1 | 4.5:1 | pass |
 | --muted | #878580 | secondary text, axis text, legend | 5.19:1 | 4.5:1 | pass |
 | --link | #CECDC3 | links | 11.98:1 | 4.5:1 | pass |
-| --faint | #575653 | no-data hatch, off swatches (not text) | 2.61:1 | report only | n/a |
+| --faint | #575653 | swatch borders, off swatches (not text) | 2.61:1 | report only | n/a |
 | --rule | #343331 | hairlines, gridlines (not text) | 1.52:1 | report only | n/a |
-| --series-price | #4385BE | Kalshi price line | 4.86:1 | 3:1 | pass |
-| --series-volume | #D14D41 | Kalshi volume line | 4.42:1 | 3:1 | pass |
+| --series-dem | #4385BE | Democratic candidate line | 4.86:1 | 3:1 | pass |
+| --series-rep | #E8705F | Republican candidate line | 6.30:1 | 3:1 | pass |
+| --series-dem | #4385BE | Democratic end of line label text | 4.86:1 | 4.5:1 | pass |
+| --series-rep | #E8705F | Republican end of line label text | 6.30:1 | 4.5:1 | pass |
+| --series-volume | #8B7EC8 | Kalshi volume line | 5.39:1 | 3:1 | pass |
 | --series-news | #879A39 | media attention line | 6.12:1 | 3:1 | pass |
 | --fg | #CECDC3 | map selected-state outline | 11.98:1 | 3:1 | pass |
 | --map-1 | #343331 | map fill, label in --fg | 7.90:1 (label vs fill) | 4.5:1 | pass |

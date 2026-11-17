@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { DisplayDaily, RaceData } from "../src/types";
-import { canHide, chartSeries, checkRange, clampDate, coverageCount, isIsoDate, legendText, lockedLine, NEWS_COL, PRICE_WHY,
+import { canHide, chartSeries, checkRange, clampDate, coverageCount, isIsoDate, legendText, lockedLine, NEWS_COL, partyLines,
   toggleLine } from "../src/display";
 import { formatValue } from "../src/linechart";
 
@@ -25,9 +25,9 @@ describe("chartSeries", () => {
   it("reads price as percent, keeps nulls as gaps and zeros as zeros", () => {
     const s = chartSeries(tiny);
     expect(s.dates).toEqual(["2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08"]);
-    expect(s.price[0]).toBeCloseTo(48);
-    expect(s.price[1]).toBeNull();
-    expect(s.price[3]).toBeCloseTo(48.7);
+    expect(s.dem[0]).toBeCloseTo(48);
+    expect(s.dem[1]).toBeNull();
+    expect(s.dem[3]).toBeCloseTo(48.7);
     expect(s.volume).toEqual([10, 0, null, 4.5]);
     expect(s.news).toEqual([3, null, 0, null]);
   });
@@ -39,13 +39,14 @@ describe("chartSeries", () => {
 
   it("matches the committed Texas JSON", () => {
     const dd = load("tx-senate-2026").series.display_daily!;
-    const s = chartSeries(dd);
+    const s = chartSeries(dd, null, NEWS_COL, partyLines(load("tx-senate-2026").candidates, "SENATETX-26-D", "SENATETX-26-R"));
     expect(s.dates.length).toBe(92);
     expect(s.dates[0]).toBe("2026-08-05");
     expect(s.dates[91]).toBe("2026-11-04");
     const i = s.dates.indexOf("2026-09-15");
     const row = dd.rows.find((r) => r.date === "2026-09-15")!;
-    expect(s.price[i]).toBeCloseTo(Number(row.kalshi_price_close) * 100);
+    expect(s.dem[i]).toBeCloseTo(Number(row.kalshi_price_close) * 100);
+    expect(s.rep[i]).toBeCloseTo(Number(row.kalshi_r_price_close) * 100);
     expect(s.volume[i]).toBe(row.kalshi_volume);
     expect(s.news[i]).toBe(row[NEWS_COL]);
   });
@@ -53,7 +54,7 @@ describe("chartSeries", () => {
   it("keeps Kentucky's missing Kalshi days as nulls and has no news", () => {
     const dd = load("ky-senate-2026").series.display_daily!;
     const s = chartSeries(dd);
-    for (const d of dd.coverage!.kalshi_price_close.missing_days) expect(s.price[s.dates.indexOf(d)]).toBeNull();
+    for (const d of dd.coverage!.kalshi_price_close.missing_days) expect(s.dem[s.dates.indexOf(d)]).toBeNull();
     for (const d of dd.coverage!.kalshi_volume.missing_days) expect(s.volume[s.dates.indexOf(d)]).toBeNull();
     expect(coverageCount(s.news)).toEqual({ n: 0, m: 92 });
   });
@@ -102,30 +103,31 @@ describe("date range", () => {
 
 describe("toggles", () => {
   it("never lets the last visible series be hidden", () => {
-    expect(canHide({ price: true, volume: true, news: false }, "price")).toBe(true);
-    expect(canHide({ price: true, volume: false, news: false }, "price")).toBe(false);
-    expect(canHide({ price: false, volume: false, news: true }, "news")).toBe(false);
-    expect(canHide({ price: false, volume: false, news: true }, "price")).toBe(true);  // already off
+    expect(canHide({ dem: true, rep: false, volume: true, news: false }, "dem")).toBe(true);
+    expect(canHide({ dem: true, rep: false, volume: false, news: false }, "dem")).toBe(false);
+    expect(canHide({ dem: false, rep: false, volume: false, news: true }, "news")).toBe(false);
+    expect(canHide({ dem: false, rep: false, volume: false, news: true }, "dem")).toBe(true);  // already off
   });
   it("toggleLine switches a line, but the last visible line stays on", () => {
-    const all = { price: true, volume: true, news: true };
-    expect(toggleLine(all, "volume")).toEqual({ price: true, volume: false, news: true });
+    const all = { dem: true, rep: false, volume: true, news: true };
+    expect(toggleLine(all, "volume")).toEqual({ dem: true, rep: false, volume: false, news: true });
     expect(all.volume).toBe(true);  // no mutation
-    const one = { price: false, volume: true, news: false };
+    const one = { dem: false, rep: false, volume: true, news: false };
     expect(toggleLine(one, "volume")).toBe(one);
-    expect(toggleLine(one, "price")).toEqual({ price: true, volume: true, news: false });
+    expect(toggleLine(one, "dem")).toEqual({ dem: true, rep: false, volume: true, news: false });
   });
   it("lockedLine names the only line on, else null", () => {
-    expect(lockedLine({ price: true, volume: true, news: true })).toBeNull();
-    expect(lockedLine({ price: true, volume: false, news: true })).toBeNull();
-    expect(lockedLine({ price: false, volume: true, news: false })).toBe("volume");
-    expect(lockedLine({ price: true, volume: false, news: false })).toBe("price");
+    expect(lockedLine({ dem: true, rep: false, volume: true, news: true })).toBeNull();
+    expect(lockedLine({ dem: true, rep: false, volume: false, news: true })).toBeNull();
+    expect(lockedLine({ dem: false, rep: false, volume: true, news: false })).toBe("volume");
+    expect(lockedLine({ dem: true, rep: false, volume: false, news: false })).toBe("dem");
   });
 });
 
 describe("legend text", () => {
-  it("price and volume, daily by default", () => {
-    expect(legendText("price")).toEqual({ name: "Price", desc: "Kalshi chance that Democrats win (%)" });
+  it("price lines without candidates, and volume, daily by default", () => {
+    expect(legendText("dem")).toEqual({ name: "Democrats", desc: "Kalshi chance that Democrats win (%)" });
+    expect(legendText("rep")).toEqual({ name: "Republicans", desc: "Kalshi chance that Republicans win (%)" });
     expect(legendText("volume")).toEqual({ name: "Volume", desc: "contracts traded per day" });
   });
   it("attention follows the Sources choice", () => {
@@ -138,17 +140,14 @@ describe("legend text", () => {
     expect(legendText("volume", "news", "hour").desc).toBe("contracts traded per hour");
     expect(legendText("news", "news", "hour").desc).toBe("news stories per hour mentioning the race (Media Cloud)");
     expect(legendText("news", "wikipedia", "hour").desc).toBe("Wikipedia pageviews per hour (race and candidate pages)");
-    expect(legendText("price", "news", "hour").desc).toBe("Kalshi chance that Democrats win (%)");
-  });
-  it("the price note explains the missing Republican line", () => {
-    expect(PRICE_WHY).toBe("The Republican contract is the mirror image: its price is about 100% minus this line.");
+    expect(legendText("dem", "news", "hour").desc).toBe("Kalshi chance that Democrats win (%)");
   });
 });
 
 describe("readout values", () => {
   it("formats each series the way the readout prints it", () => {
-    expect(formatValue("price", 48)).toBe("48.0%");
-    expect(formatValue("price", 48.7)).toBe("48.7%");
+    expect(formatValue("dem", 48)).toBe("48.0%");
+    expect(formatValue("rep", 48.7)).toBe("48.7%");
     expect(formatValue("volume", 57848.490000000005)).toBe("57,848.49 contracts");
     expect(formatValue("news", 34)).toBe("34 stories");
     expect(formatValue("news", null)).toBe("no data");

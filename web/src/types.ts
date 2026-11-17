@@ -91,6 +91,7 @@ export interface DisplayDaily {
   columns: string[];
   rows: Record<string, string | number | null>[];
   news: string[] | string;
+  opposing?: Partial<Opposing>;
   coverage?: Record<string, { days_present: number; days_total: number; missing_days: string[] }>;
   note?: string;
 }
@@ -107,6 +108,25 @@ export interface DisplayHourly {
   filled_hours?: { n: number; hours: string[]; rule?: string };
   forward_filled_null_price?: { n: number; hours: string[]; rule?: string };
   null_price_hours?: { n: number; hours: string[]; rule?: string };
+  opposing?: Opposing;        // G0: the Republican contract's columns kalshi_r/price_close and kalshi_r/volume
+  note?: string;
+}
+
+// series.display_hourly.opposing (G0): the opposing major party contract of the same Kalshi event.
+export interface Opposing {
+  ticker: string;
+  party: "D" | "R";
+  name: string;
+  filled_hours?: { n: number; hours: string[]; rule?: string };
+  leading_null_hours?: { n: number; hours: string[]; rule?: string };
+  note?: string;
+}
+
+// candidates (G0): the two major party candidates, with the Kalshi contract of each.
+export interface Candidates {
+  major: { name: string; party: "D" | "R" | string; kalshi_ticker: string; kalshi_name?: string }[];
+  left_out?: { name: string; ticker: string; why: string }[];
+  source?: string;
   note?: string;
 }
 
@@ -131,6 +151,7 @@ export interface RaceData {
   metrics: { daily: Record<string, MetricEntry>; hourly: Record<string, MetricEntry>; hourly_note?: string;
     events?: { status?: string; n_confirmed: number; n_needs_review_ignored: number; series: Record<string, EventSeries> } };
   notes: string[];
+  candidates?: Candidates;
 }
 
 // index.json: one entry per race, headline numbers for the map.
